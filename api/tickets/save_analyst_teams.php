@@ -1,0 +1,66 @@
+<?php
+/**
+ * API Endpoint: Save teams assigned to an analyst
+ */
+session_start();
+require_once '../../config.php';
+require_once '../../includes/functions.php';
+
+header('Content-Type: application/json');
+
+// Check if user is logged in
+if (!isset($_SESSION['analyst_id'])) {
+    echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+    exit;
+}
+
+// Get POST data
+$input = json_decode(file_get_contents('php://input'), true);
+
+$analystId = $input['analyst_id'] ?? null;
+$teamIds = $input['team_ids'] ?? [];
+
+if (!$analystId) {
+    echo json_encode(['success' => false, 'error' => 'Analyst ID is required']);
+    exit;
+}
+
+try {
+    $conn = connectToDatabase();
+
+    // Start transaction
+    $conn->beginTransaction();
+
+    // Delete existing team assignments for this analyst
+    $deleteSql = "DELETE FROM analyst_teams WHERE analyst_id = ?";
+    $deleteStmt = $conn->prepare($deleteSql);
+    $deleteStmt->execute([$analystId]);
+
+    // Insert new team assignments
+    if (!empty($teamIds)) {
+        $insertSql = "INSERT INTO analyst_teams (analyst_id, team_id) VALUES (?, ?)";
+        $insertStmt = $conn->prepare($insertSql);
+
+        foreach ($teamIds as $teamId) {
+            $insertStmt->execute([$analystId, $teamId]);
+        }
+    }
+
+    $conn->commit();
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Analyst teams updated successfully'
+    ]);
+
+} catch (Exception $e) {
+    if (isset($conn)) {
+        $conn->rollBack();
+    }
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+}
+
+?>

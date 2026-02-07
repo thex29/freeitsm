@@ -1,0 +1,48 @@
+<?php
+/**
+ * API Endpoint: Update Morning Check
+ */
+session_start();
+require_once '../../config.php';
+require_once '../../includes/functions.php';
+
+header('Content-Type: application/json');
+
+if (!isset($_SESSION['analyst_id'])) {
+    echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+    exit;
+}
+
+try {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $checkId = $input['checkId'] ?? null;
+    $checkName = $input['checkName'] ?? null;
+    $checkDescription = $input['checkDescription'] ?? '';
+    $sortOrder = $input['sortOrder'] ?? 0;
+    $isActive = $input['isActive'] ?? true;
+
+    if (!$checkId) {
+        throw new Exception('Check ID is required');
+    }
+
+    if (!$checkName || empty(trim($checkName))) {
+        throw new Exception('Check name is required');
+    }
+
+    $conn = connectToDatabase();
+
+    $sql = "UPDATE morningChecks_Checks
+            SET CheckName = ?, CheckDescription = ?, SortOrder = ?, IsActive = ?, ModifiedDate = GETDATE()
+            WHERE CheckID = ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([trim($checkName), trim($checkDescription), (int)$sortOrder, $isActive ? 1 : 0, (int)$checkId]);
+
+    echo json_encode(['success' => true]);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
+}
+?>

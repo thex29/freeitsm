@@ -1,0 +1,320 @@
+/**
+ * Tickets Calendar Styles
+ * Used by tickets/calendar.php for viewing scheduled tickets
+ */
+
+/* Main container */
+.calendar-container {
+    padding: 20px 30px;
+    height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    background: #f5f5f5;
+}
+
+/* Calendar header with navigation */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* Weekday headers */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #0078d4;
+    border-radius: 8px 8px 0 0;
+}
+
+.calendar-weekdays .weekday {
+    padding: 12px 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+}
+
+.calendar-weekdays .weekday.weekend {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Calendar grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #fff;
+    border-left: 1px solid #e0e0e0;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+}
+
+/* Individual day cells */
+.calendar-day {
+    min-height: 120px;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+.calendar-day.other-month {
+    background: #fafafa;
+}
+
+.calendar-day.other-month .day-number {
+    color: #bbb;
+}
+
+.calendar-day.today {
+    background: #e3f2fd;
+}
+
+.calendar-day.today .day-number {
+    background: #0078d4;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day.weekend {
+    background: #f9f9f9;
+}
+
+.calendar-day.weekend.today {
+    background: #e3f2fd;
+}
+
+/* Day number */
+.day-number {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Tickets container within a day */
+.day-tickets {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+/* Individual ticket in calendar */
+.calendar-ticket {
+    padding: 4px 8px;
+    background: #0078d4;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.15s;
+}
+
+.calendar-ticket:hover {
+    background: #106ebe;
+}
+
+.calendar-ticket.priority-high {
+    background: #d32f2f;
+}
+
+.calendar-ticket.priority-high:hover {
+    background: #b71c1c;
+}
+
+.calendar-ticket.priority-low {
+    background: #43a047;
+}
+
+.calendar-ticket.priority-low:hover {
+    background: #2e7d32;
+}
+
+/* Time display in ticket */
+.ticket-time {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* More tickets link */
+.more-tickets {
+    font-size: 11px;
+    color: #0078d4;
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.more-tickets:hover {
+    text-decoration: underline;
+}
+
+/* Modal styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 500px;
+    max-width: 90vw;
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Ticket detail in modal */
+.ticket-detail-subject {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ticket-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ticket-detail-row {
+    display: flex;
+    align-items: flex-start;
+}
+
+.ticket-detail-label {
+    width: 100px;
+    font-size: 13px;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.ticket-detail-value {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s;
+}
+
+.btn-primary {
+    background: #0078d4;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #106ebe;
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 10px;
+    }
+
+    .calendar-header h2 {
+        font-size: 18px;
+        min-width: 150px;
+    }
+
+    .calendar-day {
+        min-height: 80px;
+        padding: 4px;
+    }
+
+    .calendar-ticket {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+
+    .ticket-time {
+        display: none;
+    }
+}

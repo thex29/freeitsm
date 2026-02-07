@@ -1,0 +1,58 @@
+<?php
+/**
+ * API Endpoint: Serve/download an attachment file
+ */
+session_start();
+require_once '../../config.php';
+require_once '../../includes/functions.php';
+
+if (!isset($_SESSION['analyst_id'])) {
+    http_response_code(403);
+    echo 'Not authenticated';
+    exit;
+}
+
+$attachmentId = (int)($_GET['id'] ?? 0);
+
+if (!$attachmentId) {
+    http_response_code(400);
+    echo 'Attachment ID required';
+    exit;
+}
+
+try {
+    $conn = connectToDatabase();
+
+    $sql = "SELECT file_name, file_path, file_type FROM change_attachments WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$attachmentId]);
+    $attachment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$attachment) {
+        http_response_code(404);
+        echo 'Attachment not found';
+        exit;
+    }
+
+    $filePath = dirname(dirname(__DIR__)) . '/change-management/attachments/' . $attachment['file_path'];
+
+    if (!file_exists($filePath)) {
+        http_response_code(404);
+        echo 'File not found on disk';
+        exit;
+    }
+
+    // Set headers for download
+    header('Content-Type: ' . ($attachment['file_type'] ?: 'application/octet-stream'));
+    header('Content-Disposition: attachment; filename="' . $attachment['file_name'] . '"');
+    header('Content-Length: ' . filesize($filePath));
+    header('Cache-Control: no-cache');
+
+    readfile($filePath);
+    exit;
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo 'Error: ' . $e->getMessage();
+}
+?>
