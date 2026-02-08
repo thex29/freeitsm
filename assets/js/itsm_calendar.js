@@ -148,7 +148,7 @@ async function loadEvents() {
 
     try {
         const response = await fetch(
-            `${API_BASE}get_events.php?start=${range.start}&end=${range.end}${categoryParam}`
+            `${API_BASE}get_events.php?start=${range.start}&end=${range.end}${categoryParam}&_t=${Date.now()}`
         );
         const data = await response.json();
         if (data.success) {

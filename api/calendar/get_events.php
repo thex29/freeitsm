@@ -29,7 +29,7 @@ try {
     $sql = "SELECT e.id, e.title, e.description, e.category_id, e.start_datetime, e.end_datetime,
                    e.all_day, e.location, e.created_by, e.created_at, e.updated_at,
                    c.name as category_name, c.color as category_color,
-                   a.name as created_by_name
+                   a.full_name as created_by_name
             FROM calendar_events e
             LEFT JOIN calendar_categories c ON e.category_id = c.id
             LEFT JOIN analysts a ON e.created_by = a.id
