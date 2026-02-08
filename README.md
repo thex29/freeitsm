@@ -84,7 +84,7 @@ A comprehensive web-based IT Service Management (ITSM) platform with 9 integrate
 
 ## ITSM Modules
 
-The platform is organised into 9 modules, accessible from a landing page (`index.php`) and a shared waffle menu for cross-module navigation.
+The platform is organised into 10 modules, accessible from a landing page (`index.php`) and a shared waffle menu for cross-module navigation.
 
 | Module | Folder | Colour | Description |
 |--------|--------|--------|-------------|
@@ -97,6 +97,7 @@ The platform is organised into 9 modules, accessible from a landing page (`index
 | **Reporting** | `reporting/` | Brown `#ca5010` | System logs, audit trails, and analytics |
 | **Software** | `software/` | Indigo `#5c6bc0` | Software inventory and deployment tracking |
 | **Forms** | `forms/` | Teal `#00897b` | Dynamic form builder, filler, and submission reporting |
+| **System** | `system/` | Blue-grey `#546e7a` | Encryption key management and module access control |
 
 ---
 
@@ -184,6 +185,16 @@ sdtickets/
 │   ├── index.php                     # Software inventory dashboard
 │   ├── licences/
 │   │   └── index.php                 # Licence management (CRUD, search, CSV export)
+│   ├── settings/
+│   │   └── index.php                 # API key management
+│   └── includes/
+│
+├── system/                           # System Module
+│   ├── index.php                     # System landing page (area selection)
+│   ├── encryption/
+│   │   └── index.php                 # Encryption key management
+│   ├── modules/
+│   │   └── index.php                 # Analyst module access control
 │   └── includes/
 │
 ├── forms/                            # Forms Module
@@ -194,7 +205,7 @@ sdtickets/
 │   ├── create_tables.sql             # Database schema
 │   └── includes/
 │
-├── api/                              # REST API endpoints (~108 total)
+├── api/                              # REST API endpoints (~112 total)
 │   ├── tickets/                      # ~48 endpoints
 │   ├── assets/                       # 8 endpoints (inc. vCenter sync)
 │   ├── knowledge/                    # 16 endpoints (inc. AI chat)
@@ -202,9 +213,10 @@ sdtickets/
 │   ├── calendar/                     # 7 endpoints
 │   ├── morning-checks/               # 7 endpoints
 │   ├── reporting/                    # 2 endpoints
-│   ├── software/                     # 2 endpoints
+│   ├── software/                     # 5 endpoints
 │   ├── forms/                        # 7 endpoints
 │   ├── settings/                     # 2 endpoints
+│   ├── system/                       # 4 endpoints (encryption, module access)
 │   └── external/                     # External API (software inventory)
 │
 └── database/                         # SQL schema scripts
@@ -218,7 +230,7 @@ sdtickets/
 ## Shared Components
 
 ### Waffle Menu (`includes/waffle-menu.php`)
-A cross-module navigation component inspired by Microsoft 365's app launcher. Appears in every module's header, allowing quick switching between all 9 modules. Each module is registered here with its name, path, icon, and colour gradient.
+A cross-module navigation component inspired by Microsoft 365's app launcher. Appears in every module's header, allowing quick switching between all modules. Each module is registered here with its name, path, icon, and colour gradient. Respects `$_SESSION['allowed_modules']` to filter visible modules per analyst.
 
 To add a new module, add an entry to the `$modules` array and corresponding CSS classes.
 
@@ -250,7 +262,7 @@ Currently encrypted in `target_mailboxes`:
 - `oauth_redirect_uri`, `imap_server`, `target_mailbox`
 
 ### Functions (`includes/functions.php`)
-Contains `connectToDatabase()` which returns a PDO connection. Tries multiple ODBC drivers in order: ODBC Driver 17, ODBC Driver 18, SQL Server Native Client 11.0, and legacy SQL Server.
+Contains `connectToDatabase()` which returns a PDO connection. Tries multiple ODBC drivers in order: ODBC Driver 17, ODBC Driver 18, SQL Server Native Client 11.0, and legacy SQL Server. Also contains `getAnalystAllowedModules()` which loads module access permissions for an analyst.
 
 ### Module Header Pattern
 Each module has its own `includes/header.php` that:
@@ -330,6 +342,21 @@ Software inventory tracking across the estate.
   - Store licence keys, costs, portal URLs, vendor contacts, and notes
   - Searchable and sortable table with status badges (Active/Expired/Cancelled)
   - CSV export of all licence data
+
+### System (`system/`)
+System administration and configuration.
+
+- **Encryption** (`system/encryption/`): Guided interface for managing the AES-256-GCM encryption key
+  - Shows key status (configured/missing/invalid) with colour-coded status card
+  - One-click key generation — writes directly to `c:\wamp64\encryption_keys\sdtickets.key`
+  - Instructions on key placement, backup importance, and what data is encrypted
+  - No regenerate button to prevent accidental key destruction
+- **Module Access** (`system/modules/`): Control which modules each analyst can see
+  - Toggle matrix: analysts as rows, modules as columns
+  - "All Access" toggle per analyst (default state — backward compatible)
+  - System module cannot be disabled (always accessible)
+  - Auto-saves on toggle with debounced API calls and toast notifications
+  - Permissions enforced on homepage cards and waffle menu navigation
 
 ### Forms (`forms/`)
 Dynamic form builder and submission system.
@@ -444,6 +471,7 @@ if (!isset($_SESSION['analyst_id'])) {
 - `api/morning-checks/` — 7 endpoints for check definitions, results, and charts
 - `api/reporting/` — 2 endpoints for system logs
 - `api/software/` — 5 endpoints for software inventory and licence management
+- `api/system/` — 4 endpoints for encryption status and module access management
 - `api/external/software-inventory/submit/` — External API for automated inventory collection
 
 ---
@@ -552,6 +580,14 @@ id, check_id (FK), check_date, status (Green/Amber/Red), notes, analyst_id
 #### teams, analyst_teams, department_teams
 Many-to-many relationships for team-based access control. Analysts only see tickets in departments linked to their teams. Analysts with no team assignments see everything (admin behaviour).
 
+### Module Access Tables
+
+#### analyst_modules
+```sql
+id, analyst_id (FK analysts ON DELETE CASCADE), module_key
+```
+Controls which modules an analyst can access. No rows = full access to all modules (backward compatible). When rows exist, analyst only sees those modules on homepage and in waffle menu. The `system` module is always included and cannot be disabled.
+
 ---
 
 ## Security
@@ -565,6 +601,7 @@ Many-to-many relationships for team-based access control. Analysts only see tick
 - Client-side escaping via DOM `textContent` → `innerHTML` pattern
 - OAuth 2.0 for Microsoft 365 email integration
 - Team-based access control for ticket visibility
+- Module-level access control per analyst (configurable via System module)
 - Audit logging for all ticket changes
 - Login attempt logging with IP and user agent
 - Credential masking in UI (`****` + last 4 characters)
@@ -665,6 +702,8 @@ The `emails.exchange_message_id` column does NOT allow NULL. Manual tickets must
 | Manage knowledge AI | `knowledge/settings/`, `api/knowledge/ai_chat.php` |
 | Design forms | `forms/builder.php`, `api/forms/save_form.php` |
 | View form submissions | `forms/submissions.php`, `api/forms/get_submissions.php` |
+| Manage encryption key | `system/encryption/`, `api/system/check_encryption.php` |
+| Configure module access | `system/modules/`, `api/system/save_analyst_modules.php` |
 
 ---
 

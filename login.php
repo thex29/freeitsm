@@ -4,6 +4,7 @@
  */
 session_start();
 require_once 'config.php';
+require_once 'includes/functions.php';
 
 /**
  * Log login attempt to system_logs
@@ -87,6 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateSql = "UPDATE analysts SET last_login_datetime = GETDATE() WHERE id = ?";
                 $updateStmt = $conn->prepare($updateSql);
                 $updateStmt->execute([$analyst['id']]);
+
+                // Load module permissions
+                $_SESSION['allowed_modules'] = getAnalystAllowedModules($conn, $analyst['id']);
 
                 // Log successful login
                 logLoginAttempt($conn, $analyst['id'], $username, true);

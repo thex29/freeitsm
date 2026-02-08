@@ -66,6 +66,11 @@ $modules = [
         'name' => 'Wiki',
         'path' => 'system-wiki/',
         'icon' => '<circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>'
+    ],
+    'system' => [
+        'name' => 'System',
+        'path' => 'system/',
+        'icon' => '<line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line>'
     ]
 ];
 ?>
@@ -187,6 +192,7 @@ $modules = [
     .waffle-module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
     .waffle-module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
     .waffle-module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
+    .waffle-module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
 
     .waffle-module-name {
         font-size: 12px;
@@ -231,6 +237,7 @@ $modules = [
     .header.software-header { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
     .header.forms-header { background: linear-gradient(135deg, #00897b, #00695c); }
     .header.wiki-header { background: linear-gradient(135deg, #c62828, #b71c1c); }
+    .header.system-header { background: linear-gradient(135deg, #546e7a, #37474f); }
 </style>
 
 <div class="waffle-overlay" id="waffleOverlay" onclick="closeWaffleMenu()"></div>
@@ -253,11 +260,14 @@ function renderWaffleMenuButton() {
 }
 
 function renderWaffleMenuPanel($modules, $current_module, $path_prefix) {
+    $allowed = $_SESSION['allowed_modules'] ?? null;
     ?>
     <div class="waffle-panel" id="wafflePanel">
         <div class="waffle-panel-header">ITSM Modules</div>
         <div class="waffle-modules">
-            <?php foreach ($modules as $key => $module): ?>
+            <?php foreach ($modules as $key => $module):
+                if ($allowed !== null && !in_array($key, $allowed)) continue;
+            ?>
             <a href="<?php echo $path_prefix . $module['path']; ?>" class="waffle-module-link <?php echo $key === $current_module ? 'current' : ''; ?>">
                 <div class="waffle-module-icon <?php echo $key; ?>">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

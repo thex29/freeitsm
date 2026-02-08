@@ -13,6 +13,7 @@ if (!isset($_SESSION['analyst_id'])) {
 }
 
 $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
+$allowed_modules = $_SESSION['allowed_modules'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,6 +144,7 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
         .module-card.software:hover { border-color: #5c6bc0; }
         .module-card.forms:hover { border-color: #00897b; }
         .module-card.wiki:hover { border-color: #c62828; }
+        .module-card.system:hover { border-color: #546e7a; }
 
         .module-icon {
             width: 60px;
@@ -170,6 +172,7 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
         .module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
         .module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
         .module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
+        .module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
 
         .module-name {
             font-size: 14px;
@@ -201,6 +204,7 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
         </div>
 
         <div class="modules-grid">
+            <?php if ($allowed_modules === null || in_array('tickets', $allowed_modules)): ?>
             <a href="tickets/" class="module-card tickets" title="Manage support requests, emails, and user issues">
                 <div class="module-icon tickets">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -210,7 +214,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Tickets</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('assets', $allowed_modules)): ?>
             <a href="asset-management/" class="module-card assets" title="Track IT assets and user assignments">
                 <div class="module-icon assets">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -221,7 +227,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Assets</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('knowledge', $allowed_modules)): ?>
             <a href="knowledge/" class="module-card knowledge" title="Create and browse knowledge base articles">
                 <div class="module-icon knowledge">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -231,7 +239,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Knowledge</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('changes', $allowed_modules)): ?>
             <a href="change-management/" class="module-card changes" title="Plan, track and manage IT changes">
                 <div class="module-icon changes">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -244,7 +254,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Changes</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('calendar', $allowed_modules)): ?>
             <a href="calendar/" class="module-card calendar" title="Track events, deadlines and schedules">
                 <div class="module-icon calendar">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -256,7 +268,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Calendar</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('morning-checks', $allowed_modules)): ?>
             <a href="morning-checks/" class="module-card morning-checks" title="Record daily infrastructure checks">
                 <div class="module-icon morning-checks">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -266,7 +280,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Checks</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('reporting', $allowed_modules)): ?>
             <a href="reporting/" class="module-card reporting" title="View system logs and analytics">
                 <div class="module-icon reporting">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -277,7 +293,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Reporting</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('software', $allowed_modules)): ?>
             <a href="software/" class="module-card software" title="Browse software inventory and licensing">
                 <div class="module-icon software">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -295,7 +313,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Software</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('forms', $allowed_modules)): ?>
             <a href="forms/" class="module-card forms" title="Design custom forms and view submissions">
                 <div class="module-icon forms">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -308,7 +328,9 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Forms</div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($allowed_modules === null || in_array('wiki', $allowed_modules)): ?>
             <a href="system-wiki/" class="module-card wiki" title="Browse auto-generated codebase documentation">
                 <div class="module-icon wiki">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -319,6 +341,26 @@ $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
                 </div>
                 <div class="module-name">Wiki</div>
             </a>
+            <?php endif; ?>
+
+            <?php if ($allowed_modules === null || in_array('system', $allowed_modules)): ?>
+            <a href="system/" class="module-card system" title="System administration and configuration">
+                <div class="module-icon system">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="module-name">System</div>
+            </a>
+            <?php endif; ?>
         </div>
     </div>
 
