@@ -5,13 +5,14 @@
  */
 session_start();
 require_once 'config.php';
-require_once 'includes/waffle-menu.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['analyst_id'])) {
     header('Location: login.php');
     exit;
 }
+
+require_once 'includes/waffle-menu.php';
 
 $analyst_name = $_SESSION['analyst_name'] ?? 'Analyst';
 $allowed_modules = $_SESSION['allowed_modules'] ?? null;
