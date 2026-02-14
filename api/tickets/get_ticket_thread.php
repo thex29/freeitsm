@@ -54,48 +54,28 @@ try {
 
 /**
  * Strip quoted/nested thread content from an email body
- * so each email in the thread only shows its own new content
+ * Relies on our own visible marker text, with generic blockquote fallback
  */
 function stripQuotedThread($body) {
-    // 1. Our reply marker div: <div data-reply-marker="true">...</div>
-    $divPattern = '/<div[^>]*data-reply-marker="true"[^>]*>.*?<\/div>/is';
-    if (preg_match($divPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+    // 1. Our visible marker text: "Please reply above this line"
+    if (preg_match('/\x{2014}\s*Please reply above this line\s*\x{2014}/u', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 2. Our raw marker text: [*** SDREF:XXX-XXX-XXXXX REPLY ABOVE THIS LINE ***]
-    $markerPattern = '/\[\*{3}\s*SDREF:[A-Z]{3}-\d{3}-\d{5}\s*REPLY ABOVE THIS LINE\s*\*{3}\]/i';
-    if (preg_match($markerPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+    // 2. Our data-reply-marker div (if preserved)
+    if (preg_match('/<div[^>]*data-reply-marker="true"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 3. Gmail: <div class="gmail_quote"> or <div class="gmail_attr">
-    if (preg_match('/<div[^>]+class="[^"]*gmail_(quote|attr)[^"]*"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+    // 3. Legacy SDREF marker text from older emails
+    if (preg_match('/\[\*{3}\s*SDREF:[A-Z]{3}-\d{3}-\d{5}\s*REPLY ABOVE THIS LINE\s*\*{3}\]/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 4. Outlook-style separator: <div id="appendonsend">
-    if (preg_match('/<div[^>]*id="appendonsend"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        $stripped = trim(substr($body, 0, $matches[0][1]));
-        if (!empty($stripped)) return $stripped;
-    }
-
-    // 5. Outlook "From:" / "Sent:" header block after <hr>
-    if (preg_match('/<hr[^>]*>\s*(<(div|p|span)[^>]*>)?\s*<b>\s*From:\s*<\/b>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        $stripped = trim(substr($body, 0, $matches[0][1]));
-        if (!empty($stripped)) return $stripped;
-    }
-
-    // 6. Generic "On ... wrote:" pattern (allows HTML tags like <a> inside, and <br> before close)
-    if (preg_match('/(<div[^>]*>)\s*On\s+[\s\S]{10,300}?\s+wrote:\s*(<br\s*\/?>)?\s*<\/div>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        $stripped = trim(substr($body, 0, $matches[0][1]));
-        if (!empty($stripped)) return $stripped;
-    }
-
-    // 7. Blockquote elements (quoted replies, only if there's content before it)
+    // 4. Generic fallback: blockquote (only if there's content before it)
     if (preg_match('/<blockquote[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $before = trim(substr($body, 0, $matches[0][1]));
         if (!empty($before)) return $before;
