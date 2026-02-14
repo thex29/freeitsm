@@ -213,6 +213,7 @@ function initTinyMCE() {
             'alignright alignjustify | bullist numlist outdent indent | ' +
             'link | removeformat | help',
         content_style: 'body { font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; }',
+        extended_valid_elements: 'div[style|data-reply-marker]',
         setup: function(editor) {
             emailEditor = editor;
         }
