@@ -71,33 +71,32 @@ function stripQuotedThread($body) {
         if (!empty($stripped)) return $stripped;
     }
 
-    // 3. Gmail quoted content: <div class="gmail_quote">
-    if (preg_match('/<div[^>]*class="gmail_quote"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+    // 3. Gmail: <div class="gmail_quote"> or <div class="gmail_attr">
+    if (preg_match('/<div[^>]+class="[^"]*gmail_(quote|attr)[^"]*"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 4. Outlook-style separator: <div id="appendonsend"> or <hr> followed by From:/Sent:
+    // 4. Outlook-style separator: <div id="appendonsend">
     if (preg_match('/<div[^>]*id="appendonsend"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 5. Generic "On ... wrote:" pattern (common in most email clients)
-    if (preg_match('/<(div|p|span)[^>]*>\s*On\s+.{10,80}\s+wrote:\s*<\/(div|p|span)>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        $stripped = trim(substr($body, 0, $matches[0][1]));
-        if (!empty($stripped)) return $stripped;
-    }
-
-    // 6. Outlook "From:" / "Sent:" header block after <hr>
+    // 5. Outlook "From:" / "Sent:" header block after <hr>
     if (preg_match('/<hr[^>]*>\s*(<(div|p|span)[^>]*>)?\s*<b>\s*From:\s*<\/b>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // 7. Blockquote elements (quoted replies)
+    // 6. Generic "On ... wrote:" pattern (allows HTML tags like <a> inside, and <br> before close)
+    if (preg_match('/(<div[^>]*>)\s*On\s+[\s\S]{10,300}?\s+wrote:\s*(<br\s*\/?>)?\s*<\/div>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // 7. Blockquote elements (quoted replies, only if there's content before it)
     if (preg_match('/<blockquote[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        // Only strip if blockquote is not right at the start (i.e. there's content before it)
         $before = trim(substr($body, 0, $matches[0][1]));
         if (!empty($before)) return $before;
     }

@@ -534,14 +534,13 @@ function buildFullEmailBody($conn, $ticketId, $analystBody, $type) {
 
     $threadHtml = implode('', $threadParts);
 
-    // Build the reply marker - visually hidden but detectable for stripping inbound replies
-    $markerLine = htmlspecialchars("[*** SDREF:$ticketNumber REPLY ABOVE THIS LINE ***]", ENT_QUOTES, 'UTF-8');
+    // Build the reply marker - visible, clean separator with SDREF for programmatic detection
+    $markerText = "[*** SDREF:$ticketNumber REPLY ABOVE THIS LINE ***]";
     $prefix = ($type === 'forward') ? '<p><strong>---------- Forwarded message ----------</strong></p>' : '';
 
-    // Assemble: analyst content + separator + thread
-    // The marker text is hidden (font-size:0) but present for programmatic detection
+    // Assemble: analyst content + visible separator + thread
     return $analystBody
-        . '<div style="border-top: 1px solid #ccc; margin: 20px 0;" data-reply-marker="true"><span style="font-size:0; line-height:0; color:transparent;">' . $markerLine . '</span></div>'
+        . '<div style="border-top: 1px solid #ccc; padding: 10px 0; margin: 20px 0; color: #999; font-size: 12px; text-align: center;" data-reply-marker="true">— Please reply above this line —</div>'
         . '<div style="color: #555;">'
         . $prefix
         . $threadHtml
@@ -566,8 +565,8 @@ function stripQuotedContent($body) {
         if (!empty($stripped)) return $stripped;
     }
 
-    // Gmail quoted content
-    if (preg_match('/<div[^>]*class="gmail_quote"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+    // Gmail: <div class="gmail_quote"> or <div class="gmail_attr">
+    if (preg_match('/<div[^>]+class="[^"]*gmail_(quote|attr)[^"]*"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
@@ -578,19 +577,19 @@ function stripQuotedContent($body) {
         if (!empty($stripped)) return $stripped;
     }
 
-    // "On ... wrote:" pattern
-    if (preg_match('/<(div|p|span)[^>]*>\s*On\s+.{10,80}\s+wrote:\s*<\/(div|p|span)>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
-        $stripped = trim(substr($body, 0, $matches[0][1]));
-        if (!empty($stripped)) return $stripped;
-    }
-
     // Outlook "From:" / "Sent:" after <hr>
     if (preg_match('/<hr[^>]*>\s*(<(div|p|span)[^>]*>)?\s*<b>\s*From:\s*<\/b>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $stripped = trim(substr($body, 0, $matches[0][1]));
         if (!empty($stripped)) return $stripped;
     }
 
-    // Blockquote elements
+    // Generic "On ... wrote:" (allows HTML tags like <a> inside, and <br> before close)
+    if (preg_match('/(<div[^>]*>)\s*On\s+[\s\S]{10,300}?\s+wrote:\s*(<br\s*\/?>)?\s*<\/div>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Blockquote elements (only if there's content before it)
     if (preg_match('/<blockquote[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
         $before = trim(substr($body, 0, $matches[0][1]));
         if (!empty($before)) return $before;
