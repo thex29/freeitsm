@@ -154,13 +154,13 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
 
     <div class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('departments')">Departments</button>
-            <button class="tab" onclick="switchTab('teams')">Teams</button>
-            <button class="tab" onclick="switchTab('ticket-types')">Ticket Types</button>
-            <button class="tab" onclick="switchTab('ticket-origins')">Ticket Origins</button>
-            <button class="tab" onclick="switchTab('mailboxes')">Mailboxes</button>
-            <button class="tab" onclick="switchTab('analysts')">Analysts</button>
-            <button class="tab" onclick="switchTab('general')">General</button>
+            <button class="tab active" data-tab="departments" onclick="switchTab('departments')">Departments</button>
+            <button class="tab" data-tab="teams" onclick="switchTab('teams')">Teams</button>
+            <button class="tab" data-tab="ticket-types" onclick="switchTab('ticket-types')">Ticket Types</button>
+            <button class="tab" data-tab="ticket-origins" onclick="switchTab('ticket-origins')">Ticket Origins</button>
+            <button class="tab" data-tab="mailboxes" onclick="switchTab('mailboxes')">Mailboxes</button>
+            <button class="tab" data-tab="analysts" onclick="switchTab('analysts')">Analysts</button>
+            <button class="tab" data-tab="general" onclick="switchTab('general')">General</button>
         </div>
 
         <!-- Departments Tab -->
@@ -581,8 +581,6 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
             // Auto-switch to mailboxes tab if OAuth success
             <?php if ($oauthSuccess && $oauthMailboxId): ?>
             switchTab('mailboxes');
-            document.querySelector('.tab.active').classList.remove('active');
-            document.querySelectorAll('.tab')[4].classList.add('active');
             <?php endif; ?>
         });
 
@@ -592,7 +590,8 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
 
             // Update tab buttons
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            const btn = document.querySelector('.tab[data-tab="' + tab + '"]');
+            if (btn) btn.classList.add('active');
 
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));

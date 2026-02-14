@@ -48,7 +48,7 @@ try {
         saveTokensToDatabase($conn, $mailboxId, $tokens);
 
         // Redirect back to settings page with success message
-        header('Location: admin_settings.php?oauth=success&mailbox_id=' . $mailboxId);
+        header('Location: tickets/settings/index.php?oauth=success&mailbox_id=' . $mailboxId);
         exit;
     } else {
         // Legacy: File-based authentication (for backwards compatibility)

@@ -8,6 +8,14 @@ const API_BASE = window.API_BASE || 'api/';
 
 let emails = [];
 let selectedEmailId = null;
+
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast' + (isError ? ' toast-error' : '');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
 let departments = [];
 let ticketTypes = [];
 let ticketOrigins = [];
@@ -1413,23 +1421,23 @@ async function sendEmail() {
             data = JSON.parse(responseText);
         } catch (parseError) {
             console.error('Raw response:', responseText);
-            alert('Server error (not JSON): ' + responseText.substring(0, 500));
+            showToast('Server error: ' + responseText.substring(0, 200), true);
             return;
         }
 
         if (data.success) {
-            alert('Email sent successfully!');
+            showToast('Email sent successfully!');
             closeEmailModal();
             // Refresh the current view to show the sent email
             if (currentEmail) {
                 selectEmail(selectedEmailId);
             }
         } else {
-            alert('Failed to send email: ' + data.error);
+            showToast('Failed to send email: ' + data.error, true);
         }
     } catch (error) {
         console.error('Error sending email:', error);
-        alert('Error sending email: ' + error.message);
+        showToast('Error sending email: ' + error.message, true);
     } finally {
         // Restore button state
         sendBtn.disabled = false;

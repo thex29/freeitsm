@@ -223,6 +223,7 @@ $current_page = 'inbox';
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
     <script>window.API_BASE = '../api/tickets/';</script>
     <script src="../assets/js/inbox.js"></script>
 </body>
