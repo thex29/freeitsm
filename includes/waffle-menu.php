@@ -62,6 +62,11 @@ $modules = [
         'path' => 'forms/',
         'icon' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>'
     ],
+    'contracts' => [
+        'name' => 'Contracts',
+        'path' => 'contracts/',
+        'icon' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="12" y1="9" x2="8" y2="9"></line>'
+    ],
     'wiki' => [
         'name' => 'Wiki',
         'path' => 'system-wiki/',
@@ -191,6 +196,7 @@ $modules = [
     .waffle-module-icon.reporting { background: linear-gradient(135deg, #ca5010, #a5410a); }
     .waffle-module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
     .waffle-module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
+    .waffle-module-icon.contracts { background: linear-gradient(135deg, #f59e0b, #d97706); }
     .waffle-module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
     .waffle-module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
 
@@ -236,6 +242,7 @@ $modules = [
     .header.reporting-header { background: linear-gradient(135deg, #ca5010, #a5410a); }
     .header.software-header { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
     .header.forms-header { background: linear-gradient(135deg, #00897b, #00695c); }
+    .header.contracts-header { background: linear-gradient(135deg, #f59e0b, #d97706); }
     .header.wiki-header { background: linear-gradient(135deg, #c62828, #b71c1c); }
     .header.system-header { background: linear-gradient(135deg, #546e7a, #37474f); }
 </style>

@@ -557,6 +557,39 @@ $schema = [
         'access_type'   => 'nvarchar(10) NOT NULL',
         'line_number'   => 'int NULL',
     ],
+
+    // Contracts module
+    'suppliers' => [
+        'id'                => 'int IDENTITY(1,1) NOT NULL',
+        'legal_name'        => 'nvarchar(255) NOT NULL',
+        'trading_name'      => 'nvarchar(255) NULL',
+        'is_active'         => 'bit NOT NULL DEFAULT 1',
+        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+    ],
+
+    'contacts' => [
+        'id'                => 'int IDENTITY(1,1) NOT NULL',
+        'supplier_id'       => 'int NULL',
+        'first_name'        => 'nvarchar(100) NOT NULL',
+        'surname'           => 'nvarchar(100) NOT NULL',
+        'email'             => 'nvarchar(255) NULL',
+        'mobile'            => 'nvarchar(50) NULL',
+        'is_active'         => 'bit NOT NULL DEFAULT 1',
+        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+    ],
+
+    'contracts' => [
+        'id'                    => 'int IDENTITY(1,1) NOT NULL',
+        'contract_number'       => 'nvarchar(50) NOT NULL',
+        'title'                 => 'nvarchar(255) NOT NULL',
+        'supplier_id'           => 'int NULL',
+        'contract_owner_id'     => 'int NULL',
+        'contract_start'        => 'date NULL',
+        'contract_end'          => 'date NULL',
+        'notice_period_days'    => 'int NULL',
+        'is_active'             => 'bit NOT NULL DEFAULT 1',
+        'created_datetime'      => 'datetime NULL DEFAULT GETDATE()',
+    ],
 ];
 
 // Primary key definitions: table => pk_column (defaults to 'id')

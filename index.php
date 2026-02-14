@@ -124,6 +124,7 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
         .module-card.reporting:hover { border-color: #ca5010; }
         .module-card.software:hover { border-color: #5c6bc0; }
         .module-card.forms:hover { border-color: #00897b; }
+        .module-card.contracts:hover { border-color: #f59e0b; }
         .module-card.wiki:hover { border-color: #c62828; }
         .module-card.system:hover { border-color: #546e7a; }
 
@@ -152,6 +153,7 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
         .module-icon.reporting { background: linear-gradient(135deg, #ca5010, #a5410a); }
         .module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
         .module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
+        .module-icon.contracts { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
         .module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
 
@@ -306,6 +308,21 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
                     </svg>
                 </div>
                 <div class="module-name">Forms</div>
+            </a>
+            <?php endif; ?>
+
+            <?php if ($allowed_modules === null || in_array('contracts', $allowed_modules)): ?>
+            <a href="contracts/" class="module-card contracts" title="Manage suppliers, contacts and contracts">
+                <div class="module-icon contracts">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <line x1="12" y1="9" x2="8" y2="9"></line>
+                    </svg>
+                </div>
+                <div class="module-name">Contracts</div>
             </a>
             <?php endif; ?>
 
