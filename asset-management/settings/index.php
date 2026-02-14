@@ -134,8 +134,20 @@ $path_prefix = '../../';
         .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #888; font-size: 13px; padding: 4px; }
         .password-toggle:hover { color: #333; }
 
-        .modal { z-index: 1000; }
-        .modal .modal-content { max-width: 500px; }
+        .modal-content {
+            padding: 30px;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            padding: 0;
+            border-bottom: none;
+        }
+
         .modal .form-group { margin-bottom: 15px; }
         .modal .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; color: #333; }
         .modal .form-group input, .modal .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
@@ -143,6 +155,8 @@ $path_prefix = '../../';
         .modal .form-group input:focus, .modal .form-group textarea:focus { outline: none; border-color: #107c10; box-shadow: 0 0 0 2px rgba(16, 124, 16, 0.1); }
         .modal .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
         .modal .checkbox-label input[type="checkbox"] { width: auto; }
+
+        .modal-actions { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -268,8 +282,8 @@ $path_prefix = '../../';
                     </label>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -453,8 +467,12 @@ $path_prefix = '../../';
             }
         });
 
+        let modalMouseDownTarget = null;
+        document.getElementById('editModal').addEventListener('mousedown', function(e) {
+            modalMouseDownTarget = e.target;
+        });
         document.getElementById('editModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+            if (e.target === this && modalMouseDownTarget === this) closeModal();
         });
 
         // vCenter settings
