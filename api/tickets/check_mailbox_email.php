@@ -577,6 +577,10 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
             $updateTicketSql = "UPDATE tickets SET updated_datetime = GETDATE() WHERE id = ?";
             $updateTicketStmt = $conn->prepare($updateTicketSql);
             $updateTicketStmt->execute([$ticketId]);
+
+            // For replies to existing tickets, strip the quoted thread
+            // Look for our reply marker and store only the new content above it
+            $bodyContent = stripInboundThread($bodyContent);
         }
     }
 
@@ -680,6 +684,38 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
     ]);
 
     return true;
+}
+
+/**
+ * Strip the quoted thread from an inbound reply
+ * Looks for our reply marker and returns only the content above it
+ * Falls back to full body if no marker is found
+ */
+function stripInboundThread($bodyContent) {
+    // The marker text is: [*** SDREF:XXX-XXX-XXXXX REPLY ABOVE THIS LINE ***]
+    $markerPattern = '/\[\*{3}\s*SDREF:[A-Z]{3}-\d{3}-\d{5}\s*REPLY ABOVE THIS LINE\s*\*{3}\]/i';
+
+    // Try to find the marker div first (preserves our HTML structure)
+    $divPattern = '/<div[^>]*data-reply-marker="true"[^>]*>.*?<\/div>/is';
+    if (preg_match($divPattern, $bodyContent, $matches, PREG_OFFSET_CAPTURE)) {
+        $markerPos = $matches[0][1];
+        $newContent = trim(substr($bodyContent, 0, $markerPos));
+        if (!empty($newContent)) {
+            return $newContent;
+        }
+    }
+
+    // Fallback: look for the raw marker text (email clients may strip HTML attributes)
+    if (preg_match($markerPattern, $bodyContent, $matches, PREG_OFFSET_CAPTURE)) {
+        $markerPos = $matches[0][1];
+        $newContent = trim(substr($bodyContent, 0, $markerPos));
+        if (!empty($newContent)) {
+            return $newContent;
+        }
+    }
+
+    // No marker found — return the full body (new ticket or marker was removed)
+    return $bodyContent;
 }
 
 /**

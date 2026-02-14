@@ -81,14 +81,18 @@ try {
         throw new Exception('Failed to obtain valid access token. Please re-authenticate the mailbox.');
     }
 
-    // Build the email message for Graph API
+    // Build the email message for Graph API (send full body with thread)
     $message = buildEmailMessage($to, $cc, $subject, $body, $attachments);
 
     // Send the email via Graph API
     $result = sendEmailViaGraph($accessToken, $message);
 
-    // Save sent email to database
-    saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $body);
+    // Strip quoted thread from body before storing in DB
+    // Only store the analyst's new content (above the reply marker)
+    $bodyForStorage = stripThreadFromBody($body);
+
+    // Save sent email to database (with stripped body)
+    saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $bodyForStorage);
 
     echo json_encode([
         'success' => true,
@@ -451,6 +455,33 @@ function sendEmailViaGraph($accessToken, $message) {
     }
 
     return true;
+}
+
+/**
+ * Strip the quoted thread from the email body
+ * Looks for the reply marker and returns only the content above it
+ */
+function stripThreadFromBody($body) {
+    // Look for the marker pattern in the HTML
+    // The marker text is: [*** SDREF:XXX-XXX-XXXXX REPLY ABOVE THIS LINE ***]
+    // It's wrapped in a div with data-reply-marker="true"
+    $markerPattern = '/\[\*{3}\s*SDREF:[A-Z]{3}-\d{3}-\d{5}\s*REPLY ABOVE THIS LINE\s*\*{3}\]/i';
+
+    // Try to find the marker div first (from our own compose)
+    $divPattern = '/<div[^>]*data-reply-marker="true"[^>]*>.*?<\/div>/is';
+    if (preg_match($divPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $markerPos = $matches[0][1];
+        return trim(substr($body, 0, $markerPos));
+    }
+
+    // Fallback: look for the raw marker text (e.g. if HTML was modified)
+    if (preg_match($markerPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $markerPos = $matches[0][1];
+        return trim(substr($body, 0, $markerPos));
+    }
+
+    // No marker found — return the full body (legacy emails without marker)
+    return $body;
 }
 
 /**
