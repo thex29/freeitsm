@@ -8,6 +8,7 @@ const API_BASE = window.API_BASE || 'api/';
 
 let emails = [];
 let selectedEmailId = null;
+let composeMode = 'new';
 
 function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
@@ -1338,7 +1339,8 @@ async function saveNote() {
 }
 
 // Open reply modal
-async function openReplyModal() {
+function openReplyModal() {
+    composeMode = 'reply';
     document.getElementById('emailTo').value = currentEmail.from_address;
     document.getElementById('emailCc').value = '';
     // Add ticket reference to subject if not already present
@@ -1351,58 +1353,17 @@ async function openReplyModal() {
     }
     document.getElementById('emailSubject').value = subject;
 
-    // Fetch all previous emails for this ticket to build full thread
-    let threadHtml = '';
-    try {
-        const response = await fetch(`${API_BASE}get_ticket_thread.php?ticket_id=${currentEmail.ticket_id}`);
-        const data = await response.json();
-        if (data.success && data.emails.length > 0) {
-            // Build thread from all emails, newest first
-            const threadEmails = data.emails.slice().reverse();
-            threadHtml = threadEmails.map(e => `
-                <div style="margin-bottom: 15px;">
-                    <p style="margin: 0 0 5px 0; color: #666; font-size: 13px;"><strong>On ${formatDateTime(e.received_datetime)}, ${escapeHtml(e.from_name || e.from_address)} &lt;${escapeHtml(e.from_address)}&gt; wrote:</strong></p>
-                    <blockquote style="margin: 0 0 0 10px; padding-left: 10px; border-left: 2px solid #ccc;">
-                        ${e.body_content}
-                    </blockquote>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading thread:', error);
-        // Fallback: just quote the current email
-        threadHtml = `
-            <div style="margin-bottom: 15px;">
-                <p style="margin: 0 0 5px 0; color: #666; font-size: 13px;"><strong>On ${formatDateTime(currentEmail.received_datetime)}, ${escapeHtml(currentEmail.from_name)} wrote:</strong></p>
-                <blockquote style="margin: 0 0 0 10px; padding-left: 10px; border-left: 2px solid #ccc;">
-                    ${currentEmail.body_content}
-                </blockquote>
-            </div>
-        `;
-    }
-
-    // Build reply content with marker separating new content from thread
-    const markerLine = `[*** SDREF:${currentEmail.ticket_number} REPLY ABOVE THIS LINE ***]`;
-    const replyContent = `
-        <br><br>
-        <div style="border-top: 1px solid #ccc; padding: 10px 0; margin: 20px 0; color: #999; font-size: 12px; text-align: center;" data-reply-marker="true">${escapeHtml(markerLine)}</div>
-        <div style="color: #555;">
-            ${threadHtml}
-        </div>
-    `;
-
-    // Set content in TinyMCE
+    // Empty editor - server will assemble the full thread when sending
     if (emailEditor) {
-        emailEditor.setContent(replyContent);
-        // Move cursor to the beginning
-        emailEditor.selection.setCursorLocation(emailEditor.getBody(), 0);
+        emailEditor.setContent('<p><br></p>');
     }
 
     document.getElementById('emailModal').classList.add('active');
 }
 
 // Open forward modal
-async function openForwardModal() {
+function openForwardModal() {
+    composeMode = 'forward';
     document.getElementById('emailTo').value = '';
     document.getElementById('emailCc').value = '';
     // Add ticket reference to subject if not already present
@@ -1415,53 +1376,9 @@ async function openForwardModal() {
     }
     document.getElementById('emailSubject').value = subject;
 
-    // Fetch all previous emails for this ticket to build full thread
-    let threadHtml = '';
-    try {
-        const response = await fetch(`${API_BASE}get_ticket_thread.php?ticket_id=${currentEmail.ticket_id}`);
-        const data = await response.json();
-        if (data.success && data.emails.length > 0) {
-            const threadEmails = data.emails.slice().reverse();
-            threadHtml = threadEmails.map(e => `
-                <div style="margin-bottom: 15px;">
-                    <p style="margin: 0 0 5px 0; color: #666; font-size: 13px;"><strong>On ${formatDateTime(e.received_datetime)}, ${escapeHtml(e.from_name || e.from_address)} &lt;${escapeHtml(e.from_address)}&gt; wrote:</strong></p>
-                    <blockquote style="margin: 0 0 0 10px; padding-left: 10px; border-left: 2px solid #ccc;">
-                        ${e.body_content}
-                    </blockquote>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading thread:', error);
-        threadHtml = `
-            <div style="margin-bottom: 15px;">
-                <p style="margin: 0 0 5px 0; color: #666; font-size: 13px;"><strong>---------- Forwarded message ----------</strong></p>
-                <p><strong>From:</strong> ${escapeHtml(currentEmail.from_name)} &lt;${escapeHtml(currentEmail.from_address)}&gt;<br>
-                <strong>Date:</strong> ${formatDateTime(currentEmail.received_datetime)}<br>
-                <strong>Subject:</strong> ${escapeHtml(currentEmail.subject)}<br>
-                <strong>To:</strong> ${escapeHtml(currentEmail.to_recipients)}</p>
-                <br>
-                ${currentEmail.body_content}
-            </div>
-        `;
-    }
-
-    // Build forward content with marker
-    const markerLine = `[*** SDREF:${currentEmail.ticket_number} REPLY ABOVE THIS LINE ***]`;
-    const forwardContent = `
-        <br><br>
-        <div style="border-top: 1px solid #ccc; padding: 10px 0; margin: 20px 0; color: #999; font-size: 12px; text-align: center;" data-reply-marker="true">${escapeHtml(markerLine)}</div>
-        <div style="color: #555;">
-            <p><strong>---------- Forwarded message ----------</strong></p>
-            ${threadHtml}
-        </div>
-    `;
-
-    // Set content in TinyMCE
+    // Empty editor - server will assemble the full thread when sending
     if (emailEditor) {
-        emailEditor.setContent(forwardContent);
-        // Move cursor to the beginning
-        emailEditor.selection.setCursorLocation(emailEditor.getBody(), 0);
+        emailEditor.setContent('<p><br></p>');
     }
 
     document.getElementById('emailModal').classList.add('active');
@@ -1470,6 +1387,7 @@ async function openForwardModal() {
 // Close email modal
 function closeEmailModal() {
     document.getElementById('emailModal').classList.remove('active');
+    composeMode = 'new';
     // Clear the TinyMCE content
     if (emailEditor) {
         emailEditor.setContent('');
@@ -1517,6 +1435,7 @@ async function sendEmail() {
                 subject: subject,
                 body: body,
                 ticket_id: currentEmail ? currentEmail.ticket_id : null,
+                type: composeMode,
                 attachments: attachmentData
             })
         });

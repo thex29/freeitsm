@@ -39,6 +39,7 @@ try {
     $subject = $input['subject'] ?? '';
     $body = $input['body'] ?? '';
     $ticketId = $input['ticket_id'] ?? null;
+    $type = $input['type'] ?? 'new';
     $attachments = $input['attachments'] ?? [];
 
     // Validate required fields
@@ -81,18 +82,21 @@ try {
         throw new Exception('Failed to obtain valid access token. Please re-authenticate the mailbox.');
     }
 
-    // Build the email message for Graph API (send full body with thread)
-    $message = buildEmailMessage($to, $cc, $subject, $body, $attachments);
+    // For replies/forwards, assemble the full email with thread server-side
+    // The client sends only the analyst's new content
+    $bodyForSending = $body;
+    if (($type === 'reply' || $type === 'forward') && $ticketId) {
+        $bodyForSending = buildFullEmailBody($conn, $ticketId, $body, $type);
+    }
+
+    // Build the email message for Graph API (send assembled body with thread)
+    $message = buildEmailMessage($to, $cc, $subject, $bodyForSending, $attachments);
 
     // Send the email via Graph API
     $result = sendEmailViaGraph($accessToken, $message);
 
-    // Strip quoted thread from body before storing in DB
-    // Only store the analyst's new content (above the reply marker)
-    $bodyForStorage = stripThreadFromBody($body);
-
-    // Save sent email to database (with stripped body)
-    saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $bodyForStorage);
+    // Save only the analyst's new content to DB (not the assembled thread)
+    saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $body);
 
     echo json_encode([
         'success' => true,
@@ -481,6 +485,117 @@ function stripThreadFromBody($body) {
     }
 
     // No marker found — return the full body (legacy emails without marker)
+    return $body;
+}
+
+/**
+ * Build full email body with thread for sending to recipient
+ * Analyst's content + reply marker + quoted thread from DB
+ */
+function buildFullEmailBody($conn, $ticketId, $analystBody, $type) {
+    // Get the ticket number for the reply marker
+    $ticketStmt = $conn->prepare("SELECT ticket_number FROM tickets WHERE id = ?");
+    $ticketStmt->execute([$ticketId]);
+    $ticket = $ticketStmt->fetch(PDO::FETCH_ASSOC);
+    $ticketNumber = $ticket ? $ticket['ticket_number'] : 'UNKNOWN';
+
+    // Fetch all emails for this ticket
+    $sql = "SELECT from_address, from_name, received_datetime, body_content, direction
+            FROM emails WHERE ticket_id = ? ORDER BY received_datetime ASC";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$ticketId]);
+    $emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($emails)) {
+        return $analystBody;
+    }
+
+    // Build the quoted thread HTML (newest first)
+    $threadEmails = array_reverse($emails);
+    $threadParts = [];
+    foreach ($threadEmails as $e) {
+        $bodyContent = $e['body_content'] ?? '';
+        // Strip any existing quoted content so we don't nest
+        $bodyContent = stripQuotedContent($bodyContent);
+        // Clean control characters
+        $bodyContent = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $bodyContent);
+
+        $fromName = htmlspecialchars($e['from_name'] ?: $e['from_address'], ENT_QUOTES, 'UTF-8');
+        $fromAddr = htmlspecialchars($e['from_address'], ENT_QUOTES, 'UTF-8');
+        $date = date('d M Y H:i', strtotime($e['received_datetime']));
+
+        $threadParts[] = '<div style="margin-bottom: 15px;">'
+            . '<p style="margin: 0 0 5px 0; color: #666; font-size: 13px;"><strong>On ' . $date . ', ' . $fromName . ' &lt;' . $fromAddr . '&gt; wrote:</strong></p>'
+            . '<blockquote style="margin: 0 0 0 10px; padding-left: 10px; border-left: 2px solid #ccc;">'
+            . $bodyContent
+            . '</blockquote>'
+            . '</div>';
+    }
+
+    $threadHtml = implode('', $threadParts);
+
+    // Build the reply marker
+    $markerLine = htmlspecialchars("[*** SDREF:$ticketNumber REPLY ABOVE THIS LINE ***]", ENT_QUOTES, 'UTF-8');
+    $prefix = ($type === 'forward') ? '<p><strong>---------- Forwarded message ----------</strong></p>' : '';
+
+    // Assemble: analyst content + marker + thread
+    return $analystBody
+        . '<br><br>'
+        . '<div style="border-top: 1px solid #ccc; padding: 10px 0; margin: 20px 0; color: #999; font-size: 12px; text-align: center;" data-reply-marker="true">' . $markerLine . '</div>'
+        . '<div style="color: #555;">'
+        . $prefix
+        . $threadHtml
+        . '</div>';
+}
+
+/**
+ * Strip quoted/nested content from email body (for thread assembly)
+ */
+function stripQuotedContent($body) {
+    // Our reply marker div
+    $divPattern = '/<div[^>]*data-reply-marker="true"[^>]*>.*?<\/div>/is';
+    if (preg_match($divPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Our raw marker text
+    $markerPattern = '/\[\*{3}\s*SDREF:[A-Z]{3}-\d{3}-\d{5}\s*REPLY ABOVE THIS LINE\s*\*{3}\]/i';
+    if (preg_match($markerPattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Gmail quoted content
+    if (preg_match('/<div[^>]*class="gmail_quote"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Outlook appendonsend
+    if (preg_match('/<div[^>]*id="appendonsend"[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // "On ... wrote:" pattern
+    if (preg_match('/<(div|p|span)[^>]*>\s*On\s+.{10,80}\s+wrote:\s*<\/(div|p|span)>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Outlook "From:" / "Sent:" after <hr>
+    if (preg_match('/<hr[^>]*>\s*(<(div|p|span)[^>]*>)?\s*<b>\s*From:\s*<\/b>/is', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $stripped = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($stripped)) return $stripped;
+    }
+
+    // Blockquote elements
+    if (preg_match('/<blockquote[^>]*>/i', $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $before = trim(substr($body, 0, $matches[0][1]));
+        if (!empty($before)) return $before;
+    }
+
     return $body;
 }
 
