@@ -405,6 +405,46 @@ body {
     line-height: 1.6;
 }
 
+/* Correspondence thread */
+.thread-message {
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+    border-left: 3px solid #ddd;
+}
+
+.thread-message.thread-inbound { border-left-color: #0078d4; }
+.thread-message.thread-outbound { border-left-color: #28a745; }
+
+.thread-message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.thread-message-from { display: flex; align-items: center; gap: 6px; }
+.thread-message-email { color: #888; }
+.thread-message-date { color: #888; white-space: nowrap; }
+
+.thread-direction-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.thread-direction-badge.inbound { background: #e3f2fd; color: #0078d4; }
+.thread-direction-badge.outbound { background: #e8f5e9; color: #28a745; }
+
+.thread-message-body { line-height: 1.6; }
+
 /* Loading spinner */
 .loading {
     display: flex;

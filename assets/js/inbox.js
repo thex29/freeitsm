@@ -670,16 +670,49 @@ function displayEmail(email) {
             </button>
         </div>
         <div class="email-body">
-            <div class="email-body-content">
-                ${email.body_content}
+            <div id="threadContainer">
+                <div class="email-body-content">${email.body_content}</div>
             </div>
             <div id="notesContainer"></div>
         </div>
     `;
 
-    // Load notes and attachments after rendering
+    // Load full correspondence thread, notes and attachments after rendering
+    loadCorrespondenceThread(email.ticket_id);
     loadNotes(email.ticket_id);
     loadTicketAttachments(email.ticket_id);
+}
+
+// Load and display all correspondence for a ticket
+async function loadCorrespondenceThread(ticketId) {
+    const container = document.getElementById('threadContainer');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_BASE}get_ticket_thread.php?ticket_id=${ticketId}`);
+        const data = await response.json();
+
+        if (!data.success || !data.emails || data.emails.length === 0) return;
+
+        container.innerHTML = data.emails.map(e => {
+            const isOutbound = e.direction === 'Outbound';
+            return `
+                <div class="thread-message ${isOutbound ? 'thread-outbound' : 'thread-inbound'}">
+                    <div class="thread-message-header">
+                        <div class="thread-message-from">
+                            <span class="thread-direction-badge ${isOutbound ? 'outbound' : 'inbound'}">${isOutbound ? 'Sent' : 'Received'}</span>
+                            <strong>${escapeHtml(e.from_name || e.from_address)}</strong>
+                            <span class="thread-message-email">&lt;${escapeHtml(e.from_address)}&gt;</span>
+                        </div>
+                        <div class="thread-message-date">${formatFullDateTime(e.received_datetime)}</div>
+                    </div>
+                    <div class="thread-message-body">${e.body_content}</div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading thread:', error);
+    }
 }
 
 // Assign department
