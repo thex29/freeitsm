@@ -1052,9 +1052,19 @@ function escapeHtml(text) {
 }
 
 // Utility: Format date/time
+// Parse a DB datetime string as UTC (append Z if no timezone indicator)
+function parseUTCDate(dateStr) {
+    if (!dateStr) return null;
+    // If the string doesn't already end with Z or have a timezone offset, treat as UTC
+    if (!/[Z+\-]\d{0,4}$/.test(dateStr)) {
+        dateStr = dateStr.replace(' ', 'T') + 'Z';
+    }
+    return new Date(dateStr);
+}
+
 function formatDateTime(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    const date = parseUTCDate(dateStr);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const emailDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -1072,7 +1082,7 @@ function formatDateTime(dateStr) {
 // Utility: Format full date/time (always shows date and time)
 function formatFullDateTime(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    const date = parseUTCDate(dateStr);
     return date.toLocaleDateString('en-GB', {
         weekday: 'short',
         day: 'numeric',

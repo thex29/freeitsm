@@ -47,7 +47,7 @@ try {
         // Update existing event
         $sql = "UPDATE calendar_events
                 SET title = ?, description = ?, category_id = ?, start_datetime = ?,
-                    end_datetime = ?, all_day = ?, location = ?, updated_at = GETDATE()
+                    end_datetime = ?, all_day = ?, location = ?, updated_at = GETUTCDATE()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([

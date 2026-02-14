@@ -38,7 +38,7 @@ try {
     }
 
     // Disable MFA
-    $updateSql = "UPDATE analysts SET totp_enabled = 0, totp_secret = NULL, last_modified_datetime = GETDATE() WHERE id = ?";
+    $updateSql = "UPDATE analysts SET totp_enabled = 0, totp_secret = NULL, last_modified_datetime = GETUTCDATE() WHERE id = ?";
     $updateStmt = $conn->prepare($updateSql);
     $updateStmt->execute([$analystId]);
 

@@ -29,7 +29,7 @@ $schema = [
         'full_name'              => 'nvarchar(100) NOT NULL',
         'email'                  => 'nvarchar(100) NOT NULL',
         'is_active'              => 'bit NULL DEFAULT 1',
-        'created_datetime'       => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'       => 'datetime NULL DEFAULT GETUTCDATE()',
         'last_login_datetime'    => 'datetime NULL',
         'last_modified_datetime' => 'datetime NULL',
         'totp_secret'            => 'nvarchar(500) NULL',
@@ -42,7 +42,7 @@ $schema = [
         'description'       => 'nvarchar(255) NULL',
         'is_active'         => 'bit NULL DEFAULT 1',
         'display_order'     => 'int NULL DEFAULT 0',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'teams' => [
@@ -51,22 +51,22 @@ $schema = [
         'description'       => 'nvarchar(500) NULL',
         'display_order'     => 'int NULL DEFAULT 0',
         'is_active'         => 'bit NULL DEFAULT 1',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
-        'updated_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
+        'updated_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'analyst_teams' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'analyst_id'        => 'int NOT NULL',
         'team_id'           => 'int NOT NULL',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'department_teams' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'department_id'     => 'int NOT NULL',
         'team_id'           => 'int NOT NULL',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'analyst_modules' => [
@@ -81,7 +81,7 @@ $schema = [
         'description'       => 'nvarchar(255) NULL',
         'is_active'         => 'bit NULL DEFAULT 1',
         'display_order'     => 'int NULL DEFAULT 0',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'ticket_origins' => [
@@ -90,7 +90,7 @@ $schema = [
         'description'       => 'nvarchar(255) NULL',
         'display_order'     => 'int NULL DEFAULT 0',
         'is_active'         => 'bit NULL DEFAULT 1',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'ticket_prefixes' => [
@@ -105,7 +105,7 @@ $schema = [
         'id'            => 'int IDENTITY(1,1) NOT NULL',
         'email'         => 'nvarchar(255) NOT NULL',
         'display_name'  => 'nvarchar(255) NULL',
-        'created_at'    => 'datetime NULL DEFAULT GETDATE()',
+        'created_at'    => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'tickets' => [
@@ -119,8 +119,8 @@ $schema = [
         'assigned_analyst_id'   => 'int NULL',
         'requester_email'       => 'nvarchar(255) NULL',
         'requester_name'        => 'nvarchar(255) NULL',
-        'created_datetime'      => 'datetime NULL DEFAULT GETDATE()',
-        'updated_datetime'      => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'      => 'datetime NULL DEFAULT GETUTCDATE()',
+        'updated_datetime'      => 'datetime NULL DEFAULT GETUTCDATE()',
         'closed_datetime'       => 'datetime NULL',
         'origin_id'             => 'int NULL',
         'first_time_fix'        => 'bit NULL',
@@ -137,7 +137,7 @@ $schema = [
         'field_name'        => 'nvarchar(100) NOT NULL',
         'old_value'         => 'nvarchar(500) NULL',
         'new_value'         => 'nvarchar(500) NULL',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'ticket_notes' => [
@@ -146,7 +146,7 @@ $schema = [
         'analyst_id'        => 'int NOT NULL',
         'note_text'         => 'nvarchar(max) NOT NULL',
         'is_internal'       => 'bit NULL DEFAULT 1',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'target_mailboxes' => [
@@ -166,7 +166,7 @@ $schema = [
         'max_emails_per_check'    => 'int NOT NULL DEFAULT 10',
         'mark_as_read'            => 'bit NOT NULL DEFAULT 0',
         'is_active'               => 'bit NOT NULL DEFAULT 1',
-        'created_datetime'        => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_datetime'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
         'last_checked_datetime'   => 'datetime NULL',
     ],
 
@@ -185,7 +185,7 @@ $schema = [
         'has_attachments'         => 'bit NULL DEFAULT 0',
         'importance'              => 'nvarchar(20) NULL',
         'is_read'                 => 'bit NULL DEFAULT 0',
-        'processed_datetime'      => 'datetime NULL DEFAULT GETDATE()',
+        'processed_datetime'      => 'datetime NULL DEFAULT GETUTCDATE()',
         'ticket_created'          => 'bit NULL DEFAULT 0',
         'ticket_id'               => 'int NULL',
         'department_id'           => 'int NULL',
@@ -208,7 +208,7 @@ $schema = [
         'file_path'                 => 'nvarchar(500) NOT NULL',
         'file_size'                 => 'int NOT NULL',
         'is_inline'                 => 'bit NOT NULL DEFAULT 0',
-        'created_datetime'          => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_datetime'          => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'assets' => [
@@ -236,7 +236,7 @@ $schema = [
         'description'       => 'nvarchar(255) NULL',
         'is_active'         => 'bit NOT NULL DEFAULT 1',
         'display_order'     => 'int NOT NULL DEFAULT 0',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'asset_status_types' => [
@@ -245,14 +245,14 @@ $schema = [
         'description'       => 'nvarchar(255) NULL',
         'is_active'         => 'bit NOT NULL DEFAULT 1',
         'display_order'     => 'int NOT NULL DEFAULT 0',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'users_assets' => [
         'id'                        => 'int IDENTITY(1,1) NOT NULL',
         'user_id'                   => 'int NOT NULL',
         'asset_id'                  => 'int NOT NULL',
-        'assigned_datetime'         => 'datetime NULL DEFAULT GETDATE()',
+        'assigned_datetime'         => 'datetime NULL DEFAULT GETUTCDATE()',
         'assigned_by_analyst_id'    => 'int NULL',
         'notes'                     => 'nvarchar(500) NULL',
     ],
@@ -296,8 +296,8 @@ $schema = [
         'rollback_plan'                 => 'nvarchar(max) NULL',
         'post_implementation_review'    => 'nvarchar(max) NULL',
         'created_by_id'                 => 'int NULL',
-        'created_datetime'              => 'datetime NOT NULL DEFAULT GETDATE()',
-        'modified_datetime'             => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_datetime'              => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'modified_datetime'             => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'change_attachments' => [
@@ -308,7 +308,7 @@ $schema = [
         'file_size'             => 'int NULL',
         'file_type'             => 'nvarchar(100) NULL',
         'uploaded_by_id'        => 'int NULL',
-        'uploaded_datetime'     => 'datetime NOT NULL DEFAULT GETDATE()',
+        'uploaded_datetime'     => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'calendar_categories' => [
@@ -317,8 +317,8 @@ $schema = [
         'color'         => 'nvarchar(7) NOT NULL DEFAULT \'#ef6c00\'',
         'description'   => 'nvarchar(500) NULL',
         'is_active'     => 'bit NOT NULL DEFAULT 1',
-        'created_at'    => 'datetime NOT NULL DEFAULT GETDATE()',
-        'updated_at'    => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_at'    => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'updated_at'    => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'calendar_events' => [
@@ -331,8 +331,8 @@ $schema = [
         'all_day'           => 'bit NOT NULL DEFAULT 0',
         'location'          => 'nvarchar(255) NULL',
         'created_by'        => 'int NOT NULL',
-        'created_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
-        'updated_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'updated_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'morningChecks_Checks' => [
@@ -341,8 +341,8 @@ $schema = [
         'CheckDescription'  => 'nvarchar(max) NULL',
         'IsActive'          => 'bit NOT NULL DEFAULT 1',
         'SortOrder'         => 'int NOT NULL DEFAULT 0',
-        'CreatedDate'       => 'datetime NOT NULL DEFAULT GETDATE()',
-        'ModifiedDate'      => 'datetime NOT NULL DEFAULT GETDATE()',
+        'CreatedDate'       => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'ModifiedDate'      => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'morningChecks_Results' => [
@@ -352,14 +352,14 @@ $schema = [
         'Status'        => 'nvarchar(10) NOT NULL',
         'Notes'         => 'nvarchar(max) NULL',
         'CreatedBy'     => 'nvarchar(100) NULL',
-        'CreatedDate'   => 'datetime NOT NULL DEFAULT GETDATE()',
-        'ModifiedDate'  => 'datetime NOT NULL DEFAULT GETDATE()',
+        'CreatedDate'   => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'ModifiedDate'  => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'system_logs' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'log_type'          => 'nvarchar(50) NOT NULL',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
         'analyst_id'        => 'int NULL',
         'details'           => 'nvarchar(max) NOT NULL',
     ],
@@ -367,7 +367,7 @@ $schema = [
     'system_settings' => [
         'setting_key'       => 'nvarchar(100) NOT NULL',
         'setting_value'     => 'nvarchar(max) NULL',
-        'updated_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'updated_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'knowledge_articles' => [
@@ -375,8 +375,8 @@ $schema = [
         'title'                 => 'nvarchar(255) NOT NULL',
         'body'                  => 'nvarchar(max) NULL',
         'author_id'             => 'int NOT NULL',
-        'created_datetime'      => 'datetime NULL DEFAULT GETDATE()',
-        'modified_datetime'     => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'      => 'datetime NULL DEFAULT GETUTCDATE()',
+        'modified_datetime'     => 'datetime NULL DEFAULT GETUTCDATE()',
         'is_published'          => 'bit NULL DEFAULT 1',
         'view_count'            => 'int NULL DEFAULT 0',
         'next_review_date'      => 'date NULL',
@@ -388,7 +388,7 @@ $schema = [
     'knowledge_tags' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'name'              => 'nvarchar(50) NOT NULL',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'knowledge_article_tags' => [
@@ -400,7 +400,7 @@ $schema = [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'display_name'      => 'nvarchar(512) NOT NULL',
         'publisher'         => 'nvarchar(512) NULL',
-        'first_detected'    => 'datetime NULL DEFAULT GETDATE()',
+        'first_detected'    => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'software_inventory_detail' => [
@@ -412,8 +412,8 @@ $schema = [
         'uninstall_string'  => 'nvarchar(max) NULL',
         'install_location'  => 'nvarchar(max) NULL',
         'estimated_size'    => 'nvarchar(100) NULL',
-        'created_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
-        'last_seen'         => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'last_seen'         => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'software_licences' => [
@@ -432,14 +432,14 @@ $schema = [
         'notes'             => 'nvarchar(max) NULL',
         'status'            => 'nvarchar(20) NOT NULL DEFAULT \'Active\'',
         'created_by'        => 'int NULL',
-        'created_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
-        'updated_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'updated_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'apikeys' => [
         'id'        => 'int IDENTITY(1,1) NOT NULL',
         'apikey'    => 'nvarchar(50) NULL',
-        'datestamp' => 'datetime NULL DEFAULT GETDATE()',
+        'datestamp' => 'datetime NULL DEFAULT GETUTCDATE()',
         'active'    => 'bit NULL DEFAULT 1',
     ],
 
@@ -449,8 +449,8 @@ $schema = [
         'description'   => 'nvarchar(max) NULL',
         'is_active'     => 'bit NOT NULL DEFAULT 1',
         'created_by'    => 'int NULL',
-        'created_date'  => 'datetime NOT NULL DEFAULT GETDATE()',
-        'modified_date' => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_date'  => 'datetime NOT NULL DEFAULT GETUTCDATE()',
+        'modified_date' => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'form_fields' => [
@@ -467,7 +467,7 @@ $schema = [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
         'form_id'           => 'int NOT NULL',
         'submitted_by'      => 'int NULL',
-        'submitted_date'    => 'datetime NOT NULL DEFAULT GETDATE()',
+        'submitted_date'    => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'form_submission_data' => [
@@ -479,7 +479,7 @@ $schema = [
 
     'wiki_scan_runs' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
-        'started_at'        => 'datetime NOT NULL DEFAULT GETDATE()',
+        'started_at'        => 'datetime NOT NULL DEFAULT GETUTCDATE()',
         'completed_at'      => 'datetime NULL',
         'status'            => 'nvarchar(20) NOT NULL DEFAULT \'running\'',
         'files_scanned'     => 'int NOT NULL DEFAULT 0',
@@ -500,7 +500,7 @@ $schema = [
         'line_count'        => 'int NOT NULL DEFAULT 0',
         'last_modified'     => 'datetime NULL',
         'description'       => 'nvarchar(max) NULL',
-        'created_date'      => 'datetime NOT NULL DEFAULT GETDATE()',
+        'created_date'      => 'datetime NOT NULL DEFAULT GETUTCDATE()',
     ],
 
     'wiki_functions' => [
@@ -564,7 +564,7 @@ $schema = [
         'legal_name'        => 'nvarchar(255) NOT NULL',
         'trading_name'      => 'nvarchar(255) NULL',
         'is_active'         => 'bit NOT NULL DEFAULT 1',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'contacts' => [
@@ -575,7 +575,7 @@ $schema = [
         'email'             => 'nvarchar(255) NULL',
         'mobile'            => 'nvarchar(50) NULL',
         'is_active'         => 'bit NOT NULL DEFAULT 1',
-        'created_datetime'  => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'contracts' => [
@@ -588,7 +588,7 @@ $schema = [
         'contract_end'          => 'date NULL',
         'notice_period_days'    => 'int NULL',
         'is_active'             => 'bit NOT NULL DEFAULT 1',
-        'created_datetime'      => 'datetime NULL DEFAULT GETDATE()',
+        'created_datetime'      => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 ];
 
@@ -656,7 +656,7 @@ try {
                         } elseif (stripos($alterDef, 'bit') === 0) {
                             $alterDef .= ' DEFAULT 0';
                         } elseif (stripos($alterDef, 'datetime') === 0 || stripos($alterDef, 'date') === 0) {
-                            $alterDef .= ' DEFAULT GETDATE()';
+                            $alterDef .= ' DEFAULT GETUTCDATE()';
                         } else {
                             $alterDef .= " DEFAULT ''";
                         }

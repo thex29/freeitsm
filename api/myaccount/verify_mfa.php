@@ -43,7 +43,7 @@ try {
     // Encrypt the secret before storing
     $encryptedSecret = encryptValue($secret);
 
-    $sql = "UPDATE analysts SET totp_secret = ?, totp_enabled = 1, last_modified_datetime = GETDATE() WHERE id = ?";
+    $sql = "UPDATE analysts SET totp_secret = ?, totp_enabled = 1, last_modified_datetime = GETUTCDATE() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$encryptedSecret, $_SESSION['analyst_id']]);
 

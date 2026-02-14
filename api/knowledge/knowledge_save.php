@@ -42,7 +42,7 @@ try {
     if ($articleId) {
         // Update existing article
         $sql = "UPDATE knowledge_articles
-                SET title = ?, body = ?, owner_id = ?, next_review_date = ?, modified_datetime = GETDATE()
+                SET title = ?, body = ?, owner_id = ?, next_review_date = ?, modified_datetime = GETUTCDATE()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$title, $body, $ownerId, $nextReviewDate, $articleId]);
@@ -50,7 +50,7 @@ try {
         // Create new article
         $sql = "INSERT INTO knowledge_articles (title, body, author_id, owner_id, next_review_date, created_datetime, modified_datetime, is_published, view_count)
                 OUTPUT INSERTED.id
-                VALUES (?, ?, ?, ?, ?, GETDATE(), GETDATE(), 1, 0)";
+                VALUES (?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE(), 1, 0)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$title, $body, $analystId, $ownerId, $nextReviewDate]);
         $articleId = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
@@ -77,7 +77,7 @@ try {
             $tagId = $existingTag['id'];
         } else {
             // Create new tag
-            $createTagSql = "INSERT INTO knowledge_tags (name, created_datetime) OUTPUT INSERTED.id VALUES (?, GETDATE())";
+            $createTagSql = "INSERT INTO knowledge_tags (name, created_datetime) OUTPUT INSERTED.id VALUES (?, GETUTCDATE())";
             $createTagStmt = $conn->prepare($createTagSql);
             $createTagStmt->execute([$tagName]);
             $tagId = $createTagStmt->fetch(PDO::FETCH_ASSOC)['id'];
@@ -141,7 +141,7 @@ try {
 
                 if ($embedding && is_array($embedding)) {
                     $embeddingJson = json_encode($embedding);
-                    $updateSql = "UPDATE knowledge_articles SET embedding = ?, embedding_updated = GETDATE() WHERE id = ?";
+                    $updateSql = "UPDATE knowledge_articles SET embedding = ?, embedding_updated = GETUTCDATE() WHERE id = ?";
                     $updateStmt = $conn->prepare($updateSql);
                     $updateStmt->execute([$embeddingJson, $articleId]);
                     $embeddingGenerated = true;

@@ -46,7 +46,7 @@ try {
     // Update password
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETDATE() WHERE id = ?";
+    $sql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETUTCDATE() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$passwordHash, $id]);
 

@@ -19,7 +19,7 @@ function logLoginAttempt($conn, $analystId, $username, $success) {
         ]);
 
         $sql = "INSERT INTO system_logs (log_type, analyst_id, details, created_datetime)
-                VALUES ('login', ?, ?, GETDATE())";
+                VALUES ('login', ?, ?, GETUTCDATE())";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$analystId, $details]);
     } catch (Exception $e) {
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['analyst_email'] = $analyst['email'];
 
                     // Update last login time
-                    $updateSql = "UPDATE analysts SET last_login_datetime = GETDATE() WHERE id = ?";
+                    $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
                     $updateStmt = $conn->prepare($updateSql);
                     $updateStmt->execute([$analyst['id']]);
 

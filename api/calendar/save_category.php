@@ -39,7 +39,7 @@ try {
     if ($id) {
         // Update existing category
         $sql = "UPDATE calendar_categories
-                SET name = ?, color = ?, description = ?, is_active = ?, updated_at = GETDATE()
+                SET name = ?, color = ?, description = ?, is_active = ?, updated_at = GETUTCDATE()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $color, $description, $isActive ? 1 : 0, $id]);

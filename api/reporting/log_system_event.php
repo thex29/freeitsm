@@ -27,7 +27,7 @@ try {
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO system_logs (log_type, analyst_id, details, created_datetime)
-            VALUES (?, ?, ?, GETDATE())";
+            VALUES (?, ?, ?, GETUTCDATE())";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$logType, $analystId, json_encode($details)]);

@@ -70,7 +70,7 @@ try {
         $userId = $existingUser['id'];
     } else {
         // Create new user
-        $createUserSql = "INSERT INTO users (email, display_name, created_at) OUTPUT INSERTED.id VALUES (?, ?, GETDATE())";
+        $createUserSql = "INSERT INTO users (email, display_name, created_at) OUTPUT INSERTED.id VALUES (?, ?, GETUTCDATE())";
         $createUserStmt = $conn->prepare($createUserSql);
         $createUserStmt->execute([$fromEmail, $fromName]);
         $userId = $createUserStmt->fetch(PDO::FETCH_ASSOC)['id'];
@@ -83,7 +83,7 @@ try {
     $ticketSql = "INSERT INTO tickets (
         ticket_number, subject, status, priority, department_id, ticket_type_id,
         assigned_analyst_id, user_id, requester_name, requester_email, created_datetime, updated_datetime
-    ) OUTPUT INSERTED.id VALUES (?, ?, 'Open', ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
+    ) OUTPUT INSERTED.id VALUES (?, ?, 'Open', ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())";
 
     $ticketStmt = $conn->prepare($ticketSql);
     $ticketStmt->execute([
@@ -110,7 +110,7 @@ try {
         subject, from_address, from_name, to_recipients, received_datetime,
         body_preview, body_content, body_type, has_attachments, importance,
         is_read, ticket_id, is_initial, direction
-    ) VALUES (?, ?, ?, ?, GETDATE(), ?, ?, 'html', 0, 'normal', 1, ?, 1, 'Manual')";
+    ) VALUES (?, ?, ?, ?, GETUTCDATE(), ?, ?, 'html', 0, 'normal', 1, ?, 1, 'Manual')";
 
     $emailStmt = $conn->prepare($emailSql);
     $emailStmt->execute([
@@ -125,7 +125,7 @@ try {
 
     // Log the creation in ticket audit
     $auditSql = "INSERT INTO ticket_audit (ticket_id, analyst_id, field_name, old_value, new_value, created_datetime)
-                 VALUES (?, ?, 'Ticket Created', NULL, 'Manual ticket created by ' + ?, GETDATE())";
+                 VALUES (?, ?, 'Ticket Created', NULL, 'Manual ticket created by ' + ?, GETUTCDATE())";
     $auditStmt = $conn->prepare($auditSql);
     $auditStmt->execute([$ticketId, $analystId, $analystName]);
 

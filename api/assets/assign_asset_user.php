@@ -54,7 +54,7 @@ try {
 
     // Insert the assignment
     $sql = "INSERT INTO users_assets (asset_id, user_id, assigned_by_analyst_id, notes, assigned_datetime)
-            VALUES (?, ?, ?, ?, GETDATE())";
+            VALUES (?, ?, ?, ?, GETUTCDATE())";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$assetId, $userId, $_SESSION['analyst_id'], $notes]);

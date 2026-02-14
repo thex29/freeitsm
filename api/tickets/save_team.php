@@ -39,7 +39,7 @@ try {
 
     if ($id) {
         // Update existing team
-        $sql = "UPDATE teams SET name = ?, description = ?, display_order = ?, is_active = ?, updated_datetime = GETDATE() WHERE id = ?";
+        $sql = "UPDATE teams SET name = ?, description = ?, display_order = ?, is_active = ?, updated_datetime = GETUTCDATE() WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $description, $displayOrder, $isActive, $id]);
         $message = 'Team updated successfully';

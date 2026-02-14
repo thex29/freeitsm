@@ -64,7 +64,7 @@ try {
 
     $sql = "INSERT INTO change_attachments (change_id, file_name, file_path, file_size, file_type, uploaded_by_id, uploaded_datetime)
             OUTPUT INSERTED.id
-            VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+            VALUES (?, ?, ?, ?, ?, ?, GETUTCDATE())";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$changeId, $fileName, $relativePath, $fileSize, $fileType, $analystId]);
     $attachmentId = $stmt->fetch(PDO::FETCH_ASSOC)['id'];

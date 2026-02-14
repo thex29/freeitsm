@@ -64,7 +64,7 @@ try {
     unset($_SESSION['mfa_pending_allowed_modules']);
 
     // Update last login time
-    $updateSql = "UPDATE analysts SET last_login_datetime = GETDATE() WHERE id = ?";
+    $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
     $updateStmt = $conn->prepare($updateSql);
     $updateStmt->execute([$analystId]);
 

@@ -202,7 +202,7 @@ try {
         $exists = $checkStmt->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
         if ($exists) {
-            $stmt = $conn->prepare("UPDATE servers SET name = ?, power_state = ?, memory_gb = ?, num_cpu = ?, ip_address = ?, hard_disk_size_gb = ?, host = ?, cluster = ?, guest_os = ?, raw_data = ?, last_synced = GETDATE() WHERE vm_id = ?");
+            $stmt = $conn->prepare("UPDATE servers SET name = ?, power_state = ?, memory_gb = ?, num_cpu = ?, ip_address = ?, hard_disk_size_gb = ?, host = ?, cluster = ?, guest_os = ?, raw_data = ?, last_synced = GETUTCDATE() WHERE vm_id = ?");
             $stmt->execute([
                 $server['name'], $server['power_state'], $server['memory_gb'],
                 $server['num_cpu'], $server['ip_address'], $server['hard_disk_size_gb'],
@@ -211,7 +211,7 @@ try {
                 $server['vm_id']
             ]);
         } else {
-            $stmt = $conn->prepare("INSERT INTO servers (vm_id, name, power_state, memory_gb, num_cpu, ip_address, hard_disk_size_gb, host, cluster, guest_os, raw_data, last_synced) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())");
+            $stmt = $conn->prepare("INSERT INTO servers (vm_id, name, power_state, memory_gb, num_cpu, ip_address, hard_disk_size_gb, host, cluster, guest_os, raw_data, last_synced) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETUTCDATE())");
             $stmt->execute([
                 $server['vm_id'], $server['name'], $server['power_state'],
                 $server['memory_gb'], $server['num_cpu'], $server['ip_address'],

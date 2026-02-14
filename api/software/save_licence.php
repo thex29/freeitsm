@@ -49,7 +49,7 @@ try {
                 SET app_id = ?, licence_type = ?, licence_key = ?, quantity = ?,
                     renewal_date = ?, notice_period_days = ?, portal_url = ?,
                     cost = ?, currency = ?, purchase_date = ?, vendor_contact = ?,
-                    notes = ?, status = ?, updated_at = GETDATE()
+                    notes = ?, status = ?, updated_at = GETUTCDATE()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([

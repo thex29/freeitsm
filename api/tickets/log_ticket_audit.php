@@ -33,7 +33,7 @@ try {
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO ticket_audit (ticket_id, analyst_id, field_name, old_value, new_value, created_datetime)
-            VALUES (?, ?, ?, ?, ?, GETDATE())";
+            VALUES (?, ?, ?, ?, ?, GETUTCDATE())";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$ticketId, $analystId, $fieldName, $oldValue, $newValue]);

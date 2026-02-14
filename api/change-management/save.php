@@ -91,7 +91,7 @@ try {
                     test_plan = ?,
                     rollback_plan = ?,
                     post_implementation_review = ?,
-                    modified_datetime = GETDATE()
+                    modified_datetime = GETUTCDATE()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -114,7 +114,7 @@ try {
                     created_by_id, created_datetime, modified_datetime
                 )
                 OUTPUT INSERTED.id
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
             $title, $changeType, $status, $priority, $impact, $category,

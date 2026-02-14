@@ -259,7 +259,7 @@ function saveTokenData($conn, $mailboxId, $tokenData) {
  * Update last checked datetime
  */
 function updateLastChecked($conn, $mailboxId) {
-    $sql = "UPDATE target_mailboxes SET last_checked_datetime = GETDATE() WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET last_checked_datetime = GETUTCDATE() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mailboxId]);
 }
@@ -413,7 +413,7 @@ function getOrCreateUser($conn, $email, $displayName) {
     }
 
     // Create new user
-    $insertSql = "INSERT INTO users (email, display_name, created_at) VALUES (?, ?, GETDATE());
+    $insertSql = "INSERT INTO users (email, display_name, created_at) VALUES (?, ?, GETUTCDATE());
                   SELECT SCOPE_IDENTITY() AS user_id";
     $insertStmt = $conn->prepare($insertSql);
     $insertStmt->execute([$email, $displayName]);
@@ -601,7 +601,8 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
     $ccRecipientsStr = implode('; ', $ccRecipients);
 
     if ($receivedDateTime) {
-        $receivedDateTime = date('Y-m-d H:i:s', strtotime($receivedDateTime));
+        // Graph API returns UTC — use gmdate() to preserve UTC
+        $receivedDateTime = gmdate('Y-m-d H:i:s', strtotime($receivedDateTime));
     }
 
     // Check for ticket reference
@@ -613,7 +614,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         $ticketId = findTicketByNumber($conn, $ticketRef);
         if ($ticketId) {
             $isInitial = 0;
-            $updateTicketSql = "UPDATE tickets SET updated_datetime = GETDATE() WHERE id = ?";
+            $updateTicketSql = "UPDATE tickets SET updated_datetime = GETUTCDATE() WHERE id = ?";
             $updateTicketStmt = $conn->prepare($updateTicketSql);
             $updateTicketStmt->execute([$ticketId]);
 
@@ -633,7 +634,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         $ticketSql = "INSERT INTO tickets (
             ticket_number, subject, status, priority, requester_email,
             requester_name, created_datetime, updated_datetime, user_id
-        ) VALUES (?, ?, 'Open', 'Normal', ?, ?, ?, GETDATE(), ?);
+        ) VALUES (?, ?, 'Open', 'Normal', ?, ?, ?, GETUTCDATE(), ?);
         SELECT SCOPE_IDENTITY() AS ticket_id";
 
         $ticketStmt = $conn->prepare($ticketSql);
@@ -652,7 +653,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         cc_recipients, received_datetime, body_preview, body_content, body_type,
         has_attachments, importance, is_read, processed_datetime, ticket_id,
         is_initial, direction, mailbox_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, 'Inbound', ?);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), ?, ?, 'Inbound', ?);
     SELECT SCOPE_IDENTITY() AS email_id";
 
     $params = [
@@ -764,7 +765,7 @@ function logEmailImport($conn, $mailboxId, $details) {
     try {
         $details['mailbox_id'] = $mailboxId;
         $logSql = "INSERT INTO system_logs (log_type, analyst_id, details, created_datetime)
-                   VALUES ('email_import', NULL, ?, GETDATE())";
+                   VALUES ('email_import', NULL, ?, GETUTCDATE())";
         $logStmt = $conn->prepare($logSql);
         $logStmt->execute([json_encode($details)]);
     } catch (Exception $e) {

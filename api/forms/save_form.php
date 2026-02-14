@@ -37,7 +37,7 @@ try {
 
     if ($formId > 0) {
         // Update existing form
-        $stmt = $conn->prepare("UPDATE forms SET title = ?, description = ?, modified_date = GETDATE() WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE forms SET title = ?, description = ?, modified_date = GETUTCDATE() WHERE id = ?");
         $stmt->execute([$title, $description, $formId]);
 
         // Delete existing fields and re-insert

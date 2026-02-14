@@ -114,11 +114,11 @@ try {
         // Host exists -> update last_seen
         $hostId = (int)$hostRow['id'];
 
-        $stmt = $conn->prepare("UPDATE assets SET last_seen = GETDATE() WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE assets SET last_seen = GETUTCDATE() WHERE id = ?");
         $stmt->execute([$hostId]);
     } else {
         // Host does not exist -> insert
-        $stmt = $conn->prepare("INSERT INTO assets (hostname, first_seen, last_seen) VALUES (?, GETDATE(), GETDATE())");
+        $stmt = $conn->prepare("INSERT INTO assets (hostname, first_seen, last_seen) VALUES (?, GETUTCDATE(), GETUTCDATE())");
         $stmt->execute([$hostname]);
 
         // Re-select to get id
@@ -319,7 +319,7 @@ foreach ($softwareList as $item) {
                     uninstall_string = ?,
                     install_location = ?,
                     estimated_size   = ?,
-                    last_seen        = GETDATE()
+                    last_seen        = GETUTCDATE()
                 WHERE host_id = ? AND app_id = ?
             ");
             $stmt->execute([
@@ -346,7 +346,7 @@ foreach ($softwareList as $item) {
                     created_at,
                     last_seen
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())
+                VALUES (?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())
             ");
             $stmt->execute([
                 $hostId,
