@@ -26,6 +26,8 @@ A comprehensive web-based IT Service Management (ITSM) platform with 10 integrat
 
 ### Installation
 
+> **Tip:** After completing these steps, navigate to `/setup/` to verify everything is configured correctly.
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/edmozley/freeitsm.git
