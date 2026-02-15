@@ -18,37 +18,326 @@ $path_prefix = '../../';
     <style>
         body { overflow: auto; height: auto; }
 
-        .settings-container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 30px;
+        /* Amber theme for Contracts tabs */
+        .tab:hover { color: #f59e0b; }
+        .tab.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+
+        .tab-content .action-btn {
+            background: none;
+            border: 1px solid #ddd;
+            color: #666;
+            cursor: pointer;
+            padding: 6px;
+            margin-right: 4px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
 
-        .settings-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            padding: 40px;
-            text-align: center;
-        }
+        .tab-content .action-btn:hover { background: #f0f0f0; border-color: #f59e0b; color: #f59e0b; }
+        .tab-content .action-btn.delete { color: #d13438; }
+        .tab-content .action-btn.delete:hover { background: #fdf3f3; border-color: #d13438; color: #a00; }
+        .tab-content .action-btn svg { width: 16px; height: 16px; }
 
-        .settings-card svg { color: #ccc; margin-bottom: 16px; }
-        .settings-card h2 { margin: 0 0 8px 0; font-size: 18px; color: #333; }
-        .settings-card p { margin: 0; font-size: 14px; color: #888; line-height: 1.5; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .status-badge.active { background: #d4edda; color: #155724; }
+        .status-badge.inactive { background: #f8d7da; color: #721c24; }
+
+        .modal-content { padding: 30px; max-width: 500px; }
+        .modal-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #333; padding: 0; border-bottom: none; }
+
+        .modal .form-group { margin-bottom: 15px; }
+        .modal .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; color: #333; }
+        .modal .form-group input, .modal .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        .modal .form-group textarea { height: 60px; resize: vertical; }
+        .modal .form-group input:focus, .modal .form-group textarea:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
+        .modal .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+        .modal .checkbox-label input[type="checkbox"] { width: auto; }
+
+        .modal-actions { margin-top: 20px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background-color 0.15s; }
+        .btn-primary { background-color: #f59e0b; color: white; }
+        .btn-primary:hover { background-color: #d97706; }
     </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
 
-    <div class="settings-container">
-        <div class="settings-card">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-            <h2>Contract Settings</h2>
-            <p>Settings for the contracts module will appear here as the module grows.</p>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="supplier-types" onclick="switchTab('supplier-types')">Supplier Types</button>
+            <button class="tab" data-tab="supplier-statuses" onclick="switchTab('supplier-statuses')">Supplier Statuses</button>
+        </div>
+
+        <!-- Supplier Types Tab -->
+        <div class="tab-content active" id="supplier-types-tab">
+            <div class="section-header">
+                <h2>Supplier Types</h2>
+                <button class="add-btn" onclick="openAddModal('supplier-type')">Add</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="supplier-types-list">
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Supplier Statuses Tab -->
+        <div class="tab-content" id="supplier-statuses-tab">
+            <div class="section-header">
+                <h2>Supplier Statuses</h2>
+                <button class="add-btn" onclick="openAddModal('supplier-status')">Add</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="supplier-statuses-list">
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <!-- Edit/Add Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Add Item</div>
+            <form id="editForm">
+                <input type="hidden" id="itemId">
+                <input type="hidden" id="itemType">
+                <div class="form-group">
+                    <label for="itemName">Name</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="itemOrder">Display Order</label>
+                    <input type="number" id="itemOrder" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="itemActive" checked>
+                        Active
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '../../api/contracts/';
+        let allItems = { 'supplier-type': [], 'supplier-status': [] };
+
+        const endpoints = {
+            'supplier-type': {
+                get: API_BASE + 'get_supplier_types.php',
+                save: API_BASE + 'save_supplier_type.php',
+                delete: API_BASE + 'delete_supplier_type.php',
+                key: 'supplier_types',
+                listId: 'supplier-types-list',
+                label: 'Supplier Type'
+            },
+            'supplier-status': {
+                get: API_BASE + 'get_supplier_statuses.php',
+                save: API_BASE + 'save_supplier_status.php',
+                delete: API_BASE + 'delete_supplier_status.php',
+                key: 'supplier_statuses',
+                listId: 'supplier-statuses-list',
+                label: 'Supplier Status'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadItems('supplier-type');
+            loadItems('supplier-status');
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            const btn = document.querySelector('.tab[data-tab="' + tab + '"]');
+            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        async function loadItems(type) {
+            const ep = endpoints[type];
+            try {
+                const response = await fetch(ep.get);
+                const data = await response.json();
+                if (data.success) {
+                    allItems[type] = data[ep.key];
+                    renderItems(type, data[ep.key]);
+                } else {
+                    document.getElementById(ep.listId).innerHTML =
+                        '<tr><td colspan="5" style="text-align:center;padding:20px;color:#d13438;">Error: ' + escapeHtml(data.error) + '</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading ' + type + ':', error);
+                document.getElementById(ep.listId).innerHTML =
+                    '<tr><td colspan="5" style="text-align:center;padding:20px;color:#d13438;">Failed to load data</td></tr>';
+            }
+        }
+
+        function renderItems(type, items) {
+            const ep = endpoints[type];
+            const tbody = document.getElementById(ep.listId);
+
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No items yet. Click Add to create one.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.name)}</strong></td>
+                    <td>${escapeHtml(item.description || '-')}</td>
+                    <td>${item.display_order}</td>
+                    <td><span class="status-badge ${item.is_active ? 'active' : 'inactive'}">${item.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editItem('${type}', ${item.id})" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteItem('${type}', ${item.id}, '${escapeHtml(item.name)}')" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddModal(type) {
+            const ep = endpoints[type];
+            document.getElementById('modalTitle').textContent = 'Add ' + ep.label;
+            document.getElementById('itemId').value = '';
+            document.getElementById('itemType').value = type;
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemDescription').value = '';
+            document.getElementById('itemOrder').value = '0';
+            document.getElementById('itemActive').checked = true;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function editItem(type, id) {
+            const ep = endpoints[type];
+            const item = allItems[type].find(i => i.id == id);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit ' + ep.label;
+            document.getElementById('itemId').value = item.id;
+            document.getElementById('itemType').value = type;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemDescription').value = item.description || '';
+            document.getElementById('itemOrder').value = item.display_order || 0;
+            document.getElementById('itemActive').checked = item.is_active;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        async function deleteItem(type, id, name) {
+            const ep = endpoints[type];
+            if (!confirm('Are you sure you want to delete "' + name + '"? Any suppliers using this ' + ep.label.toLowerCase() + ' will have it cleared.')) return;
+
+            try {
+                const response = await fetch(ep.delete, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadItems(type);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error deleting:', error);
+                alert('Failed to delete item');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const type = document.getElementById('itemType').value;
+            const ep = endpoints[type];
+            const id = document.getElementById('itemId').value;
+
+            const payload = {
+                name: document.getElementById('itemName').value.trim(),
+                description: document.getElementById('itemDescription').value.trim(),
+                display_order: parseInt(document.getElementById('itemOrder').value) || 0,
+                is_active: document.getElementById('itemActive').checked ? 1 : 0
+            };
+            if (id) payload.id = parseInt(id);
+
+            try {
+                const response = await fetch(ep.save, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    closeModal();
+                    loadItems(type);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error saving:', error);
+                alert('Failed to save item');
+            }
+        });
+
+        let modalMouseDownTarget = null;
+        document.getElementById('editModal').addEventListener('mousedown', function(e) {
+            modalMouseDownTarget = e.target;
+        });
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this && modalMouseDownTarget === this) closeModal();
+        });
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>

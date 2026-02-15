@@ -32,15 +32,49 @@ $path_prefix = '../../';
         .status-badge.active { background: #d4edda; color: #155724; }
         .status-badge.inactive { background: #f8d7da; color: #721c24; }
 
-        .modal-content { padding: 30px; max-width: 500px; }
+        .modal-content {
+            padding: 30px;
+            max-width: 750px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
         .modal-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #333; padding: 0; border-bottom: none; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+        }
+        .form-grid .full-width { grid-column: span 2; }
+
+        .form-section {
+            grid-column: span 2;
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 0 6px 0;
+            margin-top: 5px;
+            border-top: 1px solid #eee;
+        }
+        .form-section:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
         .modal .form-group { margin-bottom: 15px; }
         .modal .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; color: #333; }
-        .modal .form-group input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-        .modal .form-group input:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
+        .modal .form-group input,
+        .modal .form-group select,
+        .modal .form-group textarea {
+            width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;
+            font-size: 14px; box-sizing: border-box; font-family: inherit;
+        }
+        .modal .form-group textarea { height: 70px; resize: vertical; }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus,
+        .modal .form-group textarea:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
         .modal .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
         .modal .checkbox-label input[type="checkbox"] { width: auto; }
-        .modal-actions { margin-top: 20px; }
+        .modal-actions { margin-top: 20px; grid-column: span 2; }
 
         .btn-primary { background-color: #f59e0b; color: white; }
         .btn-primary:hover { background-color: #d97706; }
@@ -60,13 +94,14 @@ $path_prefix = '../../';
                     <tr>
                         <th>Legal Name</th>
                         <th>Trading Name</th>
-                        <th>Contracts</th>
+                        <th>Type</th>
                         <th>Status</th>
+                        <th>City</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="suppliersList">
-                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                    <tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -77,23 +112,87 @@ $path_prefix = '../../';
             <div class="modal-header" id="modalTitle">Add Supplier</div>
             <form id="editForm">
                 <input type="hidden" id="itemId">
-                <div class="form-group">
-                    <label for="legalName">Legal Name</label>
-                    <input type="text" id="legalName" required>
-                </div>
-                <div class="form-group">
-                    <label for="tradingName">Trading Name</label>
-                    <input type="text" id="tradingName" placeholder="If different from legal name">
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="itemActive" checked>
-                        Active
-                    </label>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="legalName">Legal Name</label>
+                        <input type="text" id="legalName" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="tradingName">Trading Name</label>
+                        <input type="text" id="tradingName" placeholder="If different from legal name">
+                    </div>
+                    <div class="form-group">
+                        <label for="regNumber">Reg Number</label>
+                        <input type="text" id="regNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="vatNumber">VAT/Tax Number</label>
+                        <input type="text" id="vatNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierTypeId">Supplier Type</label>
+                        <select id="supplierTypeId">
+                            <option value="">-- None --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierStatusId">Status</label>
+                        <select id="supplierStatusId">
+                            <option value="">-- None --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-section">Address</div>
+                    <div class="form-group full-width">
+                        <label for="addressLine1">Address Line 1</label>
+                        <input type="text" id="addressLine1">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="addressLine2">Address Line 2</label>
+                        <input type="text" id="addressLine2">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city">
+                    </div>
+                    <div class="form-group">
+                        <label for="county">County</label>
+                        <input type="text" id="county">
+                    </div>
+                    <div class="form-group">
+                        <label for="postcode">Postcode</label>
+                        <input type="text" id="postcode">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country">
+                    </div>
+
+                    <div class="form-section">Questionnaire</div>
+                    <div class="form-group">
+                        <label for="questionnaireDateIssued">Date Issued</label>
+                        <input type="date" id="questionnaireDateIssued">
+                    </div>
+                    <div class="form-group">
+                        <label for="questionnaireDateReceived">Date Received</label>
+                        <input type="date" id="questionnaireDateReceived">
+                    </div>
+
+                    <div class="form-section">Other</div>
+                    <div class="form-group full-width">
+                        <label for="comments">Comments</label>
+                        <textarea id="comments"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="itemActive" checked>
+                            Active
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -102,8 +201,44 @@ $path_prefix = '../../';
     <script>
         const API_BASE = '../../api/contracts/';
         let suppliers = [];
+        let supplierTypes = [];
+        let supplierStatuses = [];
 
-        document.addEventListener('DOMContentLoaded', loadSuppliers);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSupplierTypes();
+            loadSupplierStatuses();
+            loadSuppliers();
+        });
+
+        async function loadSupplierTypes() {
+            try {
+                const response = await fetch(API_BASE + 'get_supplier_types.php');
+                const data = await response.json();
+                if (data.success) {
+                    supplierTypes = data.supplier_types;
+                    const select = document.getElementById('supplierTypeId');
+                    select.innerHTML = '<option value="">-- None --</option>' +
+                        supplierTypes.filter(t => t.is_active).map(t =>
+                            `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+                        ).join('');
+                }
+            } catch (error) { console.error('Error loading supplier types:', error); }
+        }
+
+        async function loadSupplierStatuses() {
+            try {
+                const response = await fetch(API_BASE + 'get_supplier_statuses.php');
+                const data = await response.json();
+                if (data.success) {
+                    supplierStatuses = data.supplier_statuses;
+                    const select = document.getElementById('supplierStatusId');
+                    select.innerHTML = '<option value="">-- None --</option>' +
+                        supplierStatuses.filter(s => s.is_active).map(s =>
+                            `<option value="${s.id}">${escapeHtml(s.name)}</option>`
+                        ).join('');
+                }
+            } catch (error) { console.error('Error loading supplier statuses:', error); }
+        }
 
         async function loadSuppliers() {
             try {
@@ -114,7 +249,7 @@ $path_prefix = '../../';
                     renderSuppliers();
                 } else {
                     document.getElementById('suppliersList').innerHTML =
-                        '<tr><td colspan="5" style="text-align:center;padding:20px;color:#d13438;">Error: ' + escapeHtml(data.error) + '</td></tr>';
+                        '<tr><td colspan="6" style="text-align:center;padding:20px;color:#d13438;">Error: ' + escapeHtml(data.error) + '</td></tr>';
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -124,15 +259,16 @@ $path_prefix = '../../';
         function renderSuppliers() {
             const tbody = document.getElementById('suppliersList');
             if (suppliers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No suppliers yet. Click Add to create one.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No suppliers yet. Click Add to create one.</td></tr>';
                 return;
             }
             tbody.innerHTML = suppliers.map(s => `
                 <tr>
                     <td><strong>${escapeHtml(s.legal_name)}</strong></td>
                     <td>${escapeHtml(s.trading_name || '-')}</td>
-                    <td>-</td>
-                    <td><span class="status-badge ${s.is_active ? 'active' : 'inactive'}">${s.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>${escapeHtml(s.supplier_type_name || '-')}</td>
+                    <td>${escapeHtml(s.supplier_status_name || '-')}</td>
+                    <td>${escapeHtml(s.city || '-')}</td>
                     <td>
                         <button class="action-btn" onclick="editSupplier(${s.id})" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -150,6 +286,19 @@ $path_prefix = '../../';
             document.getElementById('itemId').value = supplier ? supplier.id : '';
             document.getElementById('legalName').value = supplier ? supplier.legal_name : '';
             document.getElementById('tradingName').value = supplier ? (supplier.trading_name || '') : '';
+            document.getElementById('regNumber').value = supplier ? (supplier.reg_number || '') : '';
+            document.getElementById('vatNumber').value = supplier ? (supplier.vat_number || '') : '';
+            document.getElementById('supplierTypeId').value = supplier ? (supplier.supplier_type_id || '') : '';
+            document.getElementById('supplierStatusId').value = supplier ? (supplier.supplier_status_id || '') : '';
+            document.getElementById('addressLine1').value = supplier ? (supplier.address_line_1 || '') : '';
+            document.getElementById('addressLine2').value = supplier ? (supplier.address_line_2 || '') : '';
+            document.getElementById('city').value = supplier ? (supplier.city || '') : '';
+            document.getElementById('county').value = supplier ? (supplier.county || '') : '';
+            document.getElementById('postcode').value = supplier ? (supplier.postcode || '') : '';
+            document.getElementById('country').value = supplier ? (supplier.country || '') : '';
+            document.getElementById('questionnaireDateIssued').value = supplier ? (supplier.questionnaire_date_issued || '') : '';
+            document.getElementById('questionnaireDateReceived').value = supplier ? (supplier.questionnaire_date_received || '') : '';
+            document.getElementById('comments').value = supplier ? (supplier.comments || '') : '';
             document.getElementById('itemActive').checked = supplier ? supplier.is_active : true;
             document.getElementById('editModal').classList.add('active');
         }
@@ -180,6 +329,19 @@ $path_prefix = '../../';
             const payload = {
                 legal_name: document.getElementById('legalName').value.trim(),
                 trading_name: document.getElementById('tradingName').value.trim(),
+                reg_number: document.getElementById('regNumber').value.trim(),
+                vat_number: document.getElementById('vatNumber').value.trim(),
+                supplier_type_id: document.getElementById('supplierTypeId').value || null,
+                supplier_status_id: document.getElementById('supplierStatusId').value || null,
+                address_line_1: document.getElementById('addressLine1').value.trim(),
+                address_line_2: document.getElementById('addressLine2').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                county: document.getElementById('county').value.trim(),
+                postcode: document.getElementById('postcode').value.trim(),
+                country: document.getElementById('country').value.trim(),
+                questionnaire_date_issued: document.getElementById('questionnaireDateIssued').value || null,
+                questionnaire_date_received: document.getElementById('questionnaireDateReceived').value || null,
+                comments: document.getElementById('comments').value.trim(),
                 is_active: document.getElementById('itemActive').checked ? 1 : 0
             };
             if (id) payload.id = parseInt(id);

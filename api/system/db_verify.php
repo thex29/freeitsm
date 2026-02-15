@@ -572,12 +572,43 @@ $schema = [
     ],
 
     // Contracts module
-    'suppliers' => [
+    'supplier_types' => [
         'id'                => 'int IDENTITY(1,1) NOT NULL',
-        'legal_name'        => 'nvarchar(255) NOT NULL',
-        'trading_name'      => 'nvarchar(255) NULL',
+        'name'              => 'nvarchar(100) NOT NULL',
+        'description'       => 'nvarchar(255) NULL',
         'is_active'         => 'bit NOT NULL DEFAULT 1',
+        'display_order'     => 'int NOT NULL DEFAULT 0',
         'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
+    ],
+
+    'supplier_statuses' => [
+        'id'                => 'int IDENTITY(1,1) NOT NULL',
+        'name'              => 'nvarchar(100) NOT NULL',
+        'description'       => 'nvarchar(255) NULL',
+        'is_active'         => 'bit NOT NULL DEFAULT 1',
+        'display_order'     => 'int NOT NULL DEFAULT 0',
+        'created_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
+    ],
+
+    'suppliers' => [
+        'id'                            => 'int IDENTITY(1,1) NOT NULL',
+        'legal_name'                    => 'nvarchar(255) NOT NULL',
+        'trading_name'                  => 'nvarchar(255) NULL',
+        'reg_number'                    => 'nvarchar(50) NULL',
+        'vat_number'                    => 'nvarchar(50) NULL',
+        'supplier_type_id'              => 'int NULL',
+        'supplier_status_id'            => 'int NULL',
+        'address_line_1'                => 'nvarchar(255) NULL',
+        'address_line_2'                => 'nvarchar(255) NULL',
+        'city'                          => 'nvarchar(100) NULL',
+        'county'                        => 'nvarchar(100) NULL',
+        'postcode'                      => 'nvarchar(20) NULL',
+        'country'                       => 'nvarchar(100) NULL',
+        'questionnaire_date_issued'     => 'date NULL',
+        'questionnaire_date_received'   => 'date NULL',
+        'comments'                      => 'nvarchar(max) NULL',
+        'is_active'                     => 'bit NOT NULL DEFAULT 1',
+        'created_datetime'              => 'datetime NULL DEFAULT GETUTCDATE()',
     ],
 
     'contacts' => [
