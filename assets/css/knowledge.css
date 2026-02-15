@@ -831,3 +831,96 @@ div.code-toolbar > .toolbar > .toolbar-item > span {
     color: #5a2d8c;
     border-bottom-style: solid;
 }
+
+/* Recycle Bin Toggle */
+.recycle-bin-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recycle-bin-toggle.active {
+    background: #d13438;
+    border-color: #d13438;
+    color: white;
+}
+
+.recycle-bin-toggle.active:hover {
+    background: #b02a2d;
+}
+
+/* Recycle Bin Notice */
+.recycle-bin-notice {
+    padding: 10px 16px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #856404;
+    margin-bottom: 16px;
+}
+
+/* Recycle Bin Cards */
+.recycle-bin-card {
+    border-left: 4px solid #d13438 !important;
+    opacity: 0.85;
+    cursor: default !important;
+}
+
+.recycle-bin-card:hover {
+    opacity: 1;
+}
+
+.recycle-bin-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+/* AI Chat Archive Toggle */
+.ai-chat-options {
+    padding: 8px 20px;
+    border-top: 1px solid #e0e0e0;
+    background: #fafafa;
+    font-size: 12px;
+}
+
+.ai-archive-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #666;
+}
+
+.ai-archive-toggle input[type="checkbox"] {
+    accent-color: #8764b8;
+}
+
+/* Toast notification */
+.kb-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.kb-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}

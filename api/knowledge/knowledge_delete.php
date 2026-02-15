@@ -1,6 +1,7 @@
 <?php
 /**
- * API Endpoint: Delete knowledge base article
+ * API Endpoint: Archive (soft delete) knowledge base article
+ * Moves article to recycle bin instead of permanently deleting
  */
 session_start();
 require_once '../../config.php';
@@ -21,23 +22,28 @@ if (!$input || empty($input['id'])) {
 }
 
 $articleId = (int)$input['id'];
+$analystId = (int)$_SESSION['analyst_id'];
 
 try {
     $conn = connectToDatabase();
 
-    // Delete the article (tags will be cleaned up by CASCADE)
-    $sql = "DELETE FROM knowledge_articles WHERE id = ?";
+    // Soft-archive: move to recycle bin
+    $sql = "UPDATE knowledge_articles
+            SET is_archived = 1,
+                archived_datetime = GETUTCDATE(),
+                archived_by_id = ?
+            WHERE id = ? AND (is_archived = 0 OR is_archived IS NULL)";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$articleId]);
+    $stmt->execute([$analystId, $articleId]);
 
-    // Clean up orphaned tags (tags with no articles)
-    $cleanupSql = "DELETE FROM knowledge_tags
-                   WHERE id NOT IN (SELECT DISTINCT tag_id FROM knowledge_article_tags)";
-    $conn->exec($cleanupSql);
+    if ($stmt->rowCount() === 0) {
+        echo json_encode(['success' => false, 'error' => 'Article not found or already archived']);
+        exit;
+    }
 
     echo json_encode([
         'success' => true,
-        'message' => 'Article deleted successfully'
+        'message' => 'Article moved to recycle bin'
     ]);
 
 } catch (Exception $e) {
@@ -46,5 +52,3 @@ try {
         'error' => $e->getMessage()
     ]);
 }
-
-?>

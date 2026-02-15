@@ -56,6 +56,13 @@ try {
         $settings['openai_api_key'] = '****' . substr($decrypted, -4);
     }
 
+    // Get recycle bin retention setting
+    $recycleSql = "SELECT setting_value FROM system_settings WHERE setting_key = 'knowledge_recycle_bin_days'";
+    $recycleStmt = $conn->prepare($recycleSql);
+    $recycleStmt->execute();
+    $recycleRow = $recycleStmt->fetch(PDO::FETCH_ASSOC);
+    $settings['recycle_bin_days'] = $recycleRow ? (int)$recycleRow['setting_value'] : 30;
+
     echo json_encode(['success' => true, 'settings' => $settings]);
 
 } catch (Exception $e) {

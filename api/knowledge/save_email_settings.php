@@ -55,6 +55,12 @@ try {
         $settingsToSave['knowledge_openai_api_key'] = encryptValue($settings['openai_api_key']);
     }
 
+    // Recycle bin retention days
+    if (isset($settings['recycle_bin_days'])) {
+        $days = max(0, min(999, (int)$settings['recycle_bin_days']));
+        $settingsToSave['knowledge_recycle_bin_days'] = (string)$days;
+    }
+
     // Use MERGE/UPSERT pattern for SQL Server
     foreach ($settingsToSave as $key => $value) {
         // Try to update first

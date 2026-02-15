@@ -17,7 +17,10 @@ try {
     $conn = connectToDatabase();
 
     $sql = "SELECT t.id, t.name,
-                   (SELECT COUNT(*) FROM knowledge_article_tags kat WHERE kat.tag_id = t.id) as article_count
+                   (SELECT COUNT(*) FROM knowledge_article_tags kat
+                    INNER JOIN knowledge_articles ka ON ka.id = kat.article_id
+                    WHERE kat.tag_id = t.id
+                    AND (ka.is_archived = 0 OR ka.is_archived IS NULL)) as article_count
             FROM knowledge_tags t
             ORDER BY t.name";
 

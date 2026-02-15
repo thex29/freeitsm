@@ -42,6 +42,12 @@ $path_prefix = '../';
             <div class="sidebar-section">
                 <button class="btn btn-primary btn-full" onclick="openCreateArticle()">+ New Article</button>
             </div>
+            <div class="sidebar-section">
+                <button class="btn btn-secondary btn-full recycle-bin-toggle" id="recycleBinToggle" onclick="toggleRecycleBin()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Recycle Bin
+                </button>
+            </div>
         </div>
 
         <!-- Main content area -->
@@ -49,7 +55,7 @@ $path_prefix = '../';
             <!-- Article list view -->
             <div class="article-list-view" id="articleListView">
                 <div class="article-list-header">
-                    <h2>Knowledge Articles</h2>
+                    <h2 id="articleListHeader">Knowledge Articles</h2>
                     <div class="article-count" id="articleCount"></div>
                 </div>
                 <div class="article-list" id="articleList">
@@ -101,7 +107,7 @@ $path_prefix = '../';
                             </div>
                         </div>
                         <button class="btn btn-primary" onclick="editCurrentArticle()">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteCurrentArticle()">Delete</button>
+                        <button class="btn btn-danger" onclick="deleteCurrentArticle()">Archive</button>
                     </div>
                 </div>
                 <div class="article-content" id="articleContent"></div>
@@ -204,6 +210,12 @@ $path_prefix = '../';
                 <p style="font-size:12px; color:#999; margin-top:8px;">Powered by Claude Haiku</p>
             </div>
         </div>
+        <div class="ai-chat-options">
+            <label class="ai-archive-toggle" title="Include archived (recycle bin) articles in AI search">
+                <input type="checkbox" id="aiIncludeArchived">
+                <span>Include archived articles</span>
+            </label>
+        </div>
         <div class="ai-chat-input-area">
             <textarea id="aiChatInput" placeholder="Ask a question about your knowledge base..." rows="2" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); askAi();}"></textarea>
             <button class="ai-chat-send" onclick="askAi()" id="aiSendBtn">
@@ -221,7 +233,7 @@ $path_prefix = '../';
     <!-- html2pdf for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>window.API_BASE = '../api/knowledge/';</script>
-    <script src="../assets/js/knowledge.js"></script>
+    <script src="../assets/js/knowledge.js?v=2"></script>
     <!-- Prism.js for code syntax highlighting when viewing articles -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>

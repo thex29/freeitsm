@@ -23,16 +23,23 @@ if (!$articleId) {
 try {
     $conn = connectToDatabase();
 
+    $includeArchived = (int)($_GET['include_archived'] ?? 0);
+
     // Get article
     $sql = "SELECT a.id, a.title, CAST(a.body AS NVARCHAR(MAX)) as body,
                    a.author_id, a.owner_id, a.next_review_date,
                    a.created_datetime, a.modified_datetime, a.view_count,
+                   a.is_archived, a.archived_datetime,
                    an.full_name as author_name,
                    owner.full_name as owner_name
             FROM knowledge_articles a
             INNER JOIN analysts an ON an.id = a.author_id
             LEFT JOIN analysts owner ON owner.id = a.owner_id
             WHERE a.id = ?";
+
+    if (!$includeArchived) {
+        $sql .= " AND (a.is_archived = 0 OR a.is_archived IS NULL)";
+    }
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$articleId]);
@@ -52,10 +59,12 @@ try {
     $tagStmt->execute([$articleId]);
     $article['tags'] = $tagStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Increment view count
-    $updateSql = "UPDATE knowledge_articles SET view_count = view_count + 1 WHERE id = ?";
-    $updateStmt = $conn->prepare($updateSql);
-    $updateStmt->execute([$articleId]);
+    // Increment view count (skip for archived articles)
+    if (!$article['is_archived']) {
+        $updateSql = "UPDATE knowledge_articles SET view_count = view_count + 1 WHERE id = ?";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->execute([$articleId]);
+    }
 
     echo json_encode([
         'success' => true,

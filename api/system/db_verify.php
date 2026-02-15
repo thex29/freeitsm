@@ -393,6 +393,9 @@ $schema = [
         'owner_id'              => 'int NULL',
         'embedding'             => 'nvarchar(max) NULL',
         'embedding_updated'     => 'datetime NULL',
+        'is_archived'           => 'bit NULL DEFAULT 0',
+        'archived_datetime'     => 'datetime NULL',
+        'archived_by_id'        => 'int NULL',
     ],
 
     'knowledge_tags' => [

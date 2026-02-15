@@ -18,6 +18,7 @@ if (!isset($_SESSION['analyst_id'])) {
 
 $input = json_decode(file_get_contents('php://input'), true);
 $question = trim($input['question'] ?? '');
+$includeArchived = !empty($input['include_archived']);
 
 if (empty($question)) {
     echo json_encode(['success' => false, 'error' => 'Please enter a question']);
@@ -104,7 +105,8 @@ try {
     $openaiApiKey = decryptValue($openaiRow['setting_value'] ?? '');
 
     // Check if we have articles with embeddings
-    $embeddingCountSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1 AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
+    $archiveFilter = $includeArchived ? '' : ' AND (is_archived = 0 OR is_archived IS NULL)';
+    $embeddingCountSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
     $embeddingCountStmt = $conn->prepare($embeddingCountSql);
     $embeddingCountStmt->execute();
     $embeddingCount = $embeddingCountStmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -125,7 +127,7 @@ try {
             // CAST embedding to VARCHAR(MAX) to avoid NVARCHAR null-byte encoding issues with PDO ODBC
             $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body, CAST(embedding AS VARCHAR(MAX)) as embedding
                           FROM knowledge_articles
-                          WHERE is_published = 1 AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
+                          WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
             $articleStmt = $conn->prepare($articleSql);
             $articleStmt->execute();
             $allArticles = $articleStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -161,7 +163,7 @@ try {
     if (!$useVectorSearch) {
         // Fallback: fetch all published articles
         $searchMethod = 'all';
-        $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body FROM knowledge_articles WHERE is_published = 1 ORDER BY title";
+        $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " ORDER BY title";
         $articleStmt = $conn->prepare($articleSql);
         $articleStmt->execute();
         $articles = $articleStmt->fetchAll(PDO::FETCH_ASSOC);

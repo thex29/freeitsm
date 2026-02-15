@@ -31,7 +31,8 @@ try {
             FROM knowledge_articles ka
             LEFT JOIN analysts owner ON ka.owner_id = owner.id
             LEFT JOIN analysts author ON ka.author_id = author.id
-            WHERE ka.is_published = 1";
+            WHERE ka.is_published = 1
+              AND (ka.is_archived = 0 OR ka.is_archived IS NULL)";
 
     switch ($filter) {
         case 'overdue':
@@ -77,7 +78,8 @@ try {
         SUM(CASE WHEN next_review_date >= CAST(GETUTCDATE() AS DATE) AND next_review_date <= DATEADD(day, 30, GETUTCDATE()) THEN 1 ELSE 0 END) as upcoming,
         SUM(CASE WHEN next_review_date IS NULL THEN 1 ELSE 0 END) as no_date
     FROM knowledge_articles
-    WHERE is_published = 1";
+    WHERE is_published = 1
+    AND (is_archived = 0 OR is_archived IS NULL)";
     $countsStmt = $conn->prepare($countsSql);
     $countsStmt->execute();
     $counts = $countsStmt->fetch(PDO::FETCH_ASSOC);

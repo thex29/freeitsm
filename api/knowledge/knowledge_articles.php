@@ -25,7 +25,8 @@ try {
                    an.full_name as author_name
             FROM knowledge_articles a
             INNER JOIN analysts an ON an.id = a.author_id
-            WHERE a.is_published = 1";
+            WHERE a.is_published = 1
+              AND (a.is_archived = 0 OR a.is_archived IS NULL)";
 
     $params = [];
 

@@ -12,6 +12,7 @@ let currentArticle = null;
 let articleEditor = null;
 let searchTimeout = null;
 let activeTagFilters = [];
+let isRecycleBinView = false;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -128,6 +129,7 @@ async function loadTags() {
 
 // Load articles
 async function loadArticles(search = '', tagIds = []) {
+    if (isRecycleBinView) return;
     const articleList = document.getElementById('articleList');
     articleList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
@@ -376,7 +378,7 @@ async function saveArticle() {
 async function deleteCurrentArticle() {
     if (!currentArticle) return;
 
-    if (!confirm('Are you sure you want to delete this article? This cannot be undone.')) {
+    if (!confirm('Move this article to the recycle bin?')) {
         return;
     }
 
@@ -390,10 +392,134 @@ async function deleteCurrentArticle() {
         const data = await response.json();
 
         if (data.success) {
-            alert('Article deleted');
+            showToast('Article moved to recycle bin');
             loadTags();
             loadArticles();
             showView('list');
+        } else {
+            alert('Error archiving article: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to archive article');
+    }
+}
+
+// Recycle Bin functions
+async function toggleRecycleBin() {
+    const toggle = document.getElementById('recycleBinToggle');
+    const header = document.getElementById('articleListHeader');
+
+    if (isRecycleBinView) {
+        // Exit recycle bin
+        isRecycleBinView = false;
+        toggle.classList.remove('active');
+        header.textContent = 'Knowledge Articles';
+        loadArticles();
+        showView('list');
+    } else {
+        // Enter recycle bin
+        isRecycleBinView = true;
+        toggle.classList.add('active');
+        header.textContent = 'Recycle Bin';
+        showView('list');
+        await loadRecycleBin();
+    }
+}
+
+async function loadRecycleBin() {
+    const articleList = document.getElementById('articleList');
+    const articleCount = document.getElementById('articleCount');
+    articleList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+    try {
+        const response = await fetch(API_BASE + 'knowledge_archive.php?action=list');
+        const data = await response.json();
+
+        if (!data.success) {
+            articleList.innerHTML = '<div class="empty-state">Error loading recycle bin</div>';
+            return;
+        }
+
+        const items = data.articles || [];
+        const retentionDays = data.retention_days || 0;
+        articleCount.textContent = items.length + ' archived';
+
+        if (items.length === 0) {
+            articleList.innerHTML = '<div class="empty-state">Recycle bin is empty</div>';
+            return;
+        }
+
+        let html = '';
+        if (retentionDays > 0) {
+            html += `<div class="recycle-bin-notice">Articles are automatically deleted after ${retentionDays} days in the recycle bin.</div>`;
+        } else {
+            html += '<div class="recycle-bin-notice">Articles are kept indefinitely until manually deleted.</div>';
+        }
+
+        items.forEach(item => {
+            const archivedDate = item.archived_datetime ? formatDate(item.archived_datetime) : 'Unknown';
+            const archivedBy = item.archived_by_name || 'Unknown';
+            html += `
+                <div class="article-card recycle-bin-card">
+                    <div class="article-card-title">${escapeHtml(item.title)}</div>
+                    <div class="article-card-meta">
+                        By ${escapeHtml(item.author_name)} &middot; Archived ${archivedDate} by ${escapeHtml(archivedBy)}
+                    </div>
+                    <div class="recycle-bin-actions">
+                        <button class="btn btn-primary btn-sm" onclick="restoreArticle(${item.id})">Restore</button>
+                        <button class="btn btn-danger btn-sm" onclick="hardDeleteArticle(${item.id}, '${escapeHtml(item.title).replace(/'/g, "\\'")}')">Delete Permanently</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        articleList.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading recycle bin:', error);
+        articleList.innerHTML = '<div class="empty-state">Failed to load recycle bin</div>';
+    }
+}
+
+async function restoreArticle(id) {
+    try {
+        const response = await fetch(API_BASE + 'knowledge_archive.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'restore', id: id })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Article restored');
+            loadTags();
+            await loadRecycleBin();
+        } else {
+            alert('Error restoring article: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to restore article');
+    }
+}
+
+async function hardDeleteArticle(id, title) {
+    if (!confirm(`Permanently delete "${title}"? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(API_BASE + 'knowledge_archive.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'hard_delete', id: id })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Article permanently deleted');
+            loadTags();
+            await loadRecycleBin();
         } else {
             alert('Error deleting article: ' + data.error);
         }
@@ -401,6 +527,21 @@ async function deleteCurrentArticle() {
         console.error('Error:', error);
         alert('Failed to delete article');
     }
+}
+
+function showToast(message) {
+    const existing = document.querySelector('.kb-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'kb-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Cancel edit
@@ -423,6 +564,15 @@ function showView(view) {
     document.getElementById('articleListView').style.display = view === 'list' ? 'block' : 'none';
     document.getElementById('articleDetailView').style.display = view === 'detail' ? 'block' : 'none';
     document.getElementById('articleEditorView').style.display = view === 'editor' ? 'block' : 'none';
+
+    // Reset recycle bin state when navigating away from list
+    if (view !== 'list' && isRecycleBinView) {
+        isRecycleBinView = false;
+        const toggle = document.getElementById('recycleBinToggle');
+        const header = document.getElementById('articleListHeader');
+        if (toggle) toggle.classList.remove('active');
+        if (header) header.textContent = 'Knowledge Articles';
+    }
 }
 
 // Tag input functions
@@ -779,7 +929,7 @@ async function askAi() {
         const response = await fetch(API_BASE + 'ai_chat.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question: question })
+            body: JSON.stringify({ question: question, include_archived: document.getElementById('aiIncludeArchived')?.checked || false })
         });
         const data = await response.json();
 

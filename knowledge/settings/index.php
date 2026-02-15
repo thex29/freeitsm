@@ -412,6 +412,22 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
 
             <div class="test-result" id="embeddingResult"></div>
         </div>
+
+        <div class="settings-section">
+            <h2>Recycle Bin</h2>
+            <p>Configure how long archived knowledge articles are retained in the recycle bin before automatic permanent deletion.</p>
+            <form id="recycleBinSettingsForm">
+                <div class="form-group">
+                    <label for="recycleBinDays">Auto-delete after (days)</label>
+                    <input type="number" id="recycleBinDays" min="0" max="999" value="30" style="max-width: 200px;">
+                    <small>Set to 0 to keep archived articles indefinitely. Range: 0-999 days. Default: 30.</small>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 15px;">
+                    <button type="submit" class="btn btn-primary">Save Recycle Bin Settings</button>
+                    <span class="save-message" id="recycleBinSaveMessage" style="display:none; color: #155724; font-size: 14px;">Settings saved!</span>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -580,9 +596,10 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
 
         // === AI Settings ===
 
-        // Load AI API key on page load
+        // Load AI API key and recycle bin settings on page load
         loadAiSettings();
         loadEmbeddingStats();
+        loadRecycleBinSettings();
 
         async function loadAiSettings() {
             try {
@@ -784,6 +801,51 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
             btn.disabled = false;
             btn.textContent = 'Generate Embeddings';
         }
+
+        // === Recycle Bin Settings ===
+
+        async function loadRecycleBinSettings() {
+            try {
+                const response = await fetch(API_BASE + 'get_email_settings.php');
+                const data = await response.json();
+                if (data.success && data.settings) {
+                    const days = data.settings.recycle_bin_days ?? 30;
+                    document.getElementById('recycleBinDays').value = days;
+                }
+            } catch (error) {
+                console.error('Error loading recycle bin settings:', error);
+            }
+        }
+
+        document.getElementById('recycleBinSettingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const days = Math.max(0, Math.min(999, parseInt(document.getElementById('recycleBinDays').value) || 30));
+            document.getElementById('recycleBinDays').value = days;
+
+            try {
+                const response = await fetch(API_BASE + 'save_email_settings.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ settings: { recycle_bin_days: days } })
+                });
+                const data = await response.json();
+
+                const msg = document.getElementById('recycleBinSaveMessage');
+                if (data.success) {
+                    msg.textContent = 'Settings saved!';
+                    msg.style.color = '#155724';
+                    msg.style.display = 'inline';
+                    setTimeout(() => msg.style.display = 'none', 3000);
+                } else {
+                    msg.textContent = 'Error: ' + data.error;
+                    msg.style.color = '#d13438';
+                    msg.style.display = 'inline';
+                }
+            } catch (error) {
+                console.error('Error saving recycle bin settings:', error);
+            }
+        });
     </script>
 </body>
 </html>

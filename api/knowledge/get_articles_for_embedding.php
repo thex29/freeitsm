@@ -20,6 +20,7 @@ try {
     // Get articles without embeddings
     $sql = "SELECT id, title FROM knowledge_articles
             WHERE is_published = 1
+            AND (is_archived = 0 OR is_archived IS NULL)
             AND (embedding IS NULL OR DATALENGTH(embedding) = 0)
             ORDER BY id";
     $stmt = $conn->prepare($sql);
