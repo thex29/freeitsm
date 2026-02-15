@@ -20,7 +20,7 @@ $contract_id = $_GET['id'] ?? null;
         body { overflow: auto; height: auto; }
 
         .form-container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 30px;
         }
@@ -51,13 +51,27 @@ $contract_id = $_GET['id'] ?? null;
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: #333; }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px;
-            font-size: 14px; box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s;
+            font-size: 14px; box-sizing: border-box; font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group textarea { height: 80px; resize: vertical; }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-section {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 0 6px 0;
+            margin-top: 10px;
+            border-top: 1px solid #eee;
         }
 
         .form-hint { font-size: 12px; color: #888; margin-top: 4px; }
@@ -77,6 +91,22 @@ $contract_id = $_GET['id'] ?? null;
         .save-message.visible { opacity: 1; }
         .save-message.success { color: #155724; }
         .save-message.error { color: #dc3545; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc; border-radius: 24px; transition: background 0.2s;
+        }
+        .toggle-slider::before {
+            content: ''; position: absolute;
+            height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: transform 0.2s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background: #f59e0b; }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+        .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -88,16 +118,16 @@ $contract_id = $_GET['id'] ?? null;
                 <h2 id="pageTitle"><?php echo $contract_id ? 'Edit Contract' : 'Add Contract'; ?></h2>
             </div>
             <div class="form-card-body">
-                <form id="contractForm">
+                <form id="contractForm" autocomplete="off">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="contractNumber">Contract Number *</label>
                             <input type="text" id="contractNumber" required placeholder="e.g. CON-001">
                         </div>
                         <div class="form-group">
-                            <label for="supplierId">Supplier</label>
-                            <select id="supplierId">
-                                <option value="">-- Select Supplier --</option>
+                            <label for="contractStatusId">Status</label>
+                            <select id="contractStatusId">
+                                <option value="">-- None --</option>
                             </select>
                         </div>
                     </div>
@@ -107,19 +137,27 @@ $contract_id = $_GET['id'] ?? null;
                         <input type="text" id="title" required placeholder="e.g. Annual Support Agreement">
                     </div>
 
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" placeholder="Contract description..."></textarea>
+                    </div>
+
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="supplierId">Supplier</label>
+                            <select id="supplierId">
+                                <option value="">-- Select Supplier --</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="ownerId">Contract Owner</label>
                             <select id="ownerId">
                                 <option value="">-- Select Owner --</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="noticePeriod">Notice Period (days)</label>
-                            <input type="number" id="noticePeriod" min="0" placeholder="e.g. 90">
-                        </div>
                     </div>
 
+                    <div class="form-section">Dates</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="contractStart">Start Date</label>
@@ -130,9 +168,91 @@ $contract_id = $_GET['id'] ?? null;
                             <input type="date" id="contractEnd">
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="noticePeriod">Notice Period (days)</label>
+                            <input type="number" id="noticePeriod" min="0" placeholder="e.g. 90">
+                        </div>
+                        <div class="form-group">
+                            <label for="noticeDate">Notice Date</label>
+                            <input type="date" id="noticeDate">
+                        </div>
+                    </div>
+
+                    <div class="form-section">Financial</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractValue">Contract Value</label>
+                            <input type="number" id="contractValue" step="0.01" min="0" placeholder="e.g. 10000.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentScheduleId">Payment Schedule</label>
+                            <select id="paymentScheduleId">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="costCentre">Cost Centre</label>
+                            <input type="text" id="costCentre">
+                        </div>
+                    </div>
+
+                    <div class="form-section">Documents</div>
+                    <div class="form-group">
+                        <label for="dmsLink">DMS Link (Contract)</label>
+                        <input type="url" id="dmsLink" placeholder="https://...">
+                    </div>
+
+                    <div class="form-section">Terms &amp; Data Protection</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="termsStatus">Terms</label>
+                            <select id="termsStatus">
+                                <option value="">-- None --</option>
+                                <option value="received">Received</option>
+                                <option value="reviewed">Reviewed</option>
+                                <option value="agreed">Agreed</option>
+                            </select>
+                        </div>
+                        <div></div>
+                    </div>
+                    <div class="form-row">
+                        <label class="toggle-row">
+                            <span class="toggle-switch">
+                                <input type="checkbox" id="personalDataTransferred">
+                                <span class="toggle-slider"></span>
+                            </span>
+                            Personal data transferred
+                        </label>
+                        <label class="toggle-row">
+                            <span class="toggle-switch">
+                                <input type="checkbox" id="dpiaRequired">
+                                <span class="toggle-slider"></span>
+                            </span>
+                            DPIA required
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dpiaCompletedDate">DPIA Completed Date</label>
+                            <input type="date" id="dpiaCompletedDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="dpiaDmsLink">DMS Link (DPIA)</label>
+                            <input type="url" id="dpiaDmsLink" placeholder="https://...">
+                        </div>
+                    </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="saveBtn">Save Contract</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
                         <a href="index.php" class="btn btn-secondary">Cancel</a>
                         <span class="save-message" id="saveMessage"></span>
                     </div>
@@ -146,11 +266,44 @@ $contract_id = $_GET['id'] ?? null;
         const TICKETS_API = '../api/tickets/';
         const contractId = <?php echo json_encode($contract_id); ?>;
 
+        const currencies = [
+            { code: 'GBP', name: 'British Pound (GBP)' },
+            { code: 'USD', name: 'US Dollar (USD)' },
+            { code: 'EUR', name: 'Euro (EUR)' },
+            { code: 'AUD', name: 'Australian Dollar (AUD)' },
+            { code: 'CAD', name: 'Canadian Dollar (CAD)' },
+            { code: 'CHF', name: 'Swiss Franc (CHF)' },
+            { code: 'CNY', name: 'Chinese Yuan (CNY)' },
+            { code: 'DKK', name: 'Danish Krone (DKK)' },
+            { code: 'HKD', name: 'Hong Kong Dollar (HKD)' },
+            { code: 'INR', name: 'Indian Rupee (INR)' },
+            { code: 'JPY', name: 'Japanese Yen (JPY)' },
+            { code: 'KRW', name: 'South Korean Won (KRW)' },
+            { code: 'MXN', name: 'Mexican Peso (MXN)' },
+            { code: 'NOK', name: 'Norwegian Krone (NOK)' },
+            { code: 'NZD', name: 'New Zealand Dollar (NZD)' },
+            { code: 'PLN', name: 'Polish Zloty (PLN)' },
+            { code: 'SEK', name: 'Swedish Krona (SEK)' },
+            { code: 'SGD', name: 'Singapore Dollar (SGD)' },
+            { code: 'ZAR', name: 'South African Rand (ZAR)' }
+        ];
+
         document.addEventListener('DOMContentLoaded', async function() {
-            await loadSuppliers();
-            await loadAnalysts();
+            populateCurrencies();
+            await Promise.all([
+                loadSuppliers(),
+                loadAnalysts(),
+                loadContractStatuses(),
+                loadPaymentSchedules()
+            ]);
             if (contractId) await loadContract();
         });
+
+        function populateCurrencies() {
+            const select = document.getElementById('currency');
+            select.innerHTML = '<option value="">-- None --</option>' +
+                currencies.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+        }
 
         async function loadSuppliers() {
             try {
@@ -180,6 +333,34 @@ $contract_id = $_GET['id'] ?? null;
             } catch (error) { console.error('Error loading analysts:', error); }
         }
 
+        async function loadContractStatuses() {
+            try {
+                const response = await fetch(API_BASE + 'get_contract_statuses.php');
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('contractStatusId');
+                    select.innerHTML = '<option value="">-- None --</option>' +
+                        data.contract_statuses.filter(s => s.is_active).map(s =>
+                            `<option value="${s.id}">${escapeHtml(s.name)}</option>`
+                        ).join('');
+                }
+            } catch (error) { console.error('Error loading contract statuses:', error); }
+        }
+
+        async function loadPaymentSchedules() {
+            try {
+                const response = await fetch(API_BASE + 'get_payment_schedules.php');
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('paymentScheduleId');
+                    select.innerHTML = '<option value="">-- None --</option>' +
+                        data.payment_schedules.filter(p => p.is_active).map(p =>
+                            `<option value="${p.id}">${escapeHtml(p.name)}</option>`
+                        ).join('');
+                }
+            } catch (error) { console.error('Error loading payment schedules:', error); }
+        }
+
         async function loadContract() {
             try {
                 const response = await fetch(API_BASE + 'get_contract.php?id=' + contractId);
@@ -188,11 +369,24 @@ $contract_id = $_GET['id'] ?? null;
                     const c = data.contract;
                     document.getElementById('contractNumber').value = c.contract_number;
                     document.getElementById('title').value = c.title;
+                    document.getElementById('description').value = c.description || '';
                     document.getElementById('supplierId').value = c.supplier_id || '';
                     document.getElementById('ownerId').value = c.contract_owner_id || '';
+                    document.getElementById('contractStatusId').value = c.contract_status_id || '';
                     document.getElementById('contractStart').value = c.contract_start || '';
                     document.getElementById('contractEnd').value = c.contract_end || '';
                     document.getElementById('noticePeriod').value = c.notice_period_days || '';
+                    document.getElementById('noticeDate').value = c.notice_date || '';
+                    document.getElementById('contractValue').value = c.contract_value || '';
+                    document.getElementById('currency').value = c.currency || '';
+                    document.getElementById('paymentScheduleId').value = c.payment_schedule_id || '';
+                    document.getElementById('costCentre').value = c.cost_centre || '';
+                    document.getElementById('dmsLink').value = c.dms_link || '';
+                    document.getElementById('termsStatus').value = c.terms_status || '';
+                    document.getElementById('personalDataTransferred').checked = !!c.personal_data_transferred;
+                    document.getElementById('dpiaRequired').checked = !!c.dpia_required;
+                    document.getElementById('dpiaCompletedDate').value = c.dpia_completed_date || '';
+                    document.getElementById('dpiaDmsLink').value = c.dpia_dms_link || '';
                 }
             } catch (error) { console.error('Error loading contract:', error); }
         }
@@ -206,11 +400,24 @@ $contract_id = $_GET['id'] ?? null;
             const payload = {
                 contract_number: document.getElementById('contractNumber').value.trim(),
                 title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim(),
                 supplier_id: document.getElementById('supplierId').value || null,
                 contract_owner_id: document.getElementById('ownerId').value || null,
+                contract_status_id: document.getElementById('contractStatusId').value || null,
                 contract_start: document.getElementById('contractStart').value || null,
                 contract_end: document.getElementById('contractEnd').value || null,
                 notice_period_days: document.getElementById('noticePeriod').value || null,
+                notice_date: document.getElementById('noticeDate').value || null,
+                contract_value: document.getElementById('contractValue').value || null,
+                currency: document.getElementById('currency').value || null,
+                payment_schedule_id: document.getElementById('paymentScheduleId').value || null,
+                cost_centre: document.getElementById('costCentre').value.trim(),
+                dms_link: document.getElementById('dmsLink').value.trim(),
+                terms_status: document.getElementById('termsStatus').value || null,
+                personal_data_transferred: document.getElementById('personalDataTransferred').checked ? 1 : 0,
+                dpia_required: document.getElementById('dpiaRequired').checked ? 1 : 0,
+                dpia_completed_date: document.getElementById('dpiaCompletedDate').value || null,
+                dpia_dms_link: document.getElementById('dpiaDmsLink').value.trim(),
                 is_active: 1
             };
             if (contractId) payload.id = parseInt(contractId);
@@ -236,7 +443,7 @@ $contract_id = $_GET['id'] ?? null;
             }
 
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save Contract';
+            saveBtn.textContent = 'Save';
         });
 
         function showMessage(text, type) {

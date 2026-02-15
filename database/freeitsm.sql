@@ -1539,15 +1539,48 @@ CREATE TABLE [dbo].[contacts] (
     PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+CREATE TABLE [dbo].[contract_statuses] (
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [name] [nvarchar](100) NOT NULL,
+    [description] [nvarchar](255) NULL,
+    [is_active] [bit] NOT NULL DEFAULT 1,
+    [display_order] [int] NOT NULL DEFAULT 0,
+    [created_datetime] [datetime] NULL DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+CREATE TABLE [dbo].[payment_schedules] (
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [name] [nvarchar](100) NOT NULL,
+    [description] [nvarchar](255) NULL,
+    [is_active] [bit] NOT NULL DEFAULT 1,
+    [display_order] [int] NOT NULL DEFAULT 0,
+    [created_datetime] [datetime] NULL DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 CREATE TABLE [dbo].[contracts] (
     [id] [int] IDENTITY(1,1) NOT NULL,
     [contract_number] [nvarchar](50) NOT NULL,
     [title] [nvarchar](255) NOT NULL,
+    [description] [nvarchar](max) NULL,
     [supplier_id] [int] NULL,
     [contract_owner_id] [int] NULL,
+    [contract_status_id] [int] NULL,
     [contract_start] [date] NULL,
     [contract_end] [date] NULL,
     [notice_period_days] [int] NULL,
+    [notice_date] [date] NULL,
+    [contract_value] [decimal](18,2) NULL,
+    [currency] [nvarchar](3) NULL,
+    [payment_schedule_id] [int] NULL,
+    [cost_centre] [nvarchar](100) NULL,
+    [dms_link] [nvarchar](500) NULL,
+    [terms_status] [nvarchar](20) NULL,
+    [personal_data_transferred] [bit] NULL,
+    [dpia_required] [bit] NULL,
+    [dpia_completed_date] [date] NULL,
+    [dpia_dms_link] [nvarchar](500) NULL,
     [is_active] [bit] NOT NULL DEFAULT 1,
     [created_datetime] [datetime] NULL DEFAULT GETDATE(),
     PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]

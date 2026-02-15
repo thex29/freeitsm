@@ -53,8 +53,21 @@ $path_prefix = '../../';
         .modal .form-group input, .modal .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
         .modal .form-group textarea { height: 60px; resize: vertical; }
         .modal .form-group input:focus, .modal .form-group textarea:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
-        .modal .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
-        .modal .checkbox-label input[type="checkbox"] { width: auto; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc; border-radius: 24px; transition: background 0.2s;
+        }
+        .toggle-slider::before {
+            content: ''; position: absolute;
+            height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: transform 0.2s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background: #f59e0b; }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+        .toggle-label { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
 
         .modal-actions { margin-top: 20px; }
 
@@ -70,6 +83,8 @@ $path_prefix = '../../';
         <div class="tabs">
             <button class="tab active" data-tab="supplier-types" onclick="switchTab('supplier-types')">Supplier Types</button>
             <button class="tab" data-tab="supplier-statuses" onclick="switchTab('supplier-statuses')">Supplier Statuses</button>
+            <button class="tab" data-tab="contract-statuses" onclick="switchTab('contract-statuses')">Contract Statuses</button>
+            <button class="tab" data-tab="payment-schedules" onclick="switchTab('payment-schedules')">Payment Schedules</button>
         </div>
 
         <!-- Supplier Types Tab -->
@@ -115,13 +130,57 @@ $path_prefix = '../../';
                 </tbody>
             </table>
         </div>
+
+        <!-- Contract Statuses Tab -->
+        <div class="tab-content" id="contract-statuses-tab">
+            <div class="section-header">
+                <h2>Contract Statuses</h2>
+                <button class="add-btn" onclick="openAddModal('contract-status')">Add</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contract-statuses-list">
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Payment Schedules Tab -->
+        <div class="tab-content" id="payment-schedules-tab">
+            <div class="section-header">
+                <h2>Payment Schedules</h2>
+                <button class="add-btn" onclick="openAddModal('payment-schedule')">Add</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="payment-schedules-list">
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Edit/Add Modal -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <div class="modal-header" id="modalTitle">Add Item</div>
-            <form id="editForm">
+            <form id="editForm" autocomplete="off">
                 <input type="hidden" id="itemId">
                 <input type="hidden" id="itemType">
                 <div class="form-group">
@@ -137,8 +196,11 @@ $path_prefix = '../../';
                     <input type="number" id="itemOrder" value="0" min="0">
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="itemActive" checked>
+                    <label class="toggle-label">
+                        <span class="toggle-switch">
+                            <input type="checkbox" id="itemActive" checked>
+                            <span class="toggle-slider"></span>
+                        </span>
                         Active
                     </label>
                 </div>
@@ -152,7 +214,7 @@ $path_prefix = '../../';
 
     <script>
         const API_BASE = '../../api/contracts/';
-        let allItems = { 'supplier-type': [], 'supplier-status': [] };
+        let allItems = { 'supplier-type': [], 'supplier-status': [], 'contract-status': [], 'payment-schedule': [] };
 
         const endpoints = {
             'supplier-type': {
@@ -170,12 +232,30 @@ $path_prefix = '../../';
                 key: 'supplier_statuses',
                 listId: 'supplier-statuses-list',
                 label: 'Supplier Status'
+            },
+            'contract-status': {
+                get: API_BASE + 'get_contract_statuses.php',
+                save: API_BASE + 'save_contract_status.php',
+                delete: API_BASE + 'delete_contract_status.php',
+                key: 'contract_statuses',
+                listId: 'contract-statuses-list',
+                label: 'Contract Status'
+            },
+            'payment-schedule': {
+                get: API_BASE + 'get_payment_schedules.php',
+                save: API_BASE + 'save_payment_schedule.php',
+                delete: API_BASE + 'delete_payment_schedule.php',
+                key: 'payment_schedules',
+                listId: 'payment-schedules-list',
+                label: 'Payment Schedule'
             }
         };
 
         document.addEventListener('DOMContentLoaded', function() {
             loadItems('supplier-type');
             loadItems('supplier-status');
+            loadItems('contract-status');
+            loadItems('payment-schedule');
         });
 
         function switchTab(tab) {
@@ -267,7 +347,7 @@ $path_prefix = '../../';
 
         async function deleteItem(type, id, name) {
             const ep = endpoints[type];
-            if (!confirm('Are you sure you want to delete "' + name + '"? Any suppliers using this ' + ep.label.toLowerCase() + ' will have it cleared.')) return;
+            if (!confirm('Are you sure you want to delete "' + name + '"? Any records using this ' + ep.label.toLowerCase() + ' will have it cleared.')) return;
 
             try {
                 const response = await fetch(ep.delete, {
