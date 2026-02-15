@@ -29,32 +29,10 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
             height: auto;
         }
 
-        .settings-container {
-            max-width: 800px;
+        .container {
+            max-width: 900px;
             margin: 0 auto;
             padding: 30px;
-        }
-
-        .settings-section {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-
-        .settings-section h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .settings-section p {
-            color: #666;
-            margin-bottom: 20px;
         }
 
         .form-group {
@@ -244,10 +222,20 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
 <body>
     <?php include '../includes/header.php'; ?>
 
-    <div class="settings-container">
-        <div class="settings-section">
-            <h2>Outbound Email Settings</h2>
-            <p>Configure how knowledge articles are shared via email. Choose to use an SMTP server or a configured Microsoft 365 mailbox.</p>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="email" onclick="switchTab('email')">Email</button>
+            <button class="tab" data-tab="ai" onclick="switchTab('ai')">AI Assistant</button>
+            <button class="tab" data-tab="embeddings" onclick="switchTab('embeddings')">Embeddings</button>
+            <button class="tab" data-tab="recycle-bin" onclick="switchTab('recycle-bin')">Recycle Bin</button>
+        </div>
+
+        <!-- Email Tab -->
+        <div class="tab-content active" id="email-tab">
+            <div class="section-header">
+                <h2>Outbound Email Settings</h2>
+            </div>
+            <p style="color: #666; margin-bottom: 20px;">Configure how knowledge articles are shared via email. Choose to use an SMTP server or a configured Microsoft 365 mailbox.</p>
 
             <form id="emailSettingsForm">
                 <div class="radio-group">
@@ -359,9 +347,12 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
             </form>
         </div>
 
-        <div class="settings-section">
-            <h2>AI Assistant</h2>
-            <p>Configure the AI-powered assistant that answers questions based on your knowledge base articles.</p>
+        <!-- AI Assistant Tab -->
+        <div class="tab-content" id="ai-tab">
+            <div class="section-header">
+                <h2>AI Assistant</h2>
+            </div>
+            <p style="color: #666; margin-bottom: 20px;">Configure the AI-powered assistant that answers questions based on your knowledge base articles.</p>
 
             <form id="aiSettingsForm">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Claude API (Chat)</h3>
@@ -387,9 +378,12 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
             </form>
         </div>
 
-        <div class="settings-section">
-            <h2>Article Embeddings</h2>
-            <p>Generate vector embeddings for your knowledge articles to enable semantic search. This allows the AI to find the most relevant articles based on meaning, not just keywords.</p>
+        <!-- Embeddings Tab -->
+        <div class="tab-content" id="embeddings-tab">
+            <div class="section-header">
+                <h2>Article Embeddings</h2>
+            </div>
+            <p style="color: #666; margin-bottom: 20px;">Generate vector embeddings for your knowledge articles to enable semantic search. This allows the AI to find the most relevant articles based on meaning, not just keywords.</p>
 
             <div id="embeddingStatus" style="padding: 15px; background: #f9f9f9; border-radius: 6px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -413,18 +407,21 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
             <div class="test-result" id="embeddingResult"></div>
         </div>
 
-        <div class="settings-section">
-            <h2>Recycle Bin</h2>
-            <p>Configure how long archived knowledge articles are retained in the recycle bin before automatic permanent deletion.</p>
+        <!-- Recycle Bin Tab -->
+        <div class="tab-content" id="recycle-bin-tab">
+            <div class="section-header">
+                <h2>Recycle Bin</h2>
+            </div>
+            <p style="color: #666; margin-bottom: 20px;">Configure how long archived knowledge articles are retained in the recycle bin before automatic permanent deletion.</p>
             <form id="recycleBinSettingsForm">
                 <div class="form-group">
                     <label for="recycleBinDays">Auto-delete after (days)</label>
                     <input type="number" id="recycleBinDays" min="0" max="999" value="30" style="max-width: 200px;">
                     <small>Set to 0 to keep archived articles indefinitely. Range: 0-999 days. Default: 30.</small>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px; margin-top: 15px;">
+                <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save Recycle Bin Settings</button>
-                    <span class="save-message" id="recycleBinSaveMessage" style="display:none; color: #155724; font-size: 14px;">Settings saved!</span>
+                    <span class="save-message" id="recycleBinSaveMessage" style="display:none;">Settings saved!</span>
                 </div>
             </form>
         </div>
@@ -432,6 +429,15 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
 
     <script>
         const API_BASE = '../../api/knowledge/';
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            const btn = document.querySelector('.tab[data-tab="' + tab + '"]');
+            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
 
         // Load settings on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -820,7 +826,8 @@ $path_prefix = '../../';  // Two levels up from knowledge/settings/
         document.getElementById('recycleBinSettingsForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const days = Math.max(0, Math.min(999, parseInt(document.getElementById('recycleBinDays').value) || 30));
+            const parsed = parseInt(document.getElementById('recycleBinDays').value, 10);
+            const days = Math.max(0, Math.min(999, isNaN(parsed) ? 30 : parsed));
             document.getElementById('recycleBinDays').value = days;
 
             try {
