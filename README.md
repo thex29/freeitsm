@@ -1,3 +1,12 @@
+<h1 align="center">Thanks for Visiting 👋</h1>
+
+<p align="center">
+If you're downloading this project and find it useful,<br>
+⭐ Please consider starring it<br>
+🌍 And mentioning <a href="https://freeitsm.co.uk">freeitsm.co.uk</a><br><br>
+It genuinely helps and means a lot!
+</p>
+
 # FreeITSM - Open Source Service Desk Platform
 
 A comprehensive web-based IT Service Management (ITSM) platform with 10 integrated modules covering tickets, assets, knowledge, change management, calendar, morning checks, reporting, software inventory, dynamic forms, and system administration. Includes analyst account management with password reset and TOTP multi-factor authentication.
