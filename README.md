@@ -7,6 +7,10 @@ If you're downloading this project and find it useful,<br>
 It genuinely helps and means a lot!
 </p>
 
+<p align="center">
+<a href="https://github.com/edmozley/freeitsm/stargazers"><img src="https://img.shields.io/github/stars/edmozley/freeitsm?style=social" alt="GitHub stars"></a>
+</p>
+
 # FreeITSM - Open Source Service Desk Platform
 
 A comprehensive web-based IT Service Management (ITSM) platform with 10 integrated modules covering tickets, assets, knowledge, change management, calendar, morning checks, reporting, software inventory, dynamic forms, and system administration. Includes analyst account management with password reset and TOTP multi-factor authentication.
