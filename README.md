@@ -682,6 +682,13 @@ Controls which modules an analyst can access. No rows = full access to all modul
 - Credential masking in UI (`****` + last 4 characters)
 - Password required to disable MFA (prevents unauthorized deactivation)
 
+### Password Hashing
+- **Algorithm**: Bcrypt via PHP's `password_hash()` with `PASSWORD_DEFAULT`
+- **One-way**: Passwords cannot be reversed from the stored hash — authentication uses `password_verify()` to re-hash the input and compare
+- **Per-hash salt**: Every call to `password_hash()` generates a unique random salt, so the same password produces a different hash each time
+- **Cost factor**: Bcrypt uses configurable work rounds (currently 2^12 = 4,096 iterations) making brute-force attacks extremely slow
+- **Default admin account**: The SQL script includes a pre-computed hash for the initial `admin` / `freeitsm` account. Once the password is changed, a new unique hash is generated. The `db_verify.php` endpoint also seeds this account at runtime (with a fresh hash) if no analysts exist
+
 ### Encryption Details
 - **Algorithm**: AES-256-GCM (authenticated encryption — provides confidentiality + integrity)
 - **Key**: 256-bit random key stored at `C:\wamp64\encryption_keys\sdtickets.key`
