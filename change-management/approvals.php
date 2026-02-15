@@ -238,7 +238,7 @@ $path_prefix = '../';
 
                 if (!data.success) {
                     document.getElementById('approvalsList').innerHTML =
-                        '<div class="approval-empty"><p>Error loading approvals</p></div>';
+                        '<div class="approval-empty"><p>Error: ' + (data.error || 'Unknown error') + '</p></div>';
                     return;
                 }
 

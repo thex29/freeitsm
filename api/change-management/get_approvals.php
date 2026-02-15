@@ -55,23 +55,23 @@ try {
     $stmt->execute($params);
     $changes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Get counts for all three filters
-    $countAll = $conn->prepare("SELECT COUNT(*) FROM changes WHERE status = 'Pending Approval'");
-    $countAll->execute();
-
-    $countRequested = $conn->prepare("SELECT COUNT(*) FROM changes WHERE status = 'Pending Approval' AND requester_id = ?");
-    $countRequested->execute([$analystId]);
-
-    $countAssigned = $conn->prepare("SELECT COUNT(*) FROM changes WHERE status = 'Pending Approval' AND approver_id = ?");
-    $countAssigned->execute([$analystId]);
+    // Get counts for all three filters in a single query
+    $countSql = "SELECT
+                    COUNT(*) as cnt_all,
+                    SUM(CASE WHEN requester_id = ? THEN 1 ELSE 0 END) as cnt_requested,
+                    SUM(CASE WHEN approver_id = ? THEN 1 ELSE 0 END) as cnt_assigned
+                 FROM changes WHERE status = 'Pending Approval'";
+    $countStmt = $conn->prepare($countSql);
+    $countStmt->execute([$analystId, $analystId]);
+    $countRow = $countStmt->fetch(PDO::FETCH_ASSOC);
 
     echo json_encode([
         'success' => true,
         'changes' => $changes,
         'counts' => [
-            'all'       => (int)$countAll->fetchColumn(),
-            'requested' => (int)$countRequested->fetchColumn(),
-            'assigned'  => (int)$countAssigned->fetchColumn()
+            'all'       => (int)($countRow['cnt_all'] ?? 0),
+            'requested' => (int)($countRow['cnt_requested'] ?? 0),
+            'assigned'  => (int)($countRow['cnt_assigned'] ?? 0)
         ]
     ]);
 
