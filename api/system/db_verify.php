@@ -694,6 +694,20 @@ try {
         $results[] = $tableResult;
     }
 
+    // Seed default admin account if no analysts exist
+    $countStmt = $conn->query("SELECT COUNT(*) FROM analysts");
+    $analystCount = (int) $countStmt->fetchColumn();
+    if ($analystCount === 0) {
+        $defaultHash = password_hash('freeitsm', PASSWORD_DEFAULT);
+        $seedStmt = $conn->prepare("INSERT INTO analysts (username, password_hash, full_name, email, is_active, created_datetime) VALUES (?, ?, ?, ?, 1, GETUTCDATE())");
+        $seedStmt->execute(['admin', $defaultHash, 'Administrator', 'admin@localhost']);
+        $results[] = [
+            'table' => 'analysts',
+            'status' => 'seeded',
+            'details' => ['Created default admin account (username: admin, password: freeitsm)']
+        ];
+    }
+
     echo json_encode([
         'success' => true,
         'results' => $results,

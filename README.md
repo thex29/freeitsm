@@ -73,7 +73,10 @@ A comprehensive web-based IT Service Management (ITSM) platform with 10 integrat
 
 7. **First login**
    - Navigate to `http://your-server/login.php`
-   - Create your first analyst account (you'll need to insert directly into the `analysts` table initially)
+   - A default admin account is created by the SQL script:
+     - **Username:** `admin`
+     - **Password:** `freeitsm`
+   - **Change this password immediately** after first login via the account menu
 
 ### Configuration Files
 
