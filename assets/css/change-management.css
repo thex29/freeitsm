@@ -407,12 +407,27 @@
 
 /* Editor view */
 .editor-header {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f5f5f5;
+    margin: -24px -30px 20px;
+    padding: 16px 30px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .editor-header h2 {
-    font-size: 24px;
+    font-size: 20px;
     color: #333;
+    margin: 0;
+}
+
+.editor-header-actions {
+    display: flex;
+    gap: 12px;
 }
 
 .editor-form {
@@ -545,12 +560,7 @@
 }
 
 .editor-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #e0e0e0;
+    display: none;
 }
 
 /* Teal theme overrides */

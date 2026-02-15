@@ -139,6 +139,10 @@ $path_prefix = '../';
             <div id="changeEditorView" style="display: none;">
                 <div class="editor-header">
                     <h2 id="editorTitle">New Change</h2>
+                    <div class="editor-header-actions">
+                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveChange()">Save</button>
+                    </div>
                 </div>
                 <div class="editor-form">
                     <input type="hidden" id="editChangeId" value="">
@@ -288,10 +292,7 @@ $path_prefix = '../';
                         </div>
                     </div>
 
-                    <div class="editor-actions">
-                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
-                        <button class="btn btn-primary" onclick="saveChange()">Save</button>
-                    </div>
+                    <div class="editor-actions"></div>
                 </div>
             </div>
         </div>
