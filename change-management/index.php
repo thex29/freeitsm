@@ -84,51 +84,6 @@ $path_prefix = '../';
 
             <!-- Change detail view -->
             <div id="changeDetailView" style="display: none;">
-                <div class="change-detail-header">
-                    <button class="btn btn-secondary" onclick="backToList()">Back to List</button>
-                    <div class="change-detail-actions">
-                        <div class="share-dropdown">
-                            <button class="btn btn-share" onclick="toggleShareDropdown()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="18" cy="5" r="3"></circle>
-                                    <circle cx="6" cy="12" r="3"></circle>
-                                    <circle cx="18" cy="19" r="3"></circle>
-                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                                </svg>
-                                Share
-                            </button>
-                            <div class="share-dropdown-menu" id="shareDropdownMenu">
-                                <a href="#" onclick="shareChangeLink(); return false;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                    </svg>
-                                    Copy Link
-                                </a>
-                                <a href="#" onclick="shareChangePdf(); return false;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                                        <polyline points="10 9 9 9 8 9"></polyline>
-                                    </svg>
-                                    Export as PDF
-                                </a>
-                                <a href="#" onclick="shareChangeBoth(); return false;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                    Email (Link + PDF)
-                                </a>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="editCurrentChange()">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteCurrentChange()">Delete</button>
-                    </div>
-                </div>
                 <div class="change-detail-content" id="changeDetailContent"></div>
             </div>
 

@@ -262,21 +262,11 @@ function renderChangeDetail() {
     const priorityClass = c.priority.toLowerCase();
     const v = isFieldVisible;
 
-    // Build sticky header — always show title, conditionally show badges
+    // Build badges
     let badgesHtml = '';
     if (v('status')) badgesHtml += `<span class="status-badge ${statusClass}">${c.status}</span>`;
     if (v('change_type')) badgesHtml += `<span class="type-badge ${typeClass}">${c.change_type}</span>`;
     if (v('priority')) badgesHtml += `<span class="priority-badge ${priorityClass}">${c.priority}</span>`;
-
-    let html = `
-        <div class="change-detail-sticky-header">
-            <div class="sticky-header-top">
-                <div class="change-detail-ref">${ref}</div>
-                ${badgesHtml ? `<div class="sticky-header-badges">${badgesHtml}</div>` : ''}
-            </div>
-            ${v('title') ? `<div class="change-detail-title">${escapeHtml(c.title)}</div>` : ''}
-        </div>
-    `;
 
     // Build meta grid — only include visible fields
     let metaItems = '';
@@ -290,11 +280,65 @@ function renderChangeDetail() {
     if (v('work_end') && c.work_end_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Work End</span><span class="detail-meta-value">${formatDateTime(c.work_end_datetime)}</span></div>`;
     if (v('outage_start') && c.outage_start_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Outage Start</span><span class="detail-meta-value">${formatDateTime(c.outage_start_datetime)}</span></div>`;
     if (v('outage_end') && c.outage_end_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Outage End</span><span class="detail-meta-value">${formatDateTime(c.outage_end_datetime)}</span></div>`;
-    // Created/Modified always shown
     metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Created</span><span class="detail-meta-value">${formatDateTime(c.created_datetime)}${c.created_by_name ? ' by ' + c.created_by_name : ''}</span></div>`;
     metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Last Modified</span><span class="detail-meta-value">${formatDateTime(c.modified_datetime)}</span></div>`;
 
-    if (metaItems) html += `<div class="detail-meta-grid">${metaItems}</div>`;
+    // Build sticky header with buttons, title, badges, and meta grid
+    let html = `
+        <div class="change-detail-sticky-header">
+            <div class="change-detail-header">
+                <button class="btn btn-secondary" onclick="backToList()">Back</button>
+                <div class="change-detail-actions">
+                    <div class="share-dropdown">
+                        <button class="btn btn-share" onclick="toggleShareDropdown()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                            Share
+                        </button>
+                        <div class="share-dropdown-menu" id="shareDropdownMenu">
+                            <a href="#" onclick="shareChangeLink(); return false;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                Copy Link
+                            </a>
+                            <a href="#" onclick="shareChangePdf(); return false;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                Export as PDF
+                            </a>
+                            <a href="#" onclick="shareChangeBoth(); return false;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Email (Link + PDF)
+                            </a>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="editCurrentChange()">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteCurrentChange()">Delete</button>
+                </div>
+            </div>
+            <div class="sticky-header-top">
+                <div class="change-detail-ref">${ref}</div>
+                ${badgesHtml ? `<div class="sticky-header-badges">${badgesHtml}</div>` : ''}
+            </div>
+            ${v('title') ? `<div class="change-detail-title">${escapeHtml(c.title)}</div>` : ''}
+            ${metaItems ? `<div class="detail-meta-grid">${metaItems}</div>` : ''}
+        </div>
+    `;
 
     // Detail sections — only include visible fields
     let sections = '';

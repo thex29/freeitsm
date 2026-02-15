@@ -797,7 +797,7 @@
     gap: 10px;
 }
 
-/* Sticky change detail header info */
+/* Sticky change detail header (buttons + info + meta) */
 .change-detail-sticky-header {
     position: sticky;
     top: 0;
@@ -807,6 +807,12 @@
     border-bottom: 1px solid #e0e0e0;
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.change-detail-sticky-header .change-detail-header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .sticky-header-top {
@@ -829,4 +835,11 @@
 .change-detail-sticky-header .change-detail-title {
     margin-bottom: 0;
     font-size: 20px;
+}
+
+.change-detail-sticky-header .detail-meta-grid {
+    margin-top: 12px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
