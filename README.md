@@ -164,6 +164,7 @@ sdtickets/
 ├── change-management/                # Change Management Module
 │   ├── index.php                     # Change request list & detail
 │   ├── calendar.php                  # Calendar view of scheduled changes
+│   ├── settings/                     # Module settings (field visibility)
 │   └── includes/
 │
 ├── calendar/                         # Calendar Module
@@ -330,6 +331,7 @@ Change request tracking and approval workflows.
 - Calendar view with month/week/day views for visualising scheduled changes
 - Status-based filtering (Draft, Pending Approval, Approved, In Progress, Completed, Failed, Cancelled)
 - Click-through from calendar to change detail view
+- Settings page with configurable form field visibility (show/hide fields per section)
 
 ### Calendar (`calendar/`)
 Event calendar with configurable categories.
@@ -504,7 +506,7 @@ if (!isset($_SESSION['analyst_id'])) {
 
 ### Other Module APIs
 
-- `api/change-management/` — 9 endpoints for change CRUD, attachments, and calendar
+- `api/change-management/` — 11 endpoints for change CRUD, attachments, calendar, and settings
 - `api/calendar/` — 7 endpoints for events and categories
 - `api/morning-checks/` — 7 endpoints for check definitions, results, and charts
 - `api/reporting/` — 2 endpoints for system logs

@@ -10,6 +10,7 @@ let currentChange = null;
 let currentFilter = 'all';
 let searchQuery = '';
 let searchTimeout = null;
+let fieldVisibility = {};
 
 // TinyMCE editor instances
 const editorIds = ['editorDescription', 'editorReason', 'editorRisk', 'editorTestplan', 'editorRollback', 'editorPir'];
@@ -18,6 +19,7 @@ let editorsReady = false;
 // ============ Initialization ============
 
 document.addEventListener('DOMContentLoaded', function() {
+    loadFieldVisibility();
     loadAnalysts();
     loadChanges();
     setupFileUpload();
@@ -29,6 +31,92 @@ document.addEventListener('DOMContentLoaded', function() {
         viewChange(parseInt(openId, 10));
     }
 });
+
+// ============ Field Visibility ============
+
+// Section-to-fields mapping for hiding empty sections
+const SECTION_FIELDS = {
+    general:     ['title', 'change_type', 'status', 'priority', 'impact', 'category'],
+    people:      ['requester', 'assigned_to', 'approver'],
+    schedule:    ['work_start', 'work_end', 'outage_start', 'outage_end'],
+    details:     ['description', 'reason', 'risk', 'testplan', 'rollback', 'pir'],
+    attachments: ['attachments']
+};
+
+// Detail view field-to-data mapping
+const DETAIL_FIELD_MAP = {
+    impact: 'impact', category: 'category',
+    requester: 'requester_name', assigned_to: 'assigned_to_name', approver: 'approver_name',
+    work_start: 'work_start_datetime', work_end: 'work_end_datetime',
+    outage_start: 'outage_start_datetime', outage_end: 'outage_end_datetime'
+};
+
+async function loadFieldVisibility() {
+    try {
+        const res = await fetch(API_BASE + 'get_settings.php');
+        const data = await res.json();
+        if (data.success && data.settings && data.settings.field_visibility) {
+            fieldVisibility = data.settings.field_visibility;
+        }
+    } catch (e) {
+        console.error('Error loading field visibility:', e);
+    }
+}
+
+function isFieldVisible(fieldId) {
+    return fieldVisibility[fieldId] !== false;
+}
+
+function applyFieldVisibility() {
+    const editor = document.getElementById('changeEditorView');
+    if (!editor) return;
+
+    // Show/hide individual fields
+    editor.querySelectorAll('[data-field]').forEach(el => {
+        const fieldId = el.dataset.field;
+        // Skip rich-text tab buttons (handled separately)
+        if (el.tagName === 'BUTTON') return;
+        el.style.display = isFieldVisible(fieldId) ? '' : 'none';
+    });
+
+    // Show/hide rich-text tab buttons
+    const tabBar = document.getElementById('richTextTabs');
+    if (tabBar) {
+        let firstVisibleTab = null;
+        tabBar.querySelectorAll('.rich-text-tab[data-field]').forEach(btn => {
+            const vis = isFieldVisible(btn.dataset.field);
+            btn.style.display = vis ? '' : 'none';
+            if (vis && !firstVisibleTab) firstVisibleTab = btn.dataset.field;
+        });
+        // Activate first visible tab if current active is hidden
+        const activeTab = tabBar.querySelector('.rich-text-tab.active');
+        if (activeTab && activeTab.style.display === 'none' && firstVisibleTab) {
+            switchTab(firstVisibleTab);
+        }
+    }
+
+    // Show/hide form-rows: hide if ALL child .form-group elements are hidden
+    editor.querySelectorAll('.form-row[data-section]').forEach(row => {
+        const groups = row.querySelectorAll('.form-group[data-field]');
+        const allHidden = Array.from(groups).every(g => g.style.display === 'none');
+        row.style.display = allHidden ? 'none' : '';
+    });
+
+    // Show/hide section headings: hide if ALL fields in section are hidden
+    editor.querySelectorAll('.form-section-title[data-section]').forEach(heading => {
+        const section = heading.dataset.section;
+        const fields = SECTION_FIELDS[section] || [];
+        const allHidden = fields.every(f => !isFieldVisible(f));
+        heading.style.display = allHidden ? 'none' : '';
+    });
+
+    // Hide details tab bar if all detail fields hidden
+    if (tabBar) {
+        const detailFields = SECTION_FIELDS.details || [];
+        const allHidden = detailFields.every(f => !isFieldVisible(f));
+        tabBar.style.display = allHidden ? 'none' : '';
+    }
+}
 
 // ============ Data Loading ============
 
@@ -166,65 +254,55 @@ function renderChangeDetail() {
     const statusClass = c.status.toLowerCase().replace(/\s+/g, '-');
     const typeClass = c.change_type.toLowerCase();
     const priorityClass = c.priority.toLowerCase();
+    const v = isFieldVisible;
+
+    // Build sticky header — always show title, conditionally show badges
+    let badgesHtml = '';
+    if (v('status')) badgesHtml += `<span class="status-badge ${statusClass}">${c.status}</span>`;
+    if (v('change_type')) badgesHtml += `<span class="type-badge ${typeClass}">${c.change_type}</span>`;
+    if (v('priority')) badgesHtml += `<span class="priority-badge ${priorityClass}">${c.priority}</span>`;
 
     let html = `
         <div class="change-detail-sticky-header">
             <div class="sticky-header-top">
                 <div class="change-detail-ref">${ref}</div>
-                <div class="sticky-header-badges">
-                    <span class="status-badge ${statusClass}">${c.status}</span>
-                    <span class="type-badge ${typeClass}">${c.change_type}</span>
-                    <span class="priority-badge ${priorityClass}">${c.priority}</span>
-                </div>
+                ${badgesHtml ? `<div class="sticky-header-badges">${badgesHtml}</div>` : ''}
             </div>
-            <div class="change-detail-title">${escapeHtml(c.title)}</div>
-        </div>
-
-        <div class="detail-meta-grid">
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Impact</span>
-                <span class="detail-meta-value">${c.impact}</span>
-            </div>
-            ${c.category ? `<div class="detail-meta-item"><span class="detail-meta-label">Category</span><span class="detail-meta-value">${escapeHtml(c.category)}</span></div>` : ''}
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Requester</span>
-                <span class="detail-meta-value">${c.requester_name || 'Not set'}</span>
-            </div>
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Assigned To</span>
-                <span class="detail-meta-value">${c.assigned_to_name || 'Not set'}</span>
-            </div>
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Approver</span>
-                <span class="detail-meta-value">${c.approver_name || 'Not set'}</span>
-            </div>
-            ${c.approval_datetime ? `<div class="detail-meta-item"><span class="detail-meta-label">Approved</span><span class="detail-meta-value">${formatDateTime(c.approval_datetime)}</span></div>` : ''}
-            ${c.work_start_datetime ? `<div class="detail-meta-item"><span class="detail-meta-label">Work Start</span><span class="detail-meta-value">${formatDateTime(c.work_start_datetime)}</span></div>` : ''}
-            ${c.work_end_datetime ? `<div class="detail-meta-item"><span class="detail-meta-label">Work End</span><span class="detail-meta-value">${formatDateTime(c.work_end_datetime)}</span></div>` : ''}
-            ${c.outage_start_datetime ? `<div class="detail-meta-item"><span class="detail-meta-label">Outage Start</span><span class="detail-meta-value">${formatDateTime(c.outage_start_datetime)}</span></div>` : ''}
-            ${c.outage_end_datetime ? `<div class="detail-meta-item"><span class="detail-meta-label">Outage End</span><span class="detail-meta-value">${formatDateTime(c.outage_end_datetime)}</span></div>` : ''}
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Created</span>
-                <span class="detail-meta-value">${formatDateTime(c.created_datetime)}${c.created_by_name ? ' by ' + c.created_by_name : ''}</span>
-            </div>
-            <div class="detail-meta-item">
-                <span class="detail-meta-label">Last Modified</span>
-                <span class="detail-meta-value">${formatDateTime(c.modified_datetime)}</span>
-            </div>
-        </div>
-
-        <div class="detail-sections">
-            ${renderDetailSection('Description', c.description)}
-            ${renderDetailSection('Reason for Change', c.reason_for_change)}
-            ${renderDetailSection('Risk Evaluation', c.risk_evaluation)}
-            ${renderDetailSection('Test Plan', c.test_plan)}
-            ${renderDetailSection('Rollback Plan', c.rollback_plan)}
-            ${renderDetailSection('Post-Implementation Review', c.post_implementation_review)}
+            ${v('title') ? `<div class="change-detail-title">${escapeHtml(c.title)}</div>` : ''}
         </div>
     `;
 
+    // Build meta grid — only include visible fields
+    let metaItems = '';
+    if (v('impact')) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Impact</span><span class="detail-meta-value">${c.impact}</span></div>`;
+    if (v('category') && c.category) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Category</span><span class="detail-meta-value">${escapeHtml(c.category)}</span></div>`;
+    if (v('requester')) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Requester</span><span class="detail-meta-value">${c.requester_name || 'Not set'}</span></div>`;
+    if (v('assigned_to')) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Assigned To</span><span class="detail-meta-value">${c.assigned_to_name || 'Not set'}</span></div>`;
+    if (v('approver')) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Approver</span><span class="detail-meta-value">${c.approver_name || 'Not set'}</span></div>`;
+    if (v('approver') && c.approval_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Approved</span><span class="detail-meta-value">${formatDateTime(c.approval_datetime)}</span></div>`;
+    if (v('work_start') && c.work_start_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Work Start</span><span class="detail-meta-value">${formatDateTime(c.work_start_datetime)}</span></div>`;
+    if (v('work_end') && c.work_end_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Work End</span><span class="detail-meta-value">${formatDateTime(c.work_end_datetime)}</span></div>`;
+    if (v('outage_start') && c.outage_start_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Outage Start</span><span class="detail-meta-value">${formatDateTime(c.outage_start_datetime)}</span></div>`;
+    if (v('outage_end') && c.outage_end_datetime) metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Outage End</span><span class="detail-meta-value">${formatDateTime(c.outage_end_datetime)}</span></div>`;
+    // Created/Modified always shown
+    metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Created</span><span class="detail-meta-value">${formatDateTime(c.created_datetime)}${c.created_by_name ? ' by ' + c.created_by_name : ''}</span></div>`;
+    metaItems += `<div class="detail-meta-item"><span class="detail-meta-label">Last Modified</span><span class="detail-meta-value">${formatDateTime(c.modified_datetime)}</span></div>`;
+
+    if (metaItems) html += `<div class="detail-meta-grid">${metaItems}</div>`;
+
+    // Detail sections — only include visible fields
+    let sections = '';
+    if (v('description')) sections += renderDetailSection('Description', c.description);
+    if (v('reason')) sections += renderDetailSection('Reason for Change', c.reason_for_change);
+    if (v('risk')) sections += renderDetailSection('Risk Evaluation', c.risk_evaluation);
+    if (v('testplan')) sections += renderDetailSection('Test Plan', c.test_plan);
+    if (v('rollback')) sections += renderDetailSection('Rollback Plan', c.rollback_plan);
+    if (v('pir')) sections += renderDetailSection('Post-Implementation Review', c.post_implementation_review);
+
+    if (sections) html += `<div class="detail-sections">${sections}</div>`;
+
     // Attachments
-    if (c.attachments && c.attachments.length) {
+    if (v('attachments') && c.attachments && c.attachments.length) {
         html += `
             <div class="attachments-section">
                 <h3>Attachments (${c.attachments.length})</h3>
@@ -658,6 +736,9 @@ function showView(view) {
     document.getElementById('changeListView').style.display = view === 'list' ? '' : 'none';
     document.getElementById('changeDetailView').style.display = view === 'detail' ? '' : 'none';
     document.getElementById('changeEditorView').style.display = view === 'editor' ? '' : 'none';
+    if (view === 'editor') {
+        applyFieldVisibility();
+    }
 }
 
 function backToList() {

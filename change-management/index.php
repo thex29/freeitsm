@@ -143,15 +143,15 @@ $path_prefix = '../';
                 <div class="editor-form">
                     <input type="hidden" id="editChangeId" value="">
 
-                    <h3 class="form-section-title" style="margin-top:0; padding-top:0; border-top:none;">General Information</h3>
+                    <h3 class="form-section-title" data-section="general" style="margin-top:0; padding-top:0; border-top:none;">General Information</h3>
 
-                    <div class="form-group">
+                    <div class="form-group" data-field="title">
                         <label class="form-label">Title *</label>
                         <input type="text" class="form-input" id="changeTitle" placeholder="Enter change title...">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row" data-section="general">
+                        <div class="form-group" data-field="change_type">
                             <label class="form-label">Change Type</label>
                             <select class="form-input" id="changeType">
                                 <option value="Standard">Standard</option>
@@ -159,7 +159,7 @@ $path_prefix = '../';
                                 <option value="Emergency">Emergency</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="status">
                             <label class="form-label">Status</label>
                             <select class="form-input" id="changeStatus">
                                 <option value="Draft">Draft</option>
@@ -173,8 +173,8 @@ $path_prefix = '../';
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row" data-section="general">
+                        <div class="form-group" data-field="priority">
                             <label class="form-label">Priority</label>
                             <select class="form-input" id="changePriority">
                                 <option value="Low">Low</option>
@@ -183,7 +183,7 @@ $path_prefix = '../';
                                 <option value="Critical">Critical</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="impact">
                             <label class="form-label">Impact</label>
                             <select class="form-input" id="changeImpact">
                                 <option value="Low">Low</option>
@@ -191,28 +191,28 @@ $path_prefix = '../';
                                 <option value="High">High</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="category">
                             <label class="form-label">Category</label>
                             <input type="text" class="form-input" id="changeCategory" placeholder="e.g. Network, Server, Software...">
                         </div>
                     </div>
 
-                    <h3 class="form-section-title">People</h3>
+                    <h3 class="form-section-title" data-section="people">People</h3>
 
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row" data-section="people">
+                        <div class="form-group" data-field="requester">
                             <label class="form-label">Requester</label>
                             <select class="form-input" id="changeRequester">
                                 <option value="">-- Select --</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="assigned_to">
                             <label class="form-label">Assigned To</label>
                             <select class="form-input" id="changeAssignedTo">
                                 <option value="">-- Select --</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="approver">
                             <label class="form-label">Approver</label>
                             <select class="form-input" id="changeApprover">
                                 <option value="">-- Select --</option>
@@ -220,73 +220,75 @@ $path_prefix = '../';
                         </div>
                     </div>
 
-                    <h3 class="form-section-title">Schedule</h3>
+                    <h3 class="form-section-title" data-section="schedule">Schedule</h3>
 
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row" data-section="schedule">
+                        <div class="form-group" data-field="work_start">
                             <label class="form-label">Work Start</label>
                             <input type="datetime-local" class="form-input" id="changeWorkStart">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="work_end">
                             <label class="form-label">Work End</label>
                             <input type="datetime-local" class="form-input" id="changeWorkEnd">
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div class="form-row" data-section="schedule">
+                        <div class="form-group" data-field="outage_start">
                             <label class="form-label">Outage Start (optional)</label>
                             <input type="datetime-local" class="form-input" id="changeOutageStart">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="outage_end">
                             <label class="form-label">Outage End (optional)</label>
                             <input type="datetime-local" class="form-input" id="changeOutageEnd">
                         </div>
                     </div>
 
-                    <h3 class="form-section-title">Details</h3>
+                    <h3 class="form-section-title" data-section="details">Details</h3>
 
-                    <div class="rich-text-tabs" id="richTextTabs">
-                        <button class="rich-text-tab active" onclick="switchTab('description')">Description</button>
-                        <button class="rich-text-tab" onclick="switchTab('reason')">Reason for Change</button>
-                        <button class="rich-text-tab" onclick="switchTab('risk')">Risk Evaluation</button>
-                        <button class="rich-text-tab" onclick="switchTab('testplan')">Test Plan</button>
-                        <button class="rich-text-tab" onclick="switchTab('rollback')">Rollback Plan</button>
-                        <button class="rich-text-tab" onclick="switchTab('pir')">Post-Implementation Review</button>
+                    <div class="rich-text-tabs" id="richTextTabs" data-section="details">
+                        <button class="rich-text-tab active" data-field="description" onclick="switchTab('description')">Description</button>
+                        <button class="rich-text-tab" data-field="reason" onclick="switchTab('reason')">Reason for Change</button>
+                        <button class="rich-text-tab" data-field="risk" onclick="switchTab('risk')">Risk Evaluation</button>
+                        <button class="rich-text-tab" data-field="testplan" onclick="switchTab('testplan')">Test Plan</button>
+                        <button class="rich-text-tab" data-field="rollback" onclick="switchTab('rollback')">Rollback Plan</button>
+                        <button class="rich-text-tab" data-field="pir" onclick="switchTab('pir')">Post-Implementation Review</button>
                     </div>
 
-                    <div class="rich-text-panel active" id="panel-description">
+                    <div class="rich-text-panel active" id="panel-description" data-field="description">
                         <textarea id="editorDescription"></textarea>
                     </div>
-                    <div class="rich-text-panel" id="panel-reason">
+                    <div class="rich-text-panel" id="panel-reason" data-field="reason">
                         <textarea id="editorReason"></textarea>
                     </div>
-                    <div class="rich-text-panel" id="panel-risk">
+                    <div class="rich-text-panel" id="panel-risk" data-field="risk">
                         <textarea id="editorRisk"></textarea>
                     </div>
-                    <div class="rich-text-panel" id="panel-testplan">
+                    <div class="rich-text-panel" id="panel-testplan" data-field="testplan">
                         <textarea id="editorTestplan"></textarea>
                     </div>
-                    <div class="rich-text-panel" id="panel-rollback">
+                    <div class="rich-text-panel" id="panel-rollback" data-field="rollback">
                         <textarea id="editorRollback"></textarea>
                     </div>
-                    <div class="rich-text-panel" id="panel-pir">
+                    <div class="rich-text-panel" id="panel-pir" data-field="pir">
                         <textarea id="editorPir"></textarea>
                     </div>
 
-                    <h3 class="form-section-title">Attachments</h3>
+                    <h3 class="form-section-title" data-section="attachments">Attachments</h3>
 
-                    <div class="attachment-list" id="editorAttachmentList"></div>
+                    <div data-field="attachments">
+                        <div class="attachment-list" id="editorAttachmentList"></div>
 
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <div class="upload-icon">&#128206;</div>
-                        <p>Drag and drop files here, or click to browse</p>
-                        <input type="file" id="fileInput" multiple style="display:none;">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-icon">&#128206;</div>
+                            <p>Drag and drop files here, or click to browse</p>
+                            <input type="file" id="fileInput" multiple style="display:none;">
+                        </div>
                     </div>
 
                     <div class="editor-actions">
                         <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
-                        <button class="btn btn-primary" onclick="saveChange()">Save Change</button>
+                        <button class="btn btn-primary" onclick="saveChange()">Save</button>
                     </div>
                 </div>
             </div>
