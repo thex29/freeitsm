@@ -1,6 +1,6 @@
 <?php
 /**
- * Forms Module - Form List
+ * Forms Module - Form List & Builder (unified single-page layout)
  */
 session_start();
 require_once '../config.php';
@@ -15,267 +15,118 @@ $path_prefix = '../';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Desk - Forms</title>
     <link rel="stylesheet" href="../assets/css/inbox.css">
-    <style>
-        .forms-container {
-            flex: 1;
-            overflow-y: auto;
-            background-color: #f5f7fa;
-        }
-
-        .forms-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 25px;
-        }
-
-        .forms-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .forms-toolbar h2 {
-            margin: 0;
-            font-size: 20px;
-            color: #333;
-        }
-
-        .btn {
-            padding: 9px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.15s;
-        }
-
-        .btn-primary {
-            background-color: #00897b;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #00695c;
-        }
-
-        .forms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 16px;
-        }
-
-        .form-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-            padding: 20px;
-            transition: box-shadow 0.15s;
-        }
-
-        .form-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        }
-
-        .form-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .form-card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-
-        .form-card-status {
-            font-size: 11px;
-            font-weight: 500;
-            padding: 2px 8px;
-            border-radius: 10px;
-            flex-shrink: 0;
-        }
-
-        .form-card-status.active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .form-card-status.inactive {
-            background: #f5f5f5;
-            color: #999;
-        }
-
-        .form-card-desc {
-            font-size: 13px;
-            color: #666;
-            margin: 0 0 14px 0;
-            line-height: 1.4;
-            min-height: 18px;
-        }
-
-        .form-card-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 14px;
-        }
-
-        .form-card-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .form-card-actions {
-            display: flex;
-            gap: 8px;
-            border-top: 1px solid #f0f0f0;
-            padding-top: 12px;
-        }
-
-        .form-card-actions .btn {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-
-        .btn-fill {
-            background: #00897b;
-            color: white;
-        }
-
-        .btn-fill:hover {
-            background: #00695c;
-        }
-
-        .btn-edit {
-            background: #f5f7fa;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-edit:hover {
-            background: #eef0f2;
-        }
-
-        .btn-submissions {
-            background: #f5f7fa;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-submissions:hover {
-            background: #eef0f2;
-        }
-
-        .btn-delete {
-            background: none;
-            color: #d32f2f;
-            margin-left: auto;
-            padding: 6px 8px;
-        }
-
-        .btn-delete:hover {
-            background: #ffebee;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
-        }
-
-        .empty-state h3 {
-            margin: 15px 0 8px;
-            font-size: 16px;
-            color: #666;
-        }
-
-        .empty-state p {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .confirm-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .confirm-overlay.open { display: flex; }
-
-        .confirm-box {
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        }
-
-        .confirm-box h3 { margin: 0 0 8px; font-size: 16px; }
-        .confirm-box p { margin: 0 0 20px; font-size: 14px; color: #666; }
-
-        .confirm-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .btn-cancel {
-            background: #f5f5f5;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-danger {
-            background: #d32f2f;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/forms.css">
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
 
-    <div class="main-container forms-container">
-        <div class="forms-content">
-            <div class="forms-toolbar">
-                <h2>Forms</h2>
-                <a href="builder.php" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New Form
-                </a>
+    <div class="forms-container">
+        <!-- Sidebar with search and form list -->
+        <div class="forms-sidebar">
+            <div class="sidebar-section">
+                <h3>Search Forms</h3>
+                <div class="search-box">
+                    <input type="text" id="formSearch" placeholder="Search by title..." onkeyup="filterForms()">
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <button class="btn btn-primary btn-full" onclick="openNewForm()">+ New Form</button>
+            </div>
+            <div class="sidebar-section" style="flex: 1; overflow-y: auto;">
+                <h3>Forms</h3>
+                <div class="form-list" id="formList">
+                    <div class="form-list-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="forms-main">
+            <!-- Welcome / empty state -->
+            <div class="forms-welcome" id="welcomeView">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <h3>Select a form or create a new one</h3>
+                <p>Use the sidebar to browse your forms or click "New Form" to get started.</p>
             </div>
 
-            <div class="forms-grid" id="formsGrid">
-                <div style="text-align:center;padding:40px;color:#888;grid-column:1/-1">Loading...</div>
+            <!-- Editor view -->
+            <div id="editorView" style="display: none;">
+                <div class="editor-toolbar">
+                    <h2 id="editorTitle">New Form</h2>
+                    <div class="editor-toolbar-actions">
+                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveForm()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            Save Form
+                        </button>
+                    </div>
+                </div>
+
+                <div class="save-message" id="saveMessage"></div>
+
+                <!-- Title & Description (full width) -->
+                <div class="form-settings-card">
+                    <div class="field-group">
+                        <label>Form Title</label>
+                        <input type="text" id="formTitle" placeholder="Enter form title...">
+                    </div>
+                    <div class="field-group">
+                        <label>Description</label>
+                        <textarea id="formDesc" rows="2" placeholder="Optional description..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tabs: Fields | Preview -->
+                <div class="form-tabs">
+                    <button class="form-tab active" onclick="switchFormTab('fields')" id="tabFields">Fields</button>
+                    <button class="form-tab" onclick="switchFormTab('preview')" id="tabPreview">Preview</button>
+                </div>
+
+                <!-- Fields tab -->
+                <div class="form-tab-content active" id="tabContentFields">
+                    <div class="fields-header">
+                        <h3>Form Fields</h3>
+                        <div class="add-field-btn">
+                            <button class="btn btn-secondary" onclick="toggleAddMenu()" id="addFieldBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Add Field
+                            </button>
+                            <div class="add-field-menu" id="addFieldMenu">
+                                <button onclick="addField('text')"><span class="field-type-badge text">Abc</span> Text Input</button>
+                                <button onclick="addField('textarea')"><span class="field-type-badge textarea">Txt</span> Text Area</button>
+                                <button onclick="addField('checkbox')"><span class="field-type-badge checkbox">Chk</span> Checkbox</button>
+                                <button onclick="addField('dropdown')"><span class="field-type-badge dropdown">Sel</span> Dropdown</button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="field-list" id="fieldList">
+                        <li class="no-fields">No fields added yet. Click "Add Field" to start building your form.</li>
+                    </ul>
+                </div>
+
+                <!-- Preview tab -->
+                <div class="form-tab-content" id="tabContentPreview">
+                    <div id="previewContent">
+                        <p class="preview-empty">Add fields to see a preview</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Delete confirmation -->
     <div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)closeConfirm()">
         <div class="confirm-box">
             <h3>Delete Form</h3>
             <p>This will permanently delete this form and all its submissions. Are you sure?</p>
             <div class="confirm-actions">
-                <button class="btn btn-cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
                 <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
@@ -283,59 +134,377 @@ $path_prefix = '../';
 
     <script>
         const API_BASE = '../api/forms/';
+        let allForms = [];
+        let currentFormId = null;
+        let fields = [];
 
-        document.addEventListener('DOMContentLoaded', loadForms);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadForms();
+
+            // Check URL for direct form editing
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('id');
+            if (editId) {
+                openEditForm(parseInt(editId));
+            }
+
+            // Close add field menu on outside click
+            document.addEventListener('click', function(e) {
+                const menu = document.getElementById('addFieldMenu');
+                if (menu && !e.target.closest('.add-field-btn')) {
+                    menu.classList.remove('open');
+                }
+            });
+        });
+
+        // ========== Form List ==========
 
         async function loadForms() {
             try {
                 const res = await fetch(API_BASE + 'get_forms.php');
                 const data = await res.json();
-
                 if (data.success) {
-                    renderForms(data.forms);
-                } else {
-                    document.getElementById('formsGrid').innerHTML = '<div style="text-align:center;padding:40px;color:#c00;grid-column:1/-1">Error: ' + data.error + '</div>';
+                    allForms = data.forms;
+                    renderFormList(allForms);
                 }
             } catch (e) {
                 console.error(e);
             }
         }
 
-        function renderForms(forms) {
-            const grid = document.getElementById('formsGrid');
+        function renderFormList(forms) {
+            const list = document.getElementById('formList');
 
             if (forms.length === 0) {
-                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <h3>No forms yet</h3>
-                    <p>Click "New Form" to create your first form</p>
-                </div>`;
+                list.innerHTML = '<div class="form-list-empty">No forms found</div>';
                 return;
             }
 
-            grid.innerHTML = forms.map(f => `
-                <div class="form-card">
-                    <div class="form-card-header">
-                        <h3 class="form-card-title">${esc(f.title)}</h3>
-                        <span class="form-card-status ${f.is_active == 1 ? 'active' : 'inactive'}">${f.is_active == 1 ? 'Active' : 'Inactive'}</span>
+            list.innerHTML = forms.map(f => `
+                <div class="form-list-item ${currentFormId == f.id ? 'active' : ''}" onclick="openEditForm(${f.id})">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="form-list-item-title">${esc(f.title)}</div>
+                        <span class="form-list-item-status ${f.is_active == 1 ? 'active' : 'inactive'}">${f.is_active == 1 ? 'Active' : 'Inactive'}</span>
                     </div>
-                    <p class="form-card-desc">${esc(f.description || 'No description')}</p>
-                    <div class="form-card-meta">
+                    <div class="form-list-item-meta">
                         <span>${f.field_count} field${f.field_count != 1 ? 's' : ''}</span>
                         <span>${f.submission_count} submission${f.submission_count != 1 ? 's' : ''}</span>
-                        <span>by ${esc(f.created_by_name || 'Unknown')}</span>
                     </div>
-                    <div class="form-card-actions">
-                        <a href="fill.php?id=${f.id}" class="btn btn-fill">Fill In</a>
-                        <a href="builder.php?id=${f.id}" class="btn btn-edit">Edit</a>
-                        <a href="submissions.php?id=${f.id}" class="btn btn-submissions">Submissions (${f.submission_count})</a>
-                        <button class="btn btn-delete" onclick="confirmDelete(${f.id})" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <div class="form-list-item-actions">
+                        <a href="fill.php?id=${f.id}" class="btn btn-primary" onclick="event.stopPropagation()">Fill In</a>
+                        <a href="submissions.php?id=${f.id}" class="btn btn-secondary" onclick="event.stopPropagation()">Submissions</a>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); confirmDelete(${f.id})" style="margin-left: auto; padding: 4px 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                         </button>
                     </div>
                 </div>
             `).join('');
         }
+
+        function filterForms() {
+            const query = document.getElementById('formSearch').value.toLowerCase();
+            const filtered = allForms.filter(f => f.title.toLowerCase().includes(query));
+            renderFormList(filtered);
+        }
+
+        // ========== Editor ==========
+
+        function openNewForm() {
+            currentFormId = null;
+            fields = [];
+            document.getElementById('editorTitle').textContent = 'New Form';
+            document.getElementById('formTitle').value = '';
+            document.getElementById('formDesc').value = '';
+            hideSaveMessage();
+            renderFields();
+            updatePreview();
+            switchFormTab('fields');
+            showEditor();
+            renderFormList(allForms); // Remove active highlight
+            history.replaceState(null, '', './');
+        }
+
+        async function openEditForm(id) {
+            currentFormId = id;
+            document.getElementById('editorTitle').textContent = 'Edit Form';
+            hideSaveMessage();
+            showEditor();
+            renderFormList(allForms); // Update active highlight
+
+            try {
+                const res = await fetch(API_BASE + 'get_form.php?id=' + id);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('formTitle').value = data.form.title;
+                    document.getElementById('formDesc').value = data.form.description || '';
+                    fields = data.form.fields.map(f => ({
+                        field_type: f.field_type,
+                        label: f.label,
+                        options: f.options ? JSON.parse(f.options) : [],
+                        is_required: f.is_required == 1
+                    }));
+                    renderFields();
+                    updatePreview();
+                    switchFormTab('fields');
+                    history.replaceState(null, '', './?id=' + id);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function showEditor() {
+            document.getElementById('welcomeView').style.display = 'none';
+            document.getElementById('editorView').style.display = 'block';
+        }
+
+        function cancelEdit() {
+            currentFormId = null;
+            document.getElementById('editorView').style.display = 'none';
+            document.getElementById('welcomeView').style.display = 'flex';
+            renderFormList(allForms);
+            history.replaceState(null, '', './');
+        }
+
+        // ========== Tabs ==========
+
+        function switchFormTab(tab) {
+            document.getElementById('tabFields').classList.toggle('active', tab === 'fields');
+            document.getElementById('tabPreview').classList.toggle('active', tab === 'preview');
+            document.getElementById('tabContentFields').classList.toggle('active', tab === 'fields');
+            document.getElementById('tabContentPreview').classList.toggle('active', tab === 'preview');
+
+            if (tab === 'preview') {
+                updatePreview();
+            }
+        }
+
+        // ========== Field Management ==========
+
+        function toggleAddMenu() {
+            document.getElementById('addFieldMenu').classList.toggle('open');
+        }
+
+        function addField(type) {
+            document.getElementById('addFieldMenu').classList.remove('open');
+            fields.push({
+                field_type: type,
+                label: '',
+                options: type === 'dropdown' ? ['Option 1'] : [],
+                is_required: false
+            });
+            renderFields();
+            updatePreview();
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.field-label-input');
+                if (inputs.length) inputs[inputs.length - 1].focus();
+            }, 50);
+        }
+
+        function renderFields() {
+            const list = document.getElementById('fieldList');
+
+            if (fields.length === 0) {
+                list.innerHTML = '<li class="no-fields">No fields added yet. Click "Add Field" to start building your form.</li>';
+                return;
+            }
+
+            list.innerHTML = fields.map((f, i) => {
+                let optionsHtml = '';
+                if (f.field_type === 'dropdown') {
+                    optionsHtml = `
+                        <div class="field-options">
+                            <div class="field-options-label">Dropdown Options</div>
+                            ${(f.options || []).map((opt, oi) => `
+                                <div class="option-item">
+                                    <input type="text" value="${esc(opt)}" onchange="updateOption(${i}, ${oi}, this.value)" placeholder="Option ${oi + 1}">
+                                    <button class="option-remove" onclick="removeOption(${i}, ${oi})">&times;</button>
+                                </div>
+                            `).join('')}
+                            <button class="add-option-btn" onclick="addOption(${i})">+ Add Option</button>
+                        </div>`;
+                }
+
+                return `
+                    <li class="field-item" data-index="${i}">
+                        <div class="field-item-header">
+                            <span class="field-drag" title="Drag to reorder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            </span>
+                            <span class="field-type-badge ${f.field_type}">${typeName(f.field_type)}</span>
+                            <input type="text" class="field-label-input" value="${esc(f.label)}" placeholder="Field label..." onchange="updateLabel(${i}, this.value)">
+                            <div class="field-controls">
+                                <label class="field-required-toggle">
+                                    <input type="checkbox" ${f.is_required ? 'checked' : ''} onchange="toggleRequired(${i}, this.checked)">
+                                    Required
+                                </label>
+                                <button class="field-move-btn" onclick="moveField(${i}, -1)" title="Move up" ${i === 0 ? 'disabled' : ''}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                </button>
+                                <button class="field-move-btn" onclick="moveField(${i}, 1)" title="Move down" ${i === fields.length - 1 ? 'disabled' : ''}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                                <button class="field-delete-btn" onclick="deleteField(${i})" title="Remove field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        ${optionsHtml}
+                    </li>`;
+            }).join('');
+        }
+
+        function typeName(t) {
+            return { text: 'Text', textarea: 'Textarea', checkbox: 'Checkbox', dropdown: 'Dropdown' }[t] || t;
+        }
+
+        function updateLabel(i, val) { fields[i].label = val; updatePreview(); }
+        function toggleRequired(i, val) { fields[i].is_required = val; updatePreview(); }
+
+        function moveField(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= fields.length) return;
+            [fields[i], fields[j]] = [fields[j], fields[i]];
+            renderFields();
+            updatePreview();
+        }
+
+        function deleteField(i) {
+            fields.splice(i, 1);
+            renderFields();
+            updatePreview();
+        }
+
+        function addOption(fi) {
+            fields[fi].options.push('');
+            renderFields();
+            setTimeout(() => {
+                const items = document.querySelectorAll(`.field-item[data-index="${fi}"] .option-item input`);
+                if (items.length) items[items.length - 1].focus();
+            }, 50);
+        }
+
+        function updateOption(fi, oi, val) {
+            fields[fi].options[oi] = val;
+            updatePreview();
+        }
+
+        function removeOption(fi, oi) {
+            fields[fi].options.splice(oi, 1);
+            renderFields();
+            updatePreview();
+        }
+
+        // ========== Preview ==========
+
+        function updatePreview() {
+            const title = document.getElementById('formTitle').value || 'Untitled Form';
+            const desc = document.getElementById('formDesc').value;
+            const preview = document.getElementById('previewContent');
+
+            if (fields.length === 0) {
+                preview.innerHTML = '<p class="preview-empty">Add fields to see a preview</p>';
+                return;
+            }
+
+            let html = `<p class="preview-title">${esc(title)}</p>`;
+            if (desc) html += `<p class="preview-desc">${esc(desc)}</p>`;
+
+            html += fields.map(f => {
+                const reqStar = f.is_required ? '<span class="required-star">*</span>' : '';
+                const label = esc(f.label || 'Untitled field');
+
+                switch (f.field_type) {
+                    case 'text':
+                        return `<div class="preview-field"><label>${label}${reqStar}</label><input type="text" disabled placeholder="Text input..."></div>`;
+                    case 'textarea':
+                        return `<div class="preview-field"><label>${label}${reqStar}</label><textarea disabled placeholder="Text area..."></textarea></div>`;
+                    case 'checkbox':
+                        return `<div class="preview-field"><div class="checkbox-row"><input type="checkbox" disabled> <label>${label}${reqStar}</label></div></div>`;
+                    case 'dropdown':
+                        const opts = (f.options || []).filter(o => o).map(o => `<option>${esc(o)}</option>`).join('');
+                        return `<div class="preview-field"><label>${label}${reqStar}</label><select disabled><option value="">Select...</option>${opts}</select></div>`;
+                    default:
+                        return '';
+                }
+            }).join('');
+
+            preview.innerHTML = html;
+        }
+
+        // Update preview on title/desc change
+        document.getElementById('formTitle').addEventListener('input', updatePreview);
+        document.getElementById('formDesc').addEventListener('input', updatePreview);
+
+        // ========== Save ==========
+
+        async function saveForm() {
+            const title = document.getElementById('formTitle').value.trim();
+            if (!title) {
+                showMessage('Please enter a form title', 'error');
+                return;
+            }
+
+            const validFields = fields.filter(f => f.label.trim());
+            if (validFields.length === 0) {
+                showMessage('Please add at least one field with a label', 'error');
+                return;
+            }
+
+            const payload = {
+                title: title,
+                description: document.getElementById('formDesc').value.trim(),
+                fields: validFields.map(f => ({
+                    field_type: f.field_type,
+                    label: f.label.trim(),
+                    options: f.field_type === 'dropdown' ? f.options.filter(o => o.trim()) : null,
+                    is_required: f.is_required ? 1 : 0
+                }))
+            };
+
+            if (currentFormId) payload.id = parseInt(currentFormId);
+
+            try {
+                const res = await fetch(API_BASE + 'save_form.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    if (!currentFormId) {
+                        currentFormId = data.form_id;
+                        document.getElementById('editorTitle').textContent = 'Edit Form';
+                    }
+                    history.replaceState(null, '', './?id=' + currentFormId);
+                    showMessage('Form saved', 'success');
+                    await loadForms();
+                    renderFormList(allForms);
+                } else {
+                    showMessage('Error: ' + data.error, 'error');
+                }
+            } catch (e) {
+                showMessage('Failed to save form', 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const el = document.getElementById('saveMessage');
+            el.textContent = text;
+            el.className = 'save-message ' + type;
+            if (type === 'success') {
+                setTimeout(() => { el.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function hideSaveMessage() {
+            const el = document.getElementById('saveMessage');
+            el.className = 'save-message';
+            el.style.display = 'none';
+        }
+
+        // ========== Delete ==========
 
         let deleteFormId = null;
 
@@ -360,12 +529,19 @@ $path_prefix = '../';
                 const data = await res.json();
                 if (data.success) {
                     closeConfirm();
-                    loadForms();
+                    // If we just deleted the form we're editing, go back to welcome
+                    if (deleteFormId == currentFormId) {
+                        cancelEdit();
+                    }
+                    await loadForms();
+                    renderFormList(allForms);
                 }
             } catch (e) {
                 console.error(e);
             }
         });
+
+        // ========== Utility ==========
 
         function esc(text) {
             if (!text) return '';

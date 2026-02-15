@@ -96,7 +96,7 @@ The platform is organised into 10 modules, accessible from a landing page (`inde
 | **Checks** | `morning-checks/` | Cyan `#00acc1` | Daily infrastructure health checks (RAG status) with 30-day trend charts |
 | **Reporting** | `reporting/` | Brown `#ca5010` | System logs, audit trails, and analytics |
 | **Software** | `software/` | Indigo `#5c6bc0` | Software inventory and deployment tracking |
-| **Forms** | `forms/` | Teal `#00897b` | Dynamic form builder, filler, and submission reporting |
+| **Forms** | `forms/` | Teal `#00897b` | Dynamic form builder with sidebar list, tabbed editor (Fields/Preview), filler, and submission reporting |
 | **System** | `system/` | Blue-grey `#546e7a` | Encryption key management and module access control |
 
 ---
@@ -200,8 +200,8 @@ sdtickets/
 │   └── includes/
 │
 ├── forms/                            # Forms Module
-│   ├── index.php                     # Form list (card grid)
-│   ├── builder.php                   # Drag-and-drop form designer
+│   ├── index.php                     # Unified form list + builder (sidebar + editor layout)
+│   ├── builder.php                   # Legacy form designer (deprecated, use index.php)
 │   ├── fill.php                      # Form filler (A4-style with company logo)
 │   ├── submissions.php               # Submission table, detail modal, CSV export
 │   ├── create_tables.sql             # Database schema
@@ -378,9 +378,9 @@ System administration and configuration.
   - Permissions enforced on homepage cards and waffle menu navigation
 
 ### Forms (`forms/`)
-Dynamic form builder and submission system.
+Dynamic form builder and submission system with a unified sidebar + editor layout.
 
-- **Builder** (`builder.php`): Design forms with text inputs, textareas, checkboxes, and dropdowns. Reorder fields with up/down buttons. Add/remove dropdown options.
+- **Form List & Builder** (`index.php`): Sidebar shows searchable list of all forms with quick actions (Fill In, Submissions, Delete). Main area has full-width title/description inputs with tabbed Fields and Preview panels. Click a form in the sidebar to edit it inline.
 - **Filler** (`fill.php`): A4-style form rendering with company logo. Required field validation.
 - **Submissions** (`submissions.php`): Table view of all submissions. Click rows for detail modal. Date range filtering. CSV export with UTF-8 BOM for Excel compatibility.
 - **Field types**: `text`, `textarea`, `checkbox`, `dropdown`
@@ -741,7 +741,7 @@ The "Cancel and return to login" link clears the pending state so a different an
 5. Stores everything including raw JSON in `servers` table
 
 ### Form Submission
-1. Admin designs form in builder (fields, types, required flags, dropdown options)
+1. Admin designs form in the unified form builder (`index.php`) — sidebar lists all forms, editor has tabbed Fields/Preview panels
 2. Users fill in form at `fill.php?id=X` (A4-style layout with company logo)
 3. Submissions viewable in table format with CSV export
 
@@ -805,7 +805,7 @@ The `emails.exchange_message_id` column does NOT allow NULL. Manual tickets must
 | Modify ticket inbox | `tickets/index.php`, `assets/js/inbox.js` |
 | Configure vCenter | `asset-management/settings/`, `api/assets/get_vcenter.php` |
 | Manage knowledge AI | `knowledge/settings/`, `api/knowledge/ai_chat.php` |
-| Design forms | `forms/builder.php`, `api/forms/save_form.php` |
+| Design forms | `forms/index.php`, `api/forms/save_form.php` |
 | View form submissions | `forms/submissions.php`, `api/forms/get_submissions.php` |
 | Manage encryption key | `system/encryption/`, `api/system/check_encryption.php` |
 | Configure module access | `system/modules/`, `api/system/save_analyst_modules.php` |
