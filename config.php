@@ -7,7 +7,9 @@
  */
 
 // Load database credentials from secure location (outside web root)
-require_once('C:\wamp64\db_config.php');
+// Update this path to match your db_config.php location
+$db_config_path = 'C:\wamp64\db_config.php';
+require_once($db_config_path);
 
 // Timezone
 date_default_timezone_set('America/New_York');

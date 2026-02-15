@@ -63,7 +63,12 @@ A comprehensive web-based IT Service Management (ITSM) platform with 10 integrat
    - Ensure PHP extensions are enabled: `pdo_odbc`, `curl`, `openssl`, `mbstring`
    - Restart your web server
 
-6. **First login**
+6. **Verify setup**
+   - Navigate to `http://your-server/setup/` to run the setup verification checks
+   - Confirms config files, database connection, PHP extensions, and security settings
+   - **Delete the `/setup` folder** once your system is in production
+
+7. **First login**
    - Navigate to `http://your-server/login.php`
    - Create your first analyst account (you'll need to insert directly into the `analysts` table initially)
 
@@ -223,6 +228,9 @@ sdtickets/
 │   ├── submissions.php               # Submission table, detail modal, CSV export
 │   ├── create_tables.sql             # Database schema
 │   └── includes/
+│
+├── setup/                            # Setup verification (delete after going live)
+│   └── index.php                     # Diagnostic checks page
 │
 ├── api/                              # REST API endpoints (~118 total)
 │   ├── tickets/                      # ~48 endpoints
