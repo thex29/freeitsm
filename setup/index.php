@@ -48,7 +48,22 @@ if (file_exists($configPath)) {
         $checks[] = ['name' => 'Database connection', 'status' => 'fail', 'detail' => 'Database constants not defined — check db_config.php'];
     }
 
-    // 4. SSL verify peer
+    // 4. Encryption key
+    $encryptionPath = __DIR__ . '/../includes/encryption.php';
+    if (file_exists($encryptionPath)) {
+        require_once $encryptionPath;
+    }
+    if (defined('ENCRYPTION_KEY_PATH')) {
+        if (file_exists(ENCRYPTION_KEY_PATH)) {
+            $checks[] = ['name' => 'Encryption key', 'status' => 'pass', 'detail' => ENCRYPTION_KEY_PATH];
+        } else {
+            $checks[] = ['name' => 'Encryption key', 'status' => 'warn', 'detail' => 'Not found at: ' . ENCRYPTION_KEY_PATH . ' — needed for encrypting sensitive settings'];
+        }
+    } else {
+        $checks[] = ['name' => 'Encryption key', 'status' => 'warn', 'detail' => 'ENCRYPTION_KEY_PATH not defined in includes/encryption.php'];
+    }
+
+    // 5. SSL verify peer
     if (defined('SSL_VERIFY_PEER')) {
         if (SSL_VERIFY_PEER) {
             $checks[] = ['name' => 'SSL verify peer', 'status' => 'pass', 'detail' => 'Enabled'];
