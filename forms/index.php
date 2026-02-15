@@ -30,12 +30,7 @@ $path_prefix = '../';
                 </div>
             </div>
             <div class="sidebar-section">
-                <div class="sidebar-actions">
-                    <button class="btn btn-primary btn-full" onclick="openNewForm()">+ New Form</button>
-                    <button class="settings-btn" onclick="openSettings()" title="Forms Settings">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    </button>
-                </div>
+                <button class="btn btn-primary btn-full" onclick="openNewForm()">+ New Form</button>
             </div>
             <div class="sidebar-section" style="flex: 1; overflow-y: auto;">
                 <h3>Forms</h3>
@@ -137,34 +132,6 @@ $path_prefix = '../';
             <div class="confirm-actions">
                 <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
                 <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings modal -->
-    <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
-        <div class="settings-box">
-            <h3>Forms Settings</h3>
-            <div class="settings-group">
-                <label>Logo Alignment</label>
-                <div class="alignment-options">
-                    <div class="alignment-option" data-align="left" onclick="selectAlignment('left')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
-                        <span>Left</span>
-                    </div>
-                    <div class="alignment-option selected" data-align="center" onclick="selectAlignment('center')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
-                        <span>Centre</span>
-                    </div>
-                    <div class="alignment-option" data-align="right" onclick="selectAlignment('right')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
-                        <span>Right</span>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-actions">
-                <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
             </div>
         </div>
     </div>
@@ -723,55 +690,9 @@ $path_prefix = '../';
                 const data = await res.json();
                 if (data.success && data.settings) {
                     logoAlignment = data.settings.logo_alignment || 'center';
-                    highlightAlignment(logoAlignment);
                 }
             } catch (e) {
                 console.error(e);
-            }
-        }
-
-        function openSettings() {
-            highlightAlignment(logoAlignment);
-            document.getElementById('settingsOverlay').classList.add('open');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsOverlay').classList.remove('open');
-        }
-
-        function selectAlignment(align) {
-            document.querySelectorAll('.alignment-option').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`.alignment-option[data-align="${align}"]`).classList.add('selected');
-        }
-
-        function highlightAlignment(align) {
-            document.querySelectorAll('.alignment-option').forEach(el => el.classList.remove('selected'));
-            const el = document.querySelector(`.alignment-option[data-align="${align}"]`);
-            if (el) el.classList.add('selected');
-        }
-
-        async function saveSettings() {
-            const selected = document.querySelector('.alignment-option.selected');
-            const align = selected ? selected.dataset.align : 'center';
-
-            try {
-                const res = await fetch(API_BASE + 'save_settings.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ settings: { logo_alignment: align } })
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    logoAlignment = align;
-                    closeSettings();
-                    showToast('Settings saved');
-                    updatePreview();
-                } else {
-                    showToast('Error: ' + data.error, true);
-                }
-            } catch (e) {
-                showToast('Failed to save settings', true);
             }
         }
 
