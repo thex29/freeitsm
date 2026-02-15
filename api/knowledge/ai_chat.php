@@ -181,12 +181,20 @@ try {
         $publishedStmt->execute();
         $publishedCount = $publishedStmt->fetch(PDO::FETCH_ASSOC)['published'];
 
+        // Check how many are available after the archive filter
+        $availableSql = "SELECT COUNT(*) as available FROM knowledge_articles WHERE is_published = 1" . $archiveFilter;
+        $availableStmt = $conn->prepare($availableSql);
+        $availableStmt->execute();
+        $availableCount = $availableStmt->fetch(PDO::FETCH_ASSOC)['available'];
+
         if ($totalCount == 0) {
             echo json_encode(['success' => false, 'error' => 'No knowledge articles found in the database.']);
         } elseif ($publishedCount == 0) {
             echo json_encode(['success' => false, 'error' => "Found {$totalCount} article(s) but none are published. Please publish your articles to enable AI search."]);
+        } elseif ($availableCount == 0 && !$includeArchived) {
+            echo json_encode(['success' => false, 'error' => "All {$publishedCount} published article(s) are archived. Enable \"Include archived articles\" to search them."]);
         } else {
-            echo json_encode(['success' => false, 'error' => "Found {$publishedCount} published article(s) but none have embeddings. Please generate embeddings in Knowledge Settings."]);
+            echo json_encode(['success' => false, 'error' => "Found {$availableCount} published article(s) but none have embeddings. Please generate embeddings in Knowledge Settings."]);
         }
         exit;
     }

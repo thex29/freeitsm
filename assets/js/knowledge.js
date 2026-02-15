@@ -467,6 +467,7 @@ async function loadRecycleBin() {
                         By ${escapeHtml(item.author_name)} &middot; Archived ${archivedDate} by ${escapeHtml(archivedBy)}
                     </div>
                     <div class="recycle-bin-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="viewArchivedArticle(${item.id})">View</button>
                         <button class="btn btn-primary btn-sm" onclick="restoreArticle(${item.id})">Restore</button>
                         <button class="btn btn-danger btn-sm" onclick="hardDeleteArticle(${item.id}, '${escapeHtml(item.title).replace(/'/g, "\\'")}')">Delete Permanently</button>
                     </div>
@@ -527,6 +528,36 @@ async function hardDeleteArticle(id, title) {
         console.error('Error:', error);
         alert('Failed to delete article');
     }
+}
+
+async function viewArchivedArticle(id) {
+    try {
+        const response = await fetch(`${API_BASE}knowledge_article.php?id=${id}&include_archived=1`);
+        const data = await response.json();
+
+        if (data.success) {
+            const article = data.article;
+            document.getElementById('archivedArticleTitle').textContent = article.title;
+            document.getElementById('archivedArticleMeta').innerHTML =
+                `By ${escapeHtml(article.author_name)} &middot; Created ${formatDate(article.created_datetime)} &middot; Modified ${formatDate(article.modified_datetime)}` +
+                (article.tags && article.tags.length ? '<div style="margin-top: 8px;">' + article.tags.map(t => `<span class="article-tag">${escapeHtml(t.name)}</span>`).join(' ') + '</div>' : '');
+            document.getElementById('archivedArticleBody').innerHTML = article.body;
+            document.getElementById('archivedArticleModal').classList.add('active');
+
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+        } else {
+            alert('Error loading article: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load article');
+    }
+}
+
+function closeArchivedArticleModal() {
+    document.getElementById('archivedArticleModal').classList.remove('active');
 }
 
 function showToast(message) {

@@ -192,6 +192,18 @@ $path_prefix = '../';
         </div>
     </div>
 
+    <!-- Archived Article Preview Modal -->
+    <div class="modal" id="archivedArticleModal">
+        <div class="modal-content" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="archivedArticleTitle" style="margin: 0;"></h3>
+                <button class="btn btn-secondary" onclick="closeArchivedArticleModal()" style="flex-shrink: 0;">&times;</button>
+            </div>
+            <div id="archivedArticleMeta" style="font-size: 13px; color: #666; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e0e0e0;"></div>
+            <div id="archivedArticleBody" class="article-content-body" style="overflow-y: auto; flex: 1;"></div>
+        </div>
+    </div>
+
     <!-- AI Chat Panel (slide-out from right) -->
     <div class="ai-chat-overlay" id="aiChatOverlay" onclick="closeAiChat()"></div>
     <div class="ai-chat-panel" id="aiChatPanel">
@@ -212,8 +224,11 @@ $path_prefix = '../';
         </div>
         <div class="ai-chat-options">
             <label class="ai-archive-toggle" title="Include archived (recycle bin) articles in AI search">
-                <input type="checkbox" id="aiIncludeArchived">
-                <span>Include archived articles</span>
+                <span class="toggle-label">Include archived articles</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="aiIncludeArchived">
+                    <span class="toggle-slider"></span>
+                </div>
             </label>
         </div>
         <div class="ai-chat-input-area">
@@ -233,7 +248,7 @@ $path_prefix = '../';
     <!-- html2pdf for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>window.API_BASE = '../api/knowledge/';</script>
-    <script src="../assets/js/knowledge.js?v=2"></script>
+    <script src="../assets/js/knowledge.js?v=3"></script>
     <!-- Prism.js for code syntax highlighting when viewing articles -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
