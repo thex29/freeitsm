@@ -138,6 +138,15 @@ $path_prefix = '../';
         let currentFormId = null;
         let fields = [];
 
+        // Track mousedown target for drag-from-handle detection
+        // (dragstart e.target is the draggable element, not what was clicked)
+        let fieldDragAllowed = false;
+        let optDragAllowed = false;
+        document.addEventListener('mousedown', function(e) {
+            fieldDragAllowed = !!e.target.closest('.field-drag');
+            optDragAllowed = !!e.target.closest('.option-drag');
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             loadForms();
 
@@ -407,15 +416,17 @@ $path_prefix = '../';
         let dragFieldIndex = null;
 
         function onFieldDragStart(e, i) {
-            // Only allow drag from the handle
-            if (!e.target.closest('.field-drag')) {
+            if (!fieldDragAllowed) {
                 e.preventDefault();
                 return;
             }
             dragFieldIndex = i;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', 'field');
-            requestAnimationFrame(() => e.target.closest('.field-item').classList.add('dragging'));
+            requestAnimationFrame(() => {
+                const item = document.querySelector(`.field-item[data-index="${i}"]`);
+                if (item) item.classList.add('dragging');
+            });
         }
 
         function onFieldDragEnd(e) {
@@ -463,7 +474,7 @@ $path_prefix = '../';
         let dragOptIndex = null;
 
         function onOptDragStart(e, fi, oi) {
-            if (!e.target.closest('.option-drag')) {
+            if (!optDragAllowed) {
                 e.preventDefault();
                 return;
             }
@@ -472,7 +483,7 @@ $path_prefix = '../';
             dragOptIndex = oi;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', 'option');
-            requestAnimationFrame(() => e.target.closest('.option-item').classList.add('dragging'));
+            requestAnimationFrame(() => e.currentTarget.classList.add('dragging'));
         }
 
         function onOptDragEnd(e) {
