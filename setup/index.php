@@ -315,6 +315,25 @@ $totalCount = count($checks);
             color: #333;
         }
 
+        .next-steps {
+            margin-top: 12px;
+        }
+
+        .next-steps p {
+            margin-bottom: 6px;
+        }
+
+        .next-steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .next-steps li {
+            font-size: 13px;
+            color: #155724;
+            padding: 2px 0;
+        }
+
         .admin-error {
             margin-top: 25px;
             padding: 15px;
@@ -378,12 +397,21 @@ $totalCount = count($checks);
         <?php if ($adminCreated): ?>
             <div class="admin-success">
                 <h2>Admin account created</h2>
-                <p>You can now log in with the following credentials:</p>
                 <div class="credentials">
                     Username: <strong>admin</strong><br>
                     Password: <strong>freeitsm</strong>
                 </div>
-                <p style="margin-top: 10px;">Change this password after your first login.</p>
+                <div class="next-steps">
+                    <p><strong>Next steps:</strong></p>
+                    <ol>
+                        <li>Log in with the credentials above</li>
+                        <li>Go to Tickets &rarr; Settings &rarr; Analysts</li>
+                        <li>Create a new account for yourself</li>
+                        <li>Delete the admin account</li>
+                        <li>Log out and log back in with your new account</li>
+                    </ol>
+                </div>
+                <a href="../login.php" target="_blank" class="admin-btn" style="margin-top: 15px; text-decoration: none;">Log in</a>
             </div>
         <?php elseif ($adminError): ?>
             <div class="admin-error">
