@@ -25,10 +25,7 @@ $path_prefix = '../';
         <!-- Sidebar with search and status filters -->
         <div class="changes-sidebar">
             <div class="sidebar-section">
-                <h3>Search</h3>
-                <div class="search-box">
-                    <input type="text" id="changeSearch" placeholder="Search changes..." onkeyup="debounceSearch()">
-                </div>
+                <button class="search-btn" onclick="openSearchModal()">Search</button>
             </div>
             <div class="sidebar-section">
                 <h3>Status</h3>
@@ -300,6 +297,33 @@ $path_prefix = '../';
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+
+    <!-- Search Modal (Draggable) -->
+    <div class="search-modal" id="searchModal">
+        <div class="search-modal-header" id="searchModalHeader">
+            <span>Search Changes</span>
+            <button class="search-modal-close" onclick="closeSearchModal()">&times;</button>
+        </div>
+        <div class="search-modal-body">
+            <div class="search-form">
+                <div class="search-field">
+                    <label>Change Number</label>
+                    <input type="text" id="searchChangeNumber" placeholder="e.g., CHG-0001 or 1">
+                </div>
+                <div class="search-field">
+                    <label>Title</label>
+                    <input type="text" id="searchChangeTitle" placeholder="Search in title...">
+                </div>
+                <div class="search-actions">
+                    <button class="btn btn-primary" onclick="performSearch()">Search</button>
+                    <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+            <div class="search-results" id="searchResults">
+                <div class="search-results-empty">Enter search criteria above</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Delete confirmation modal container -->
     <div id="deleteModal"></div>

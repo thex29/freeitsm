@@ -9,7 +9,6 @@ let analysts = [];
 let currentChange = null;
 let currentFilter = 'all';
 let searchQuery = '';
-let searchTimeout = null;
 let fieldVisibility = {};
 
 // TinyMCE editor instances
@@ -30,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (openId) {
         viewChange(parseInt(openId, 10));
     }
+
+    // Enter key triggers search in search modal
+    document.querySelectorAll('#searchChangeNumber, #searchChangeTitle').forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+    });
 });
 
 // ============ Field Visibility ============
@@ -354,12 +360,143 @@ function filterByStatus(status) {
     loadChanges();
 }
 
-function debounceSearch() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        searchQuery = document.getElementById('changeSearch').value.trim();
-        loadChanges();
-    }, 300);
+// ============ Search Modal ============
+
+let searchModalOffsetX = 0;
+let searchModalOffsetY = 0;
+
+function openSearchModal() {
+    const modal = document.getElementById('searchModal');
+    modal.classList.add('active');
+
+    // Position near the search button
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) {
+        const btnRect = searchBtn.getBoundingClientRect();
+        modal.style.left = btnRect.left + 'px';
+        modal.style.top = (btnRect.bottom + 10) + 'px';
+        modal.style.transform = 'none';
+    } else {
+        modal.style.left = '50%';
+        modal.style.top = '100px';
+        modal.style.transform = 'translateX(-50%)';
+    }
+
+    initSearchModalDrag();
+    document.getElementById('searchChangeNumber').focus();
+}
+
+function closeSearchModal() {
+    document.getElementById('searchModal').classList.remove('active');
+}
+
+function initSearchModalDrag() {
+    const header = document.getElementById('searchModalHeader');
+    const modal = document.getElementById('searchModal');
+
+    header.onmousedown = function(e) {
+        if (e.target.tagName === 'BUTTON') return;
+        e.preventDefault();
+        const rect = modal.getBoundingClientRect();
+        searchModalOffsetX = e.clientX - rect.left;
+        searchModalOffsetY = e.clientY - rect.top;
+
+        function onMouseMove(e) {
+            modal.style.left = (e.clientX - searchModalOffsetX) + 'px';
+            modal.style.top = (e.clientY - searchModalOffsetY) + 'px';
+            modal.style.transform = 'none';
+        }
+        function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    };
+}
+
+async function performSearch() {
+    const changeNumber = document.getElementById('searchChangeNumber').value.trim();
+    const title = document.getElementById('searchChangeTitle').value.trim();
+
+    if (!changeNumber && !title) {
+        alert('Please enter at least one search criterion');
+        return;
+    }
+
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+    // Build search query — extract numeric ID from CHG-0001 format
+    let searchId = '';
+    if (changeNumber) {
+        searchId = changeNumber.replace(/^CHG-0*/i, '').replace(/^0+/, '') || changeNumber;
+    }
+
+    try {
+        let url = API_BASE + 'list.php?';
+        if (searchId || title) {
+            url += 'search=' + encodeURIComponent(title || searchId);
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+            let results = data.changes || [];
+
+            // If searching by change number, filter more precisely
+            if (searchId && !title) {
+                results = results.filter(c => String(c.id) === searchId || String(c.id).includes(searchId));
+            }
+
+            renderSearchResults(results);
+        } else {
+            resultsContainer.innerHTML = '<div class="search-results-empty">Error: ' + (data.error || 'Unknown') + '</div>';
+        }
+    } catch (e) {
+        console.error(e);
+        resultsContainer.innerHTML = '<div class="search-results-empty">Search failed</div>';
+    }
+}
+
+function renderSearchResults(results) {
+    const container = document.getElementById('searchResults');
+
+    if (!results || results.length === 0) {
+        container.innerHTML = '<div class="search-results-empty">No changes found</div>';
+        return;
+    }
+
+    let html = '<div class="search-results-count">' + results.length + ' change' + (results.length === 1 ? '' : 's') + ' found</div>';
+
+    results.forEach(c => {
+        const ref = 'CHG-' + String(c.id).padStart(4, '0');
+        html += `
+            <div class="search-result-item" onclick="selectSearchResult(${c.id})">
+                <div class="search-result-ticket">${ref}</div>
+                <div class="search-result-subject">${escapeHtml(c.title)}</div>
+                <div class="search-result-meta">
+                    <span>${escapeHtml(c.status)}</span>
+                    <span>${escapeHtml(c.change_type)}</span>
+                    ${c.assigned_to_name ? '<span>' + escapeHtml(c.assigned_to_name) + '</span>' : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function selectSearchResult(changeId) {
+    closeSearchModal();
+    openChange(changeId);
+}
+
+function clearSearch() {
+    document.getElementById('searchChangeNumber').value = '';
+    document.getElementById('searchChangeTitle').value = '';
+    document.getElementById('searchResults').innerHTML = '<div class="search-results-empty">Enter search criteria above</div>';
 }
 
 // ============ Create / Edit ============

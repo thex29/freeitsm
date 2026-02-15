@@ -563,6 +563,19 @@
     display: none;
 }
 
+/* Search modal teal overrides */
+.search-modal-header {
+    background: #00897b;
+}
+
+.search-field input:focus {
+    border-color: #00897b;
+}
+
+.search-btn {
+    width: 100%;
+}
+
 /* Teal theme overrides */
 .changes-container .btn-primary {
     background: #00897b;
