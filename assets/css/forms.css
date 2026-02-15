@@ -384,11 +384,27 @@
     padding: 12px 14px;
     margin-bottom: 8px;
     background: #fafafa;
-    transition: box-shadow 0.15s;
+    transition: box-shadow 0.15s, opacity 0.15s, border-color 0.15s;
+    position: relative;
 }
 
 .field-item:hover {
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* Field drag-and-drop */
+.field-item.dragging {
+    opacity: 0.4;
+}
+
+.field-item.drag-over-top {
+    border-top: 2px solid #00897b;
+    margin-top: -1px;
+}
+
+.field-item.drag-over-bottom {
+    border-bottom: 2px solid #00897b;
+    margin-bottom: 7px;
 }
 
 .field-item-header {
@@ -402,6 +418,11 @@
     cursor: grab;
     color: #bbb;
     padding: 2px;
+    touch-action: none;
+}
+
+.field-drag:active {
+    cursor: grabbing;
 }
 
 .field-label-input {
@@ -466,6 +487,37 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 4px;
+    position: relative;
+    transition: opacity 0.15s;
+}
+
+.option-item.dragging {
+    opacity: 0.4;
+}
+
+.option-item.drag-over-top {
+    border-top: 2px solid #00897b;
+    padding-top: 2px;
+}
+
+.option-item.drag-over-bottom {
+    border-bottom: 2px solid #00897b;
+    padding-bottom: 2px;
+}
+
+.option-drag {
+    cursor: grab;
+    color: #ccc;
+    font-size: 12px;
+    padding: 0 2px;
+    user-select: none;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.option-drag:active {
+    cursor: grabbing;
+    color: #888;
 }
 
 .option-item input {
@@ -515,6 +567,13 @@
 }
 
 /* Preview panel (in tab) */
+.preview-logo {
+    display: block;
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto 20px;
+}
+
 .preview-title {
     font-size: 18px;
     font-weight: 600;

@@ -63,7 +63,7 @@ $path_prefix = '../';
                         <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
                         <button class="btn btn-primary" onclick="saveForm()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                            Save Form
+                            Save
                         </button>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ $path_prefix = '../';
                         <div class="add-field-btn">
                             <button class="btn btn-secondary" onclick="toggleAddMenu()" id="addFieldBtn">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                Add Field
+                                Add
                             </button>
                             <div class="add-field-menu" id="addFieldMenu">
                                 <button onclick="addField('text')"><span class="field-type-badge text">Abc</span> Text Input</button>
@@ -106,7 +106,7 @@ $path_prefix = '../';
                         </div>
                     </div>
                     <ul class="field-list" id="fieldList">
-                        <li class="no-fields">No fields added yet. Click "Add Field" to start building your form.</li>
+                        <li class="no-fields">No fields added yet. Click "Add" to start building your form.</li>
                     </ul>
                 </div>
 
@@ -305,7 +305,7 @@ $path_prefix = '../';
             const list = document.getElementById('fieldList');
 
             if (fields.length === 0) {
-                list.innerHTML = '<li class="no-fields">No fields added yet. Click "Add Field" to start building your form.</li>';
+                list.innerHTML = '<li class="no-fields">No fields added yet. Click "Add" to start building your form.</li>';
                 return;
             }
 
@@ -316,8 +316,16 @@ $path_prefix = '../';
                         <div class="field-options">
                             <div class="field-options-label">Dropdown Options</div>
                             ${(f.options || []).map((opt, oi) => `
-                                <div class="option-item">
-                                    <input type="text" value="${esc(opt)}" onchange="updateOption(${i}, ${oi}, this.value)" placeholder="Option ${oi + 1}">
+                                <div class="option-item" draggable="true"
+                                     ondragstart="onOptDragStart(event, ${i}, ${oi})"
+                                     ondragend="onOptDragEnd(event)"
+                                     ondragover="onOptDragOver(event, ${i}, ${oi})"
+                                     ondrop="onOptDrop(event, ${i}, ${oi})">
+                                    <span class="option-drag" title="Drag to reorder">⠿</span>
+                                    <input type="text" value="${esc(opt)}"
+                                           onchange="updateOption(${i}, ${oi}, this.value)"
+                                           onkeydown="onOptionKeydown(event, ${i}, ${oi})"
+                                           placeholder="Option ${oi + 1}">
                                     <button class="option-remove" onclick="removeOption(${i}, ${oi})">&times;</button>
                                 </div>
                             `).join('')}
@@ -326,7 +334,11 @@ $path_prefix = '../';
                 }
 
                 return `
-                    <li class="field-item" data-index="${i}">
+                    <li class="field-item" data-index="${i}" draggable="true"
+                        ondragstart="onFieldDragStart(event, ${i})"
+                        ondragend="onFieldDragEnd(event)"
+                        ondragover="onFieldDragOver(event, ${i})"
+                        ondrop="onFieldDrop(event, ${i})">
                         <div class="field-item-header">
                             <span class="field-drag" title="Drag to reorder">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -338,12 +350,6 @@ $path_prefix = '../';
                                     <input type="checkbox" ${f.is_required ? 'checked' : ''} onchange="toggleRequired(${i}, this.checked)">
                                     Required
                                 </label>
-                                <button class="field-move-btn" onclick="moveField(${i}, -1)" title="Move up" ${i === 0 ? 'disabled' : ''}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                </button>
-                                <button class="field-move-btn" onclick="moveField(${i}, 1)" title="Move down" ${i === fields.length - 1 ? 'disabled' : ''}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                </button>
                                 <button class="field-delete-btn" onclick="deleteField(${i})" title="Remove field">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 </button>
@@ -361,14 +367,6 @@ $path_prefix = '../';
         function updateLabel(i, val) { fields[i].label = val; updatePreview(); }
         function toggleRequired(i, val) { fields[i].is_required = val; updatePreview(); }
 
-        function moveField(i, dir) {
-            const j = i + dir;
-            if (j < 0 || j >= fields.length) return;
-            [fields[i], fields[j]] = [fields[j], fields[i]];
-            renderFields();
-            updatePreview();
-        }
-
         function deleteField(i) {
             fields.splice(i, 1);
             renderFields();
@@ -379,7 +377,7 @@ $path_prefix = '../';
             fields[fi].options.push('');
             renderFields();
             setTimeout(() => {
-                const items = document.querySelectorAll(`.field-item[data-index="${fi}"] .option-item input`);
+                const items = document.querySelectorAll(`.field-item[data-index="${fi}"] .option-item input[type="text"]`);
                 if (items.length) items[items.length - 1].focus();
             }, 50);
         }
@@ -391,6 +389,131 @@ $path_prefix = '../';
 
         function removeOption(fi, oi) {
             fields[fi].options.splice(oi, 1);
+            renderFields();
+            updatePreview();
+        }
+
+        function onOptionKeydown(e, fi, oi) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // Save current value first
+                fields[fi].options[oi] = e.target.value;
+                addOption(fi);
+            }
+        }
+
+        // ========== Field Drag & Drop ==========
+
+        let dragFieldIndex = null;
+
+        function onFieldDragStart(e, i) {
+            // Only allow drag from the handle
+            if (!e.target.closest('.field-drag')) {
+                e.preventDefault();
+                return;
+            }
+            dragFieldIndex = i;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', 'field');
+            requestAnimationFrame(() => e.target.closest('.field-item').classList.add('dragging'));
+        }
+
+        function onFieldDragEnd(e) {
+            dragFieldIndex = null;
+            document.querySelectorAll('.field-item').forEach(el => {
+                el.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+            });
+        }
+
+        function onFieldDragOver(e, i) {
+            if (dragFieldIndex === null || dragFieldIndex === i) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const rect = e.currentTarget.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            // Clear all indicators
+            document.querySelectorAll('.field-item').forEach(el => {
+                el.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            if (e.clientY < midY) {
+                e.currentTarget.classList.add('drag-over-top');
+            } else {
+                e.currentTarget.classList.add('drag-over-bottom');
+            }
+        }
+
+        function onFieldDrop(e, i) {
+            e.preventDefault();
+            if (dragFieldIndex === null || dragFieldIndex === i) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            let targetIndex = e.clientY < midY ? i : i + 1;
+            // Adjust if dragging from before the target
+            if (dragFieldIndex < targetIndex) targetIndex--;
+            const [moved] = fields.splice(dragFieldIndex, 1);
+            fields.splice(targetIndex, 0, moved);
+            dragFieldIndex = null;
+            renderFields();
+            updatePreview();
+        }
+
+        // ========== Option Drag & Drop ==========
+
+        let dragOptFieldIndex = null;
+        let dragOptIndex = null;
+
+        function onOptDragStart(e, fi, oi) {
+            if (!e.target.closest('.option-drag')) {
+                e.preventDefault();
+                return;
+            }
+            e.stopPropagation(); // Don't trigger field drag
+            dragOptFieldIndex = fi;
+            dragOptIndex = oi;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', 'option');
+            requestAnimationFrame(() => e.target.closest('.option-item').classList.add('dragging'));
+        }
+
+        function onOptDragEnd(e) {
+            dragOptFieldIndex = null;
+            dragOptIndex = null;
+            document.querySelectorAll('.option-item').forEach(el => {
+                el.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+            });
+        }
+
+        function onOptDragOver(e, fi, oi) {
+            if (dragOptFieldIndex !== fi || dragOptIndex === null || dragOptIndex === oi) return;
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'move';
+            const rect = e.currentTarget.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            // Clear indicators within this field's options
+            e.currentTarget.closest('.field-options').querySelectorAll('.option-item').forEach(el => {
+                el.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            if (e.clientY < midY) {
+                e.currentTarget.classList.add('drag-over-top');
+            } else {
+                e.currentTarget.classList.add('drag-over-bottom');
+            }
+        }
+
+        function onOptDrop(e, fi, oi) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (dragOptFieldIndex !== fi || dragOptIndex === null || dragOptIndex === oi) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            let targetIndex = e.clientY < midY ? oi : oi + 1;
+            if (dragOptIndex < targetIndex) targetIndex--;
+            const opts = fields[fi].options;
+            const [moved] = opts.splice(dragOptIndex, 1);
+            opts.splice(targetIndex, 0, moved);
+            dragOptFieldIndex = null;
+            dragOptIndex = null;
             renderFields();
             updatePreview();
         }
@@ -407,7 +530,8 @@ $path_prefix = '../';
                 return;
             }
 
-            let html = `<p class="preview-title">${esc(title)}</p>`;
+            let html = `<img src="../assets/images/CompanyLogo.png" alt="Company Logo" class="preview-logo">`;
+            html += `<p class="preview-title">${esc(title)}</p>`;
             if (desc) html += `<p class="preview-desc">${esc(desc)}</p>`;
 
             html += fields.map(f => {
