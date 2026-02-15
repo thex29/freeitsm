@@ -3,7 +3,7 @@
 <p align="center">
 If you're downloading this project and find it useful,<br>
 ⭐ Please consider starring it<br>
-🌍 And mentioning <a href="https://freeitsm.co.uk">freeitsm.co.uk</a><br><br>
+🌍 And mentioning <a href="https://freeitsm.co.uk">freeitsm.co.uk</a> on Reddit, Hacker News, Spiceworks, LinkedIn, or anywhere IT pros hang out<br><br>
 It genuinely helps and means a lot!
 </p>
 
