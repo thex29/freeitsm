@@ -15,6 +15,8 @@ $path_prefix = $path_prefix ?? '../';
 $current_module = $current_module ?? '';
 $analyst_name = $analyst_name ?? ($_SESSION['analyst_name'] ?? 'Analyst');
 
+require_once __DIR__ . '/module-colors.php';
+
 // Password expiry guard — force redirect if password is expired
 if (!empty($_SESSION['password_expired'])) {
     $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
@@ -201,19 +203,9 @@ $modules = [
         color: #fff;
     }
 
-    .waffle-module-icon.tickets { background: linear-gradient(135deg, #0078d4, #106ebe); }
-    .waffle-module-icon.assets { background: linear-gradient(135deg, #107c10, #0b5c0b); }
-    .waffle-module-icon.knowledge { background: linear-gradient(135deg, #8764b8, #6b4fa2); }
-    .waffle-module-icon.changes { background: linear-gradient(135deg, #00897b, #00695c); }
-    .waffle-module-icon.calendar { background: linear-gradient(135deg, #ef6c00, #e65100); }
-    .waffle-module-icon.morning-checks { background: linear-gradient(135deg, #00acc1, #00838f); }
-    .waffle-module-icon.reporting { background: linear-gradient(135deg, #ca5010, #a5410a); }
-    .waffle-module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
-    .waffle-module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
-    .waffle-module-icon.contracts { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .waffle-module-icon.service-status { background: linear-gradient(135deg, #10b981, #059669); }
-    .waffle-module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
-    .waffle-module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
+    <?php foreach (getModuleColors() as $key => $c): ?>
+    .waffle-module-icon.<?php echo $key; ?> { background: linear-gradient(135deg, <?php echo $c[0]; ?>, <?php echo $c[1]; ?>); }
+    <?php endforeach; ?>
 
     .waffle-module-name {
         font-size: 12px;
@@ -248,19 +240,9 @@ $modules = [
     }
 
     /* Module header colors */
-    .header.tickets-header { background: linear-gradient(135deg, #0078d4, #106ebe); }
-    .header.assets-header { background: linear-gradient(135deg, #107c10, #0b5c0b); }
-    .header.knowledge-header { background: linear-gradient(135deg, #8764b8, #6b4fa2); }
-    .header.changes-header { background: linear-gradient(135deg, #00897b, #00695c); }
-    .header.calendar-header { background: linear-gradient(135deg, #ef6c00, #e65100); }
-    .header.morning-checks-header { background: linear-gradient(135deg, #00acc1, #00838f); }
-    .header.reporting-header { background: linear-gradient(135deg, #ca5010, #a5410a); }
-    .header.software-header { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
-    .header.forms-header { background: linear-gradient(135deg, #00897b, #00695c); }
-    .header.contracts-header { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .header.service-status-header { background: linear-gradient(135deg, #10b981, #059669); }
-    .header.wiki-header { background: linear-gradient(135deg, #c62828, #b71c1c); }
-    .header.system-header { background: linear-gradient(135deg, #546e7a, #37474f); }
+    <?php foreach (getModuleColors() as $key => $c): ?>
+    .header.<?php echo $key; ?>-header { background: linear-gradient(135deg, <?php echo $c[0]; ?>, <?php echo $c[1]; ?>); }
+    <?php endforeach; ?>
 </style>
 
 <div class="waffle-overlay" id="waffleOverlay" onclick="closeWaffleMenu()"></div>

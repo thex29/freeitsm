@@ -20,6 +20,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 038 | System            | Feature     | Global toast notification system with configurable position (9 positions via visual grid picker in System settings), colour-coded types with icons, and slide-in animations |
 | 039 | System            | Feature     | Security settings with trusted device (skip OTP for configurable days with per-user toggle), password expiry policy, and account lockout after failed login attempts |
 | 040 | Service Status    | Feature     | Service status dashboard with configurable services, incident tracking, multi-service impact levels, and worst-status board view |
+| 041 | System            | Feature     | Configurable module colours with per-module primary and secondary colour pickers, live preview, and reset to defaults |
 
 ---
 

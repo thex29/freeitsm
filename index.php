@@ -115,19 +115,9 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .module-card.tickets:hover { border-color: #0078d4; }
-        .module-card.assets:hover { border-color: #107c10; }
-        .module-card.knowledge:hover { border-color: #8764b8; }
-        .module-card.changes:hover { border-color: #00897b; }
-        .module-card.calendar:hover { border-color: #ef6c00; }
-        .module-card.morning-checks:hover { border-color: #00acc1; }
-        .module-card.reporting:hover { border-color: #ca5010; }
-        .module-card.software:hover { border-color: #5c6bc0; }
-        .module-card.forms:hover { border-color: #00897b; }
-        .module-card.contracts:hover { border-color: #f59e0b; }
-        .module-card.service-status:hover { border-color: #10b981; }
-        .module-card.wiki:hover { border-color: #c62828; }
-        .module-card.system:hover { border-color: #546e7a; }
+        <?php foreach (getModuleColors() as $key => $c): ?>
+        .module-card.<?php echo $key; ?>:hover { border-color: <?php echo $c[0]; ?>; }
+        <?php endforeach; ?>
 
         .module-icon {
             width: 60px;
@@ -145,19 +135,9 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
             color: white;
         }
 
-        .module-icon.tickets { background: linear-gradient(135deg, #0078d4, #106ebe); }
-        .module-icon.assets { background: linear-gradient(135deg, #107c10, #0b5c0b); }
-        .module-icon.knowledge { background: linear-gradient(135deg, #8764b8, #6b4fa2); }
-        .module-icon.changes { background: linear-gradient(135deg, #00897b, #00695c); }
-        .module-icon.calendar { background: linear-gradient(135deg, #ef6c00, #e65100); }
-        .module-icon.morning-checks { background: linear-gradient(135deg, #00acc1, #00838f); }
-        .module-icon.reporting { background: linear-gradient(135deg, #ca5010, #a5410a); }
-        .module-icon.software { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
-        .module-icon.forms { background: linear-gradient(135deg, #00897b, #00695c); }
-        .module-icon.contracts { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .module-icon.service-status { background: linear-gradient(135deg, #10b981, #059669); }
-        .module-icon.wiki { background: linear-gradient(135deg, #c62828, #b71c1c); }
-        .module-icon.system { background: linear-gradient(135deg, #546e7a, #37474f); }
+        <?php foreach (getModuleColors() as $key => $c): ?>
+        .module-icon.<?php echo $key; ?> { background: linear-gradient(135deg, <?php echo $c[0]; ?>, <?php echo $c[1]; ?>); }
+        <?php endforeach; ?>
 
         .module-name {
             font-size: 14px;
