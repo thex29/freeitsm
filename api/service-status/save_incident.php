@@ -63,8 +63,9 @@ try {
         }
         $conn->prepare($sql)->execute([$title, $status, $comment, $_SESSION['analyst_id']]);
 
-        // Get the new ID
-        $id = $conn->lastInsertId();
+        // Get the new ID (ODBC driver doesn't support lastInsertId)
+        $idStmt = $conn->query("SELECT SCOPE_IDENTITY() AS id");
+        $id = $idStmt->fetch(PDO::FETCH_ASSOC)['id'];
     }
 
     // Re-insert affected services
