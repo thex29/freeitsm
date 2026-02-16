@@ -31,6 +31,9 @@ function getModuleColors() {
     $colors = $defaultModuleColors;
 
     try {
+        if (!function_exists('connectToDatabase')) {
+            require_once __DIR__ . '/functions.php';
+        }
         $conn = connectToDatabase();
         $stmt = $conn->prepare("SELECT setting_key, setting_value FROM system_settings WHERE setting_key LIKE 'module_color_%'");
         $stmt->execute();
