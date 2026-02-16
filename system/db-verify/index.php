@@ -8,6 +8,12 @@ require_once '../../config.php';
 
 $current_page = 'db-verify';
 $path_prefix = '../../';
+
+// Auth check before any HTML output (prevents "headers already sent")
+if (!isset($_SESSION['analyst_id'])) {
+    header('Location: ' . $path_prefix . 'login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -161,13 +167,7 @@ $path_prefix = '../../';
     </style>
 </head>
 <body>
-    <?php if (isset($_SESSION['analyst_id'])): ?>
-        <?php include '../includes/header.php'; ?>
-    <?php else: ?>
-        <div class="header system-header" style="background: linear-gradient(135deg, #546e7a, #37474f); padding: 12px 20px; color: #fff; font-size: 14px; font-weight: 600;">
-            System &mdash; Database Verify
-        </div>
-    <?php endif; ?>
+    <?php include '../includes/header.php'; ?>
 
     <div class="db-verify-container">
         <div class="db-verify-header">
