@@ -7,6 +7,32 @@ require_once 'config.php';
 require_once 'includes/functions.php';
 
 /**
+ * Get a security setting from system_settings (returns string or null)
+ */
+function getSecuritySetting($conn, $key) {
+    try {
+        $stmt = $conn->prepare("SELECT setting_value FROM system_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['setting_value'] : null;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+/**
+ * Check if password is expired based on system setting
+ */
+function isPasswordExpired($conn, $passwordChangedDatetime) {
+    $days = (int)(getSecuritySetting($conn, 'password_expiry_days') ?? 0);
+    if ($days <= 0) return false;
+    if (empty($passwordChangedDatetime)) return true; // never changed
+    $changed = new DateTime($passwordChangedDatetime);
+    $now = new DateTime('now', new DateTimeZone('UTC'));
+    return $now->diff($changed)->days >= $days;
+}
+
+/**
  * Log login attempt to system_logs
  */
 function logLoginAttempt($conn, $analystId, $username, $success) {
@@ -83,15 +109,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Database connection failed: ' . $lastException->getMessage());
             }
 
-            // Query for user (include MFA fields)
-            $sql = "SELECT id, username, password_hash, full_name, email, totp_enabled FROM analysts WHERE username = ? AND is_active = 1";
+            // Query for user (include MFA, lockout, trust, and password fields)
+            $sql = "SELECT id, username, password_hash, full_name, email, totp_enabled,
+                           locked_until, failed_login_count, trust_device_enabled, password_changed_datetime
+                    FROM analysts WHERE username = ? AND is_active = 1";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$username]);
             $analyst = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($analyst && password_verify($password, $analyst['password_hash'])) {
+            // Check account lockout
+            if ($analyst && !empty($analyst['locked_until'])) {
+                $lockedUntil = new DateTime($analyst['locked_until']);
+                $now = new DateTime('now', new DateTimeZone('UTC'));
+                if ($now < $lockedUntil) {
+                    $remaining = $now->diff($lockedUntil);
+                    $mins = $remaining->i + ($remaining->h * 60);
+                    if ($mins < 1) $mins = 1;
+                    $error = 'Account locked. Try again in ' . $mins . ' minute' . ($mins !== 1 ? 's' : '') . '.';
+                    logLoginAttempt($conn, $analyst['id'], $username, false);
+                } else {
+                    // Lockout expired — reset
+                    $resetStmt = $conn->prepare("UPDATE analysts SET failed_login_count = 0, locked_until = NULL WHERE id = ?");
+                    $resetStmt->execute([$analyst['id']]);
+                    $analyst['failed_login_count'] = 0;
+                    $analyst['locked_until'] = null;
+                }
+            }
+
+            if (empty($error) && $analyst && password_verify($password, $analyst['password_hash'])) {
+                // Reset failed login counter on success
+                if ($analyst['failed_login_count'] > 0) {
+                    $resetStmt = $conn->prepare("UPDATE analysts SET failed_login_count = 0, locked_until = NULL WHERE id = ?");
+                    $resetStmt->execute([$analyst['id']]);
+                }
+
                 // Check if MFA is enabled
                 if (!empty($analyst['totp_enabled'])) {
+                    // Check for trusted device cookie — skip MFA if valid
+                    $trustedDeviceValid = false;
+                    if (!empty($_COOKIE['trusted_device']) && !empty($analyst['trust_device_enabled'])) {
+                        $tokenHash = hash('sha256', hex2bin($_COOKIE['trusted_device']));
+                        $tdStmt = $conn->prepare("SELECT id FROM trusted_devices WHERE device_token_hash = ? AND analyst_id = ? AND expires_datetime > GETUTCDATE()");
+                        $tdStmt->execute([$tokenHash, $analyst['id']]);
+                        if ($tdStmt->fetch()) {
+                            $trustedDeviceValid = true;
+                        }
+                    }
+
+                    if ($trustedDeviceValid) {
+                        // Trusted device — skip MFA, complete login directly
+                        $_SESSION['analyst_id'] = $analyst['id'];
+                        $_SESSION['analyst_username'] = $analyst['username'];
+                        $_SESSION['analyst_name'] = $analyst['full_name'];
+                        $_SESSION['analyst_email'] = $analyst['email'];
+
+                        $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
+                        $updateStmt = $conn->prepare($updateSql);
+                        $updateStmt->execute([$analyst['id']]);
+
+                        $_SESSION['allowed_modules'] = getAnalystAllowedModules($conn, $analyst['id']);
+                        logLoginAttempt($conn, $analyst['id'], $username, true);
+
+                        // Check password expiry
+                        if (isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
+                            $_SESSION['password_expired'] = true;
+                            header('Location: force_password_change.php');
+                        } else {
+                            header('Location: index.php');
+                        }
+                        exit;
+                    }
+
                     // MFA required - store pending state, don't complete login yet
                     $_SESSION['mfa_pending_analyst_id'] = $analyst['id'];
                     $_SESSION['mfa_pending_username'] = $analyst['username'];
@@ -122,12 +210,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Log successful login
                     logLoginAttempt($conn, $analyst['id'], $username, true);
 
-                    header('Location: index.php');
+                    // Check password expiry
+                    if (isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
+                        $_SESSION['password_expired'] = true;
+                        header('Location: force_password_change.php');
+                    } else {
+                        header('Location: index.php');
+                    }
                     exit;
                 }
-            } else {
-                // Log failed login
-                logLoginAttempt($conn, null, $username, false);
+            } else if (empty($error)) {
+                // Failed login — track attempts and possibly lock
+                if ($analyst) {
+                    $newCount = ($analyst['failed_login_count'] ?? 0) + 1;
+                    $maxFailed = (int)(getSecuritySetting($conn, 'max_failed_logins') ?? 0);
+                    $lockoutMins = (int)(getSecuritySetting($conn, 'lockout_duration_minutes') ?? 30);
+
+                    if ($maxFailed > 0 && $newCount >= $maxFailed) {
+                        $lockStmt = $conn->prepare("UPDATE analysts SET failed_login_count = ?, locked_until = DATEADD(MINUTE, ?, GETUTCDATE()) WHERE id = ?");
+                        $lockStmt->execute([$newCount, $lockoutMins, $analyst['id']]);
+                    } else {
+                        $incStmt = $conn->prepare("UPDATE analysts SET failed_login_count = ? WHERE id = ?");
+                        $incStmt->execute([$newCount, $analyst['id']]);
+                    }
+                }
+
+                logLoginAttempt($conn, $analyst ? $analyst['id'] : null, $username, false);
                 $error = 'Invalid username or password';
             }
 
@@ -359,7 +467,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                     const data = await resp.json();
                     if (data.success) {
-                        window.location.href = 'index.php';
+                        window.location.href = data.redirect || 'index.php';
                     } else {
                         errEl.textContent = data.error;
                         errEl.style.display = 'block';

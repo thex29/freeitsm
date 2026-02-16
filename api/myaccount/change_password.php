@@ -49,11 +49,14 @@ try {
         exit;
     }
 
-    // Update password
+    // Update password and track change datetime
     $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
-    $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETUTCDATE() WHERE id = ?";
+    $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETUTCDATE(), password_changed_datetime = GETUTCDATE() WHERE id = ?";
     $updateStmt = $conn->prepare($updateSql);
     $updateStmt->execute([$newHash, $analystId]);
+
+    // Clear password expired flag if set
+    unset($_SESSION['password_expired']);
 
     echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
 } catch (Exception $e) {

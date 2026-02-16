@@ -17,14 +17,22 @@ if (!isset($_SESSION['analyst_id'])) {
 try {
     $conn = connectToDatabase();
 
-    $sql = "SELECT totp_enabled FROM analysts WHERE id = ?";
+    $sql = "SELECT totp_enabled, trust_device_enabled FROM analysts WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$_SESSION['analyst_id']]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Get system-wide trusted device days setting
+    $tdStmt = $conn->prepare("SELECT setting_value FROM system_settings WHERE setting_key = 'trusted_device_days'");
+    $tdStmt->execute();
+    $tdRow = $tdStmt->fetch(PDO::FETCH_ASSOC);
+    $trustDays = (int)($tdRow['setting_value'] ?? 0);
+
     echo json_encode([
         'success' => true,
-        'mfa_enabled' => $row ? (bool)$row['totp_enabled'] : false
+        'mfa_enabled' => $row ? (bool)$row['totp_enabled'] : false,
+        'trust_device_enabled' => $row ? (bool)$row['trust_device_enabled'] : false,
+        'trusted_device_days' => $trustDays
     ]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);

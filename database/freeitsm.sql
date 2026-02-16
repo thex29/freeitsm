@@ -1607,6 +1607,25 @@ CREATE TABLE [dbo].[contracts] (
 ) ON [PRIMARY]
 GO
 
+-- Security: additional analyst columns
+ALTER TABLE analysts ADD trust_device_enabled BIT NOT NULL DEFAULT 0;
+ALTER TABLE analysts ADD password_changed_datetime DATETIME NULL;
+ALTER TABLE analysts ADD failed_login_count INT NOT NULL DEFAULT 0;
+ALTER TABLE analysts ADD locked_until DATETIME NULL;
+
+-- Trusted devices table
+CREATE TABLE [dbo].[trusted_devices] (
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [analyst_id] [int] NOT NULL,
+    [device_token_hash] [nvarchar](255) NOT NULL,
+    [user_agent] [nvarchar](500) NULL,
+    [ip_address] [nvarchar](45) NULL,
+    [created_datetime] [datetime] NULL DEFAULT GETDATE(),
+    [expires_datetime] [datetime] NOT NULL,
+    PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
 -- Default admin account (username: admin, password: freeitsm)
 -- IMPORTANT: Change this password after first login!
 INSERT INTO [dbo].[analysts] ([username], [password_hash], [full_name], [email], [is_active], [created_datetime]) VALUES (N'admin', N'$2y$12$z9jzs9Sqol4i.ThVE/wwL.EzvbYtZrU0GHpzUJX7UC6ODp5h.q2U2', N'Administrator', N'admin@localhost', 1, GETUTCDATE());

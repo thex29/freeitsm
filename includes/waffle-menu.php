@@ -15,6 +15,15 @@ $path_prefix = $path_prefix ?? '../';
 $current_module = $current_module ?? '';
 $analyst_name = $analyst_name ?? ($_SESSION['analyst_name'] ?? 'Analyst');
 
+// Password expiry guard — force redirect if password is expired
+if (!empty($_SESSION['password_expired'])) {
+    $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
+    if (strpos($currentUrl, 'force_password_change.php') === false && strpos($currentUrl, 'analyst_logout.php') === false && strpos($currentUrl, 'api/') === false) {
+        header('Location: ' . $path_prefix . 'force_password_change.php');
+        exit;
+    }
+}
+
 // Module definitions - add new modules here
 $modules = [
     'tickets' => [
@@ -681,6 +690,11 @@ function renderHeaderRight($analyst_name, $path_prefix) {
                 <span>Multi-Factor Auth</span>
                 <span class="mfa-badge disabled" id="mfaBadgeMenu">Off</span>
             </button>
+            <button class="user-menu-item" id="trustDeviceItem" onclick="toggleTrustDevice()" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                <span>Trusted Device</span>
+                <span class="mfa-badge disabled" id="trustBadgeMenu">Off</span>
+            </button>
             <div class="user-menu-divider"></div>
             <button class="user-menu-item logout-item" onclick="if(confirm('Are you sure you want to logout?')) window.location.href='<?php echo $path_prefix; ?>analyst_logout.php';">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -820,7 +834,7 @@ function renderHeaderRight($analyst_name, $path_prefix) {
         btn.disabled = false;
     }
 
-    /* --- MFA Badge --- */
+    /* --- MFA Badge & Trust Device Badge --- */
     async function loadMfaBadge() {
         try {
             const resp = await fetch(_pathPrefix + 'api/myaccount/get_mfa_status.php');
@@ -832,6 +846,45 @@ function renderHeaderRight($analyst_name, $path_prefix) {
             } else {
                 badge.className = 'mfa-badge disabled';
                 badge.textContent = 'Off';
+            }
+
+            // Trust device badge
+            const trustItem = document.getElementById('trustDeviceItem');
+            const trustBadge = document.getElementById('trustBadgeMenu');
+            if (data.success && data.trusted_device_days > 0) {
+                trustItem.style.display = '';
+                if (data.trust_device_enabled) {
+                    trustBadge.className = 'mfa-badge enabled';
+                    trustBadge.textContent = 'On';
+                } else {
+                    trustBadge.className = 'mfa-badge disabled';
+                    trustBadge.textContent = 'Off';
+                }
+            } else {
+                trustItem.style.display = 'none';
+            }
+        } catch (e) {}
+    }
+
+    /* --- Trust Device Toggle --- */
+    async function toggleTrustDevice() {
+        closeUserMenu();
+        try {
+            const resp = await fetch(_pathPrefix + 'api/myaccount/toggle_trust_device.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const data = await resp.json();
+            if (data.success) {
+                const trustBadge = document.getElementById('trustBadgeMenu');
+                if (data.enabled) {
+                    trustBadge.className = 'mfa-badge enabled';
+                    trustBadge.textContent = 'On';
+                } else {
+                    trustBadge.className = 'mfa-badge disabled';
+                    trustBadge.textContent = 'Off';
+                }
             }
         } catch (e) {}
     }

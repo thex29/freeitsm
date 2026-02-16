@@ -34,6 +34,10 @@ $schema = [
         'last_modified_datetime' => 'datetime NULL',
         'totp_secret'            => 'nvarchar(500) NULL',
         'totp_enabled'           => 'bit NOT NULL DEFAULT 0',
+        'trust_device_enabled'   => 'bit NOT NULL DEFAULT 0',
+        'password_changed_datetime' => 'datetime NULL',
+        'failed_login_count'     => 'int NOT NULL DEFAULT 0',
+        'locked_until'           => 'datetime NULL',
     ],
 
     'departments' => [
@@ -378,6 +382,16 @@ $schema = [
         'setting_key'       => 'nvarchar(100) NOT NULL',
         'setting_value'     => 'nvarchar(max) NULL',
         'updated_datetime'  => 'datetime NULL DEFAULT GETUTCDATE()',
+    ],
+
+    'trusted_devices' => [
+        'id'                 => 'int IDENTITY(1,1) NOT NULL',
+        'analyst_id'         => 'int NOT NULL',
+        'device_token_hash'  => 'nvarchar(255) NOT NULL',
+        'user_agent'         => 'nvarchar(500) NULL',
+        'ip_address'         => 'nvarchar(45) NULL',
+        'created_datetime'   => 'datetime NULL DEFAULT GETUTCDATE()',
+        'expires_datetime'   => 'datetime NOT NULL',
     ],
 
     'knowledge_articles' => [

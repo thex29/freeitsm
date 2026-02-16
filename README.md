@@ -696,6 +696,9 @@ Controls which modules an analyst can access. No rows = full access to all modul
 - Login attempt logging with IP and user agent
 - Credential masking in UI (`****` + last 4 characters)
 - Password required to disable MFA (prevents unauthorized deactivation)
+- Trusted device: users can opt in to skip OTP on trusted browsers for a configurable number of days (cookie-based with SHA-256 hashed tokens stored server-side)
+- Password expiry policy: configurable maximum password age (30–365 days) with forced password change on next login when expired
+- Account lockout: configurable max failed login attempts before temporary account lock with configurable lockout duration
 
 ### Password Hashing
 - **Algorithm**: Bcrypt via PHP's `password_hash()` with `PASSWORD_DEFAULT`
