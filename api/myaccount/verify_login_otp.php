@@ -111,8 +111,8 @@ try {
     $peRow = $peStmt->fetch(PDO::FETCH_ASSOC);
     $expiryDays = (int)($peRow['setting_value'] ?? 0);
 
-    if ($expiryDays > 0) {
-        $pwChanged = $row['password_changed_datetime'] ?? null;
+    if ($expiryDays > 0 && array_key_exists('password_changed_datetime', $row)) {
+        $pwChanged = $row['password_changed_datetime'];
         $expired = false;
         if (empty($pwChanged)) {
             $expired = true;
