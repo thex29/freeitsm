@@ -264,21 +264,21 @@ $contract_id = $_GET['id'] ?? null;
                         </div>
                     </div>
 
+                    <div class="form-section" style="margin-top: 20px;">Contract Terms Detail</div>
+                    <div id="contractTermsSection" style="display: none;">
+                        <div class="terms-tabs" id="termsTabs"></div>
+                        <div id="termsPanels"></div>
+                    </div>
+                    <div id="contractTermsEmpty" class="terms-empty">
+                        No contract terms tabs configured. <a href="settings/">Configure in settings</a>.
+                    </div>
+
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
                         <a href="index.php" class="btn btn-secondary">Cancel</a>
                         <span class="save-message" id="saveMessage"></span>
                     </div>
                 </form>
-
-                <div class="form-section" style="margin-top: 20px;">Contract Terms Detail</div>
-                <div id="contractTermsSection" style="display: none;">
-                    <div class="terms-tabs" id="termsTabs"></div>
-                    <div id="termsPanels"></div>
-                </div>
-                <div id="contractTermsEmpty" class="terms-empty">
-                    No contract terms tabs configured. <a href="settings/">Configure in settings</a>.
-                </div>
             </div>
         </div>
     </div>
