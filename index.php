@@ -91,9 +91,9 @@ $allowed_modules = $_SESSION['allowed_modules'] ?? null;
 
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
-            max-width: 750px;
+            max-width: 940px;
             width: 100%;
             justify-content: center;
         }
