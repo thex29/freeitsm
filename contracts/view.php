@@ -25,7 +25,7 @@ if (!$contract_id) {
         body { overflow: auto; height: auto; }
 
         .contract-container {
-            max-width: 900px;
+            max-width: 1120px;
             margin: 0 auto;
             padding: 30px;
         }

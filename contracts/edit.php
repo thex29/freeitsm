@@ -21,7 +21,7 @@ $contract_id = $_GET['id'] ?? null;
         body { overflow: auto; height: auto; }
 
         .form-container {
-            max-width: 800px;
+            max-width: 1120px;
             margin: 0 auto;
             padding: 30px;
         }
