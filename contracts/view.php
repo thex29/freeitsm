@@ -114,6 +114,19 @@ if (!$contract_id) {
         .dms-link a:hover { text-decoration: underline; }
 
         .loading { text-align: center; padding: 60px; color: #999; }
+
+        .terms-view-tabs { display: flex; gap: 0; border-bottom: 2px solid #e0e0e0; margin-top: 8px; }
+        .terms-view-tab {
+            padding: 10px 20px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer;
+            background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s;
+        }
+        .terms-view-tab:hover { color: #333; background: #f5f5f5; }
+        .terms-view-tab.active { color: #f59e0b; border-bottom-color: #f59e0b; font-weight: 600; }
+        .terms-view-panel { display: none; padding: 20px 0; }
+        .terms-view-panel.active { display: block; }
+        .terms-view-panel .rich-content { font-size: 14px; line-height: 1.6; color: #333; }
+        .terms-view-panel .rich-content table { border-collapse: collapse; width: 100%; }
+        .terms-view-panel .rich-content td, .terms-view-panel .rich-content th { border: 1px solid #ddd; padding: 8px; }
     </style>
 </head>
 <body>
@@ -137,6 +150,7 @@ if (!$contract_id) {
                 const data = await response.json();
                 if (data.success) {
                     renderContract(data.contract);
+                    loadAndRenderContractTerms();
                 } else {
                     document.getElementById('contractCard').innerHTML =
                         '<div class="loading" style="color:#d13438;">Error: ' + escapeHtml(data.error) + '</div>';
@@ -290,6 +304,62 @@ if (!$contract_id) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Contract Terms Detail (read-only)
+        async function loadAndRenderContractTerms() {
+            try {
+                const [tabsResp, valuesResp] = await Promise.all([
+                    fetch(API_BASE + 'get_contract_term_tabs.php'),
+                    fetch(API_BASE + 'get_contract_terms.php?contract_id=' + contractId)
+                ]);
+                const tabsData = await tabsResp.json();
+                const valuesData = await valuesResp.json();
+
+                if (!tabsData.success || !valuesData.success) return;
+
+                const activeTabs = tabsData.contract_term_tabs.filter(t => t.is_active);
+                if (activeTabs.length === 0) return;
+
+                const valueMap = {};
+                (valuesData.contract_terms || []).forEach(tv => {
+                    valueMap[tv.term_tab_id] = tv.content || '';
+                });
+
+                const hasAnyContent = activeTabs.some(tab => valueMap[tab.id] && valueMap[tab.id].trim());
+                if (!hasAnyContent) return;
+
+                const tabButtons = activeTabs.map((tab, i) =>
+                    `<button class="terms-view-tab ${i === 0 ? 'active' : ''}" data-tab-id="${tab.id}" onclick="switchViewTermTab(${tab.id})">${escapeHtml(tab.name)}</button>`
+                ).join('');
+
+                const tabPanels = activeTabs.map((tab, i) =>
+                    `<div class="terms-view-panel ${i === 0 ? 'active' : ''}" id="viewTermPanel_${tab.id}"><div class="rich-content">${valueMap[tab.id] || '<span style="color:#999;">No content</span>'}</div></div>`
+                ).join('');
+
+                const termsHtml = `
+                    <div class="section-divider"><h3>Contract Terms Detail</h3></div>
+                    <div class="detail-group full-width">
+                        <div class="terms-view-tabs">${tabButtons}</div>
+                        ${tabPanels}
+                    </div>
+                `;
+
+                // Insert before the System section divider
+                const dividers = document.querySelectorAll('.section-divider');
+                const systemDivider = dividers[dividers.length - 1];
+                systemDivider.insertAdjacentHTML('beforebegin', termsHtml);
+
+            } catch (error) {
+                console.error('Error loading contract terms:', error);
+            }
+        }
+
+        function switchViewTermTab(tabId) {
+            document.querySelectorAll('.terms-view-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.terms-view-tab[data-tab-id="' + tabId + '"]').classList.add('active');
+            document.querySelectorAll('.terms-view-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('viewTermPanel_' + tabId).classList.add('active');
         }
     </script>
 </body>

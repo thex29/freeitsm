@@ -1559,6 +1559,26 @@ CREATE TABLE [dbo].[payment_schedules] (
     PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+CREATE TABLE [dbo].[contract_term_tabs] (
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [name] [nvarchar](100) NOT NULL,
+    [description] [nvarchar](255) NULL,
+    [is_active] [bit] NOT NULL DEFAULT 1,
+    [display_order] [int] NOT NULL DEFAULT 0,
+    [created_datetime] [datetime] NULL DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+CREATE TABLE [dbo].[contract_term_values] (
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [contract_id] [int] NOT NULL,
+    [term_tab_id] [int] NOT NULL,
+    [content] [nvarchar](max) NULL,
+    [created_datetime] [datetime] NULL DEFAULT GETDATE(),
+    [updated_datetime] [datetime] NULL DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id] ASC) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 CREATE TABLE [dbo].[contracts] (
     [id] [int] IDENTITY(1,1) NOT NULL,
     [contract_number] [nvarchar](50) NOT NULL,

@@ -16,6 +16,7 @@ $contract_id = $_GET['id'] ?? null;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Desk - <?php echo $contract_id ? 'Edit' : 'Add'; ?> Contract</title>
     <link rel="stylesheet" href="../assets/css/inbox.css">
+    <script src="../assets/js/tinymce/tinymce.min.js"></script>
     <style>
         body { overflow: auto; height: auto; }
 
@@ -107,6 +108,19 @@ $contract_id = $_GET['id'] ?? null;
         .toggle-switch input:checked + .toggle-slider { background: #f59e0b; }
         .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
         .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; margin-bottom: 15px; }
+
+        .terms-tabs { display: flex; gap: 0; border-bottom: 2px solid #e0e0e0; margin-bottom: 0; }
+        .terms-tab {
+            padding: 10px 20px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer;
+            background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s;
+        }
+        .terms-tab:hover { color: #333; background: #f5f5f5; }
+        .terms-tab.active { color: #f59e0b; border-bottom-color: #f59e0b; font-weight: 600; }
+        .terms-panel { display: none; padding-top: 16px; }
+        .terms-panel.active { display: block; }
+        .terms-save-row { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+        .terms-empty { color: #999; font-size: 13px; padding: 12px 0; }
+        .terms-empty a { color: #f59e0b; }
     </style>
 </head>
 <body>
@@ -257,6 +271,19 @@ $contract_id = $_GET['id'] ?? null;
                         <span class="save-message" id="saveMessage"></span>
                     </div>
                 </form>
+
+                <div class="form-section" style="margin-top: 20px;">Contract Terms Detail</div>
+                <div id="contractTermsSection" style="display: none;">
+                    <div class="terms-tabs" id="termsTabs"></div>
+                    <div id="termsPanels"></div>
+                    <div class="terms-save-row">
+                        <button type="button" class="btn btn-primary" id="saveTermsBtn" onclick="saveContractTerms()">Save</button>
+                        <span class="save-message" id="termsMessage"></span>
+                    </div>
+                </div>
+                <div id="contractTermsEmpty" class="terms-empty">
+                    No contract terms tabs configured. <a href="settings/">Configure in settings</a>.
+                </div>
             </div>
         </div>
     </div>
@@ -288,15 +315,24 @@ $contract_id = $_GET['id'] ?? null;
             { code: 'ZAR', name: 'South African Rand (ZAR)' }
         ];
 
+        let termTabs = [];
+        let termEditorIds = [];
+
         document.addEventListener('DOMContentLoaded', async function() {
             populateCurrencies();
             await Promise.all([
                 loadSuppliers(),
                 loadAnalysts(),
                 loadContractStatuses(),
-                loadPaymentSchedules()
+                loadPaymentSchedules(),
+                loadContractTermTabs()
             ]);
             if (contractId) await loadContract();
+
+            buildTermEditors();
+            initTermEditors(() => {
+                if (contractId) loadContractTermValues();
+            });
         });
 
         function populateCurrencies() {
@@ -458,6 +494,130 @@ $contract_id = $_GET['id'] ?? null;
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Contract Terms
+        async function loadContractTermTabs() {
+            try {
+                const response = await fetch(API_BASE + 'get_contract_term_tabs.php');
+                const data = await response.json();
+                if (data.success) {
+                    termTabs = data.contract_term_tabs.filter(t => t.is_active);
+                }
+            } catch (error) { console.error('Error loading contract term tabs:', error); }
+        }
+
+        function buildTermEditors() {
+            if (termTabs.length === 0) {
+                document.getElementById('contractTermsSection').style.display = 'none';
+                document.getElementById('contractTermsEmpty').style.display = '';
+                return;
+            }
+
+            document.getElementById('contractTermsSection').style.display = '';
+            document.getElementById('contractTermsEmpty').style.display = 'none';
+
+            const tabsContainer = document.getElementById('termsTabs');
+            const panelsContainer = document.getElementById('termsPanels');
+            termEditorIds = [];
+
+            tabsContainer.innerHTML = termTabs.map((tab, i) =>
+                `<button type="button" class="terms-tab ${i === 0 ? 'active' : ''}" data-tab-id="${tab.id}" onclick="switchTermTab(${tab.id})">${escapeHtml(tab.name)}</button>`
+            ).join('');
+
+            panelsContainer.innerHTML = termTabs.map((tab, i) => {
+                const editorId = 'termEditor_' + tab.id;
+                termEditorIds.push(editorId);
+                return `<div class="terms-panel ${i === 0 ? 'active' : ''}" id="termPanel_${tab.id}"><textarea id="${editorId}"></textarea></div>`;
+            }).join('');
+        }
+
+        function switchTermTab(tabId) {
+            document.querySelectorAll('.terms-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.terms-tab[data-tab-id="' + tabId + '"]').classList.add('active');
+            document.querySelectorAll('.terms-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('termPanel_' + tabId).classList.add('active');
+        }
+
+        function initTermEditors(callback) {
+            if (termEditorIds.length === 0) { if (callback) callback(); return; }
+
+            let initialized = 0;
+            const total = termEditorIds.length;
+
+            termEditorIds.forEach(id => {
+                tinymce.init({
+                    selector: '#' + id,
+                    license_key: 'gpl',
+                    height: 300,
+                    menubar: false,
+                    plugins: ['advlist', 'autolink', 'lists', 'link', 'table', 'wordcount'],
+                    toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link table | removeformat',
+                    content_style: 'body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; }',
+                    setup: function(editor) {
+                        editor.on('init', function() {
+                            initialized++;
+                            if (initialized === total && callback) callback();
+                        });
+                    }
+                });
+            });
+        }
+
+        async function loadContractTermValues() {
+            if (!contractId) return;
+            try {
+                const response = await fetch(API_BASE + 'get_contract_terms.php?contract_id=' + contractId);
+                const data = await response.json();
+                if (data.success) {
+                    data.contract_terms.forEach(tv => {
+                        const editor = tinymce.get('termEditor_' + tv.term_tab_id);
+                        if (editor) editor.setContent(tv.content || '');
+                    });
+                }
+            } catch (error) { console.error('Error loading contract term values:', error); }
+        }
+
+        async function saveContractTerms() {
+            if (!contractId) {
+                showTermsMessage('Save the contract first before adding terms content', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveTermsBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const terms = termTabs.map(tab => ({
+                term_tab_id: tab.id,
+                content: tinymce.get('termEditor_' + tab.id)?.getContent() || ''
+            }));
+
+            try {
+                const response = await fetch(API_BASE + 'save_contract_terms.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contract_id: parseInt(contractId), terms })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showTermsMessage('Terms saved', 'success');
+                } else {
+                    showTermsMessage('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showTermsMessage('Failed to save terms', 'error');
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+        }
+
+        function showTermsMessage(text, type) {
+            const el = document.getElementById('termsMessage');
+            el.textContent = text;
+            el.className = 'save-message visible ' + type;
+            setTimeout(() => el.classList.remove('visible'), 3000);
         }
     </script>
 </body>

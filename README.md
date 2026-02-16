@@ -424,6 +424,16 @@ Dynamic form builder and submission system with a unified sidebar + editor layou
 - **Settings**: Gear icon in sidebar opens settings modal. Configurable logo alignment (left, centre, right) applied to both preview and fill-in views.
 - **Field types**: `text`, `textarea`, `checkbox`, `dropdown`
 
+### Contracts (`contracts/`)
+Supplier and contract lifecycle management with configurable rich text terms.
+
+- **Dashboard** (`index.php`): Left sidebar with overview stats (contracts, active, expiring, suppliers, contacts), quick links, and universal search across contracts, suppliers, and contacts. Main area shows the full contracts table.
+- **Add/Edit** (`edit.php`): Sectioned form with contract details, dates, financial, documents, and terms & data protection fields. Below the main form, a "Contract Terms Detail" section displays configurable TinyMCE rich text tabs for detailed contract terms (e.g. Special terms, KPIs, SLAs).
+- **View** (`view.php`): Read-only detail view with all fields organised into sections. Contract terms content displayed in read-only tabs.
+- **Suppliers** (`suppliers/`): Supplier register with legal/trading names, registration details, address, type/status, questionnaire tracking, and comments.
+- **Contacts** (`contacts/`): Supplier contacts with name, job title, email, direct dial, and switchboard fields.
+- **Settings** (`settings/`): Tabbed management of supplier types, supplier statuses, contract statuses, payment schedules, and contract term tabs.
+
 ---
 
 ## API Reference

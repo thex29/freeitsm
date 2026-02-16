@@ -85,6 +85,7 @@ $path_prefix = '../../';
             <button class="tab" data-tab="supplier-statuses" onclick="switchTab('supplier-statuses')">Supplier Statuses</button>
             <button class="tab" data-tab="contract-statuses" onclick="switchTab('contract-statuses')">Contract Statuses</button>
             <button class="tab" data-tab="payment-schedules" onclick="switchTab('payment-schedules')">Payment Schedules</button>
+            <button class="tab" data-tab="contract-term-tabs" onclick="switchTab('contract-term-tabs')">Contract Terms</button>
         </div>
 
         <!-- Supplier Types Tab -->
@@ -174,6 +175,27 @@ $path_prefix = '../../';
                 </tbody>
             </table>
         </div>
+        <!-- Contract Term Tabs Tab -->
+        <div class="tab-content" id="contract-term-tabs-tab">
+            <div class="section-header">
+                <h2>Contract Terms</h2>
+                <button class="add-btn" onclick="openAddModal('contract-term-tab')">Add</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contract-term-tabs-list">
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Edit/Add Modal -->
@@ -214,7 +236,7 @@ $path_prefix = '../../';
 
     <script>
         const API_BASE = '../../api/contracts/';
-        let allItems = { 'supplier-type': [], 'supplier-status': [], 'contract-status': [], 'payment-schedule': [] };
+        let allItems = { 'supplier-type': [], 'supplier-status': [], 'contract-status': [], 'payment-schedule': [], 'contract-term-tab': [] };
 
         const endpoints = {
             'supplier-type': {
@@ -248,6 +270,14 @@ $path_prefix = '../../';
                 key: 'payment_schedules',
                 listId: 'payment-schedules-list',
                 label: 'Payment Schedule'
+            },
+            'contract-term-tab': {
+                get: API_BASE + 'get_contract_term_tabs.php',
+                save: API_BASE + 'save_contract_term_tab.php',
+                delete: API_BASE + 'delete_contract_term_tab.php',
+                key: 'contract_term_tabs',
+                listId: 'contract-term-tabs-list',
+                label: 'Contract Term'
             }
         };
 
@@ -256,6 +286,7 @@ $path_prefix = '../../';
             loadItems('supplier-status');
             loadItems('contract-status');
             loadItems('payment-schedule');
+            loadItems('contract-term-tab');
         });
 
         function switchTab(tab) {
