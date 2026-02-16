@@ -118,7 +118,6 @@ $contract_id = $_GET['id'] ?? null;
         .terms-tab.active { color: #f59e0b; border-bottom-color: #f59e0b; font-weight: 600; }
         .terms-panel { display: none; padding-top: 16px; }
         .terms-panel.active { display: block; }
-        .terms-save-row { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
         .terms-empty { color: #999; font-size: 13px; padding: 12px 0; }
         .terms-empty a { color: #f59e0b; }
     </style>
@@ -276,10 +275,6 @@ $contract_id = $_GET['id'] ?? null;
                 <div id="contractTermsSection" style="display: none;">
                     <div class="terms-tabs" id="termsTabs"></div>
                     <div id="termsPanels"></div>
-                    <div class="terms-save-row">
-                        <button type="button" class="btn btn-primary" id="saveTermsBtn" onclick="saveContractTerms()">Save</button>
-                        <span class="save-message" id="termsMessage"></span>
-                    </div>
                 </div>
                 <div id="contractTermsEmpty" class="terms-empty">
                     No contract terms tabs configured. <a href="settings/">Configure in settings</a>.
@@ -291,7 +286,7 @@ $contract_id = $_GET['id'] ?? null;
     <script>
         const API_BASE = '../api/contracts/';
         const TICKETS_API = '../api/tickets/';
-        const contractId = <?php echo json_encode($contract_id); ?>;
+        let contractId = <?php echo json_encode($contract_id); ?>;
 
         const currencies = [
             { code: 'GBP', name: 'British Pound (GBP)' },
@@ -466,10 +461,25 @@ $contract_id = $_GET['id'] ?? null;
                 });
                 const data = await response.json();
                 if (data.success) {
+                    const savedId = contractId || data.id;
+
+                    // Save terms if any editors exist
+                    if (termEditorIds.length > 0) {
+                        const terms = termTabs.map(tab => ({
+                            term_tab_id: tab.id,
+                            content: tinymce.get('termEditor_' + tab.id)?.getContent() || ''
+                        }));
+                        await fetch(API_BASE + 'save_contract_terms.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contract_id: parseInt(savedId), terms })
+                        });
+                    }
+
                     if (contractId) {
-                        showMessage('Contract saved successfully', 'success');
+                        showMessage('Contract saved', 'success');
                     } else {
-                        window.location.href = 'view.php?id=' + data.id;
+                        window.location.href = 'view.php?id=' + savedId;
                     }
                 } else {
                     showMessage('Error: ' + data.error, 'error');
@@ -578,47 +588,6 @@ $contract_id = $_GET['id'] ?? null;
             } catch (error) { console.error('Error loading contract term values:', error); }
         }
 
-        async function saveContractTerms() {
-            if (!contractId) {
-                showTermsMessage('Save the contract first before adding terms content', 'error');
-                return;
-            }
-
-            const saveBtn = document.getElementById('saveTermsBtn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-
-            const terms = termTabs.map(tab => ({
-                term_tab_id: tab.id,
-                content: tinymce.get('termEditor_' + tab.id)?.getContent() || ''
-            }));
-
-            try {
-                const response = await fetch(API_BASE + 'save_contract_terms.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contract_id: parseInt(contractId), terms })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showTermsMessage('Terms saved', 'success');
-                } else {
-                    showTermsMessage('Error: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showTermsMessage('Failed to save terms', 'error');
-            }
-
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save';
-        }
-
-        function showTermsMessage(text, type) {
-            const el = document.getElementById('termsMessage');
-            el.textContent = text;
-            el.className = 'save-message visible ' + type;
-            setTimeout(() => el.classList.remove('visible'), 3000);
-        }
     </script>
 </body>
 </html>
