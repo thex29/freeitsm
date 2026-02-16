@@ -110,11 +110,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Query for user (include MFA, lockout, trust, and password fields)
-            $sql = "SELECT id, username, password_hash, full_name, email, totp_enabled,
-                           locked_until, failed_login_count, trust_device_enabled, password_changed_datetime
-                    FROM analysts WHERE username = ? AND is_active = 1";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$username]);
+            // Falls back to basic query if security columns don't exist yet (pre db-verify)
+            try {
+                $sql = "SELECT id, username, password_hash, full_name, email, totp_enabled,
+                               locked_until, failed_login_count, trust_device_enabled, password_changed_datetime
+                        FROM analysts WHERE username = ? AND is_active = 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$username]);
+            } catch (Exception $colEx) {
+                $sql = "SELECT id, username, password_hash, full_name, email, totp_enabled
+                        FROM analysts WHERE username = ? AND is_active = 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$username]);
+            }
             $analyst = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Check account lockout
@@ -138,9 +146,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (empty($error) && $analyst && password_verify($password, $analyst['password_hash'])) {
                 // Reset failed login counter on success
-                if ($analyst['failed_login_count'] > 0) {
-                    $resetStmt = $conn->prepare("UPDATE analysts SET failed_login_count = 0, locked_until = NULL WHERE id = ?");
-                    $resetStmt->execute([$analyst['id']]);
+                if (!empty($analyst['failed_login_count'])) {
+                    try {
+                        $resetStmt = $conn->prepare("UPDATE analysts SET failed_login_count = 0, locked_until = NULL WHERE id = ?");
+                        $resetStmt->execute([$analyst['id']]);
+                    } catch (Exception $e) { /* columns may not exist yet */ }
                 }
 
                 // Check if MFA is enabled
@@ -171,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         logLoginAttempt($conn, $analyst['id'], $username, true);
 
                         // Check password expiry
-                        if (isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
+                        if (isset($analyst['password_changed_datetime']) && isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
                             $_SESSION['password_expired'] = true;
                             header('Location: force_password_change.php');
                         } else {
@@ -211,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     logLoginAttempt($conn, $analyst['id'], $username, true);
 
                     // Check password expiry
-                    if (isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
+                    if (isset($analyst['password_changed_datetime']) && isPasswordExpired($conn, $analyst['password_changed_datetime'])) {
                         $_SESSION['password_expired'] = true;
                         header('Location: force_password_change.php');
                     } else {
@@ -221,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else if (empty($error)) {
                 // Failed login — track attempts and possibly lock
-                if ($analyst) {
+                if ($analyst && array_key_exists('failed_login_count', $analyst)) {
                     $newCount = ($analyst['failed_login_count'] ?? 0) + 1;
                     $maxFailed = (int)(getSecuritySetting($conn, 'max_failed_logins') ?? 0);
                     $lockoutMins = (int)(getSecuritySetting($conn, 'lockout_duration_minutes') ?? 30);

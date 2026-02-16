@@ -9,10 +9,8 @@ require_once '../../includes/functions.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['analyst_id'])) {
-    echo json_encode(['success' => false, 'error' => 'Not authenticated']);
-    exit;
-}
+// No auth check — db_verify must be accessible before login works
+// (new columns may not exist yet, breaking the login query)
 
 /**
  * Complete database schema definition.
