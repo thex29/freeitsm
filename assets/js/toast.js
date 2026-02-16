@@ -1,6 +1,7 @@
 /**
  * Global Toast Notification System
- * Position preference stored in localStorage ('toast_position')
+ * Position: localStorage 'toast_position' (default: bottom-right)
+ * Animation: localStorage 'toast_animation' (slide|fade, default: slide)
  * Usage: showToast('Message text', 'success') — types: success, error, warning, info
  */
 (function() {
@@ -21,11 +22,15 @@
             'font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:#333;pointer-events:auto;' +
             'min-width:280px;max-width:380px;opacity:0;transition:opacity 0.3s,transform 0.3s}' +
         '.toast-item.show{opacity:1;transform:none!important}' +
-        '.toast-container.top-left .toast-item,.toast-container.top-center .toast-item,.toast-container.top-right .toast-item{transform:translateY(-20px)}' +
-        '.toast-container.bottom-left .toast-item,.toast-container.bottom-center .toast-item,.toast-container.bottom-right .toast-item{transform:translateY(20px)}' +
-        '.toast-container.middle-left .toast-item{transform:translateX(-20px)}' +
-        '.toast-container.middle-right .toast-item{transform:translateX(20px)}' +
-        '.toast-container.middle-center .toast-item{transform:scale(0.95)}' +
+        /* Slide animations */
+        '.toast-container.anim-slide.top-left .toast-item,.toast-container.anim-slide.top-center .toast-item,.toast-container.anim-slide.top-right .toast-item{transform:translateY(-20px)}' +
+        '.toast-container.anim-slide.bottom-left .toast-item,.toast-container.anim-slide.bottom-center .toast-item,.toast-container.anim-slide.bottom-right .toast-item{transform:translateY(20px)}' +
+        '.toast-container.anim-slide.middle-left .toast-item{transform:translateX(-20px)}' +
+        '.toast-container.anim-slide.middle-right .toast-item{transform:translateX(20px)}' +
+        '.toast-container.anim-slide.middle-center .toast-item{transform:scale(0.95)}' +
+        /* Fade animation — just opacity, no transform */
+        '.toast-container.anim-fade .toast-item{transform:none}' +
+        /* Type colours */
         '.toast-item.toast-success{border-left-color:#22c55e}' +
         '.toast-item.toast-error{border-left-color:#ef4444}' +
         '.toast-item.toast-warning{border-left-color:#f59e0b}' +
@@ -49,19 +54,26 @@
 
     var container = null;
     var currentPosition = null;
+    var currentAnimation = null;
 
     function getPosition() {
         return localStorage.getItem('toast_position') || 'bottom-right';
     }
 
+    function getAnimation() {
+        return localStorage.getItem('toast_animation') || 'slide';
+    }
+
     function getContainer() {
         var pos = getPosition();
-        if (container && currentPosition === pos) return container;
+        var anim = getAnimation();
+        if (container && currentPosition === pos && currentAnimation === anim) return container;
         if (container) container.remove();
         container = document.createElement('div');
-        container.className = 'toast-container ' + pos;
+        container.className = 'toast-container ' + pos + ' anim-' + anim;
         document.body.appendChild(container);
         currentPosition = pos;
+        currentAnimation = anim;
         return container;
     }
 

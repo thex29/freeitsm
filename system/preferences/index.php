@@ -95,6 +95,30 @@ $path_prefix = '../../';
             background: #bbb;
             transition: all 0.15s;
         }
+
+        .anim-toggle {
+            display: flex;
+            gap: 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            width: fit-content;
+        }
+
+        .anim-option {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            background: #f5f5f5;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .anim-option:not(:last-child) { border-right: 1px solid #ddd; }
+        .anim-option:hover { background: #e8e8e8; }
+        .anim-option.active { background: #546e7a; color: #fff; }
     </style>
 </head>
 <body>
@@ -106,9 +130,18 @@ $path_prefix = '../../';
             <p class="subtitle">Personal settings saved to this browser.</p>
 
             <div class="pref-section">
-                <h3>Toast Notifications</h3>
+                <h3>Notification Position</h3>
                 <p>Choose where notifications appear on your screen.</p>
                 <div class="position-grid" id="toastPositionGrid"></div>
+            </div>
+
+            <div class="pref-section">
+                <h3>Animation Style</h3>
+                <p>How notifications enter and exit the screen.</p>
+                <div class="anim-toggle" id="animToggle">
+                    <button class="anim-option" data-anim="slide">Slide</button>
+                    <button class="anim-option" data-anim="fade">Fade</button>
+                </div>
             </div>
         </div>
     </div>
@@ -147,6 +180,18 @@ $path_prefix = '../../';
             });
 
             grid.appendChild(cell);
+        });
+
+        // Animation toggle
+        const currentAnim = localStorage.getItem('toast_animation') || 'slide';
+        document.querySelectorAll('.anim-option').forEach(btn => {
+            if (btn.dataset.anim === currentAnim) btn.classList.add('active');
+            btn.addEventListener('click', function() {
+                localStorage.setItem('toast_animation', btn.dataset.anim);
+                document.querySelectorAll('.anim-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                showToast('Preview: ' + btn.dataset.anim + ' animation', 'info');
+            });
         });
     </script>
 </body>
