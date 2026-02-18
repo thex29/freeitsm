@@ -106,7 +106,7 @@ try {
 
     // Check if we have articles with embeddings
     $archiveFilter = $includeArchived ? '' : ' AND (is_archived = 0 OR is_archived IS NULL)';
-    $embeddingCountSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
+    $embeddingCountSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND LENGTH(embedding) > 0";
     $embeddingCountStmt = $conn->prepare($embeddingCountSql);
     $embeddingCountStmt->execute();
     $embeddingCount = $embeddingCountStmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -126,7 +126,7 @@ try {
             // Fetch all articles with embeddings
             $articleSql = "SELECT id, title, body, embedding
                           FROM knowledge_articles
-                          WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
+                          WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND LENGTH(embedding) > 0";
             $articleStmt = $conn->prepare($articleSql);
             $articleStmt->execute();
             $allArticles = $articleStmt->fetchAll(PDO::FETCH_ASSOC);

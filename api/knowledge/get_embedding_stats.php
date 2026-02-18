@@ -24,7 +24,7 @@ try {
     $total = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
     // Get articles with embeddings
-    $withSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1 AND (is_archived = 0 OR is_archived IS NULL) AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
+    $withSql = "SELECT COUNT(*) as count FROM knowledge_articles WHERE is_published = 1 AND (is_archived = 0 OR is_archived IS NULL) AND embedding IS NOT NULL AND LENGTH(embedding) > 0";
     $withStmt = $conn->prepare($withSql);
     $withStmt->execute();
     $withEmbeddings = $withStmt->fetch(PDO::FETCH_ASSOC)['count'];

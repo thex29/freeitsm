@@ -22,6 +22,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 047 | System            | Fix         | Parameterize all raw token_data SQL updates and integer interpolation to prevent SQL injection (6 files) |
 | 048 | System            | Improvement | Update setup page to check for pdo_mysql extension instead of pdo_odbc |
 | 049 | System            | Feature     | Per-module demo data import with 11 JSON datasets covering tickets, assets, knowledge, changes, calendar, morning checks, contracts, services, software, and forms |
+| 050 | Knowledge         | Fix         | Replace SQL Server DATALENGTH() with MySQL LENGTH() in AI chat, embedding stats, and article embedding queries |
 
 ### 16 February 2026
 
