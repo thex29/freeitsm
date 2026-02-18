@@ -263,11 +263,10 @@ function refreshAccessToken($mailbox, $refreshToken) {
  */
 function saveTokenData($conn, $mailboxId, $tokenData) {
     $jsonData = json_encode($tokenData);
-    $escapedJson = str_replace("'", "''", $jsonData);
 
-    $sql = "UPDATE target_mailboxes SET token_data = '$escapedJson' WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET token_data = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$mailboxId]);
+    $stmt->execute([$jsonData, $mailboxId]);
     echo "  ✓ Token data saved to database\n";
 }
 ?>

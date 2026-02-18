@@ -25,15 +25,14 @@ try {
 
     $conn = connectToDatabase();
 
-    // Embed validated date directly - PDO ODBC has issues with date parameters
     $sql = "SELECT c.CheckID, c.CheckName, c.CheckDescription, c.SortOrder, r.Status, r.Notes
             FROM morningChecks_Checks c
-            LEFT JOIN morningChecks_Results r ON c.CheckID = r.CheckID AND r.CheckDate = '$checkDate'
+            LEFT JOIN morningChecks_Results r ON c.CheckID = r.CheckID AND r.CheckDate = ?
             WHERE c.IsActive = 1
             ORDER BY c.SortOrder, c.CheckName";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute();
+    $stmt->execute([$checkDate]);
     $checks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Convert types for JS

@@ -118,7 +118,7 @@ if (file_exists($configPath)) {
 
 // 6. PHP extensions (always check, regardless of config)
 $requiredExtensions = ['pdo', 'curl', 'openssl', 'mbstring'];
-$odbcLoaded = extension_loaded('pdo_odbc') || extension_loaded('odbc');
+$mysqlLoaded = extension_loaded('pdo_mysql');
 foreach ($requiredExtensions as $ext) {
     if (extension_loaded($ext)) {
         $checks[] = ['name' => "PHP extension: $ext", 'status' => 'pass', 'detail' => 'Loaded'];
@@ -126,10 +126,10 @@ foreach ($requiredExtensions as $ext) {
         $checks[] = ['name' => "PHP extension: $ext", 'status' => 'fail', 'detail' => 'Not loaded — enable in php.ini'];
     }
 }
-if ($odbcLoaded) {
-    $checks[] = ['name' => 'PHP extension: pdo_odbc', 'status' => 'pass', 'detail' => 'Loaded'];
+if ($mysqlLoaded) {
+    $checks[] = ['name' => 'PHP extension: pdo_mysql', 'status' => 'pass', 'detail' => 'Loaded'];
 } else {
-    $checks[] = ['name' => 'PHP extension: pdo_odbc', 'status' => 'fail', 'detail' => 'Not loaded — enable pdo_odbc in php.ini'];
+    $checks[] = ['name' => 'PHP extension: pdo_mysql', 'status' => 'fail', 'detail' => 'Not loaded — enable pdo_mysql in php.ini'];
 }
 
 // Count results

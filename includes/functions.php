@@ -8,32 +8,16 @@
  */
 
 /**
- * Connect to SQL Server database using PDO with ODBC
- * Tries multiple drivers for compatibility
+ * Connect to MySQL database using PDO
  *
  * @return PDO Database connection
- * @throws Exception If connection fails with all drivers
+ * @throws Exception If connection fails
  */
 function connectToDatabase() {
-    $drivers = [
-        'ODBC Driver 17 for SQL Server',
-        'ODBC Driver 18 for SQL Server',
-        'SQL Server Native Client 11.0',
-        'SQL Server'
-    ];
-
-    foreach ($drivers as $driver) {
-        try {
-            $dsn = "odbc:Driver={{$driver}};Server=" . DB_SERVER . ";Database=" . DB_NAME;
-            $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $conn;
-        } catch (PDOException $e) {
-            continue;
-        }
-    }
-
-    throw new Exception('Database connection failed - no compatible ODBC driver found');
+    $dsn = "mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $conn;
 }
 
 /**

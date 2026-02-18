@@ -70,20 +70,20 @@ try {
         $userId = $existingUser['id'];
     } else {
         // Create new user
-        $createUserSql = "INSERT INTO users (email, display_name, created_at) OUTPUT INSERTED.id VALUES (?, ?, GETUTCDATE())";
+        $createUserSql = "INSERT INTO users (email, display_name, created_at) VALUES (?, ?, UTC_TIMESTAMP())";
         $createUserStmt = $conn->prepare($createUserSql);
         $createUserStmt->execute([$fromEmail, $fromName]);
-        $userId = $createUserStmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $userId = $conn->lastInsertId();
     }
 
     // Generate ticket number
     $ticketNumber = generateTicketNumber($conn);
 
-    // Create the ticket and get the ID using OUTPUT clause
+    // Create the ticket and get the ID
     $ticketSql = "INSERT INTO tickets (
         ticket_number, subject, status, priority, department_id, ticket_type_id,
         assigned_analyst_id, user_id, requester_name, requester_email, created_datetime, updated_datetime
-    ) OUTPUT INSERTED.id VALUES (?, ?, 'Open', ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())";
+    ) VALUES (?, ?, 'Open', ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 
     $ticketStmt = $conn->prepare($ticketSql);
     $ticketStmt->execute([
@@ -98,8 +98,7 @@ try {
         $fromEmail
     ]);
 
-    // Fetch the ticket ID from the OUTPUT clause
-    $ticketId = $ticketStmt->fetch(PDO::FETCH_ASSOC)['id'];
+    $ticketId = $conn->lastInsertId();
 
     // Create an initial "email" entry (this makes it appear in the inbox like other tickets)
     // Direction is 'Manual' to indicate it was manually created
@@ -110,7 +109,7 @@ try {
         subject, from_address, from_name, to_recipients, received_datetime,
         body_preview, body_content, body_type, has_attachments, importance,
         is_read, ticket_id, is_initial, direction
-    ) VALUES (?, ?, ?, ?, GETUTCDATE(), ?, ?, 'html', 0, 'normal', 1, ?, 1, 'Manual')";
+    ) VALUES (?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, 'html', 0, 'normal', 1, ?, 1, 'Manual')";
 
     $emailStmt = $conn->prepare($emailSql);
     $emailStmt->execute([
@@ -125,7 +124,7 @@ try {
 
     // Log the creation in ticket audit
     $auditSql = "INSERT INTO ticket_audit (ticket_id, analyst_id, field_name, old_value, new_value, created_datetime)
-                 VALUES (?, ?, 'Ticket Created', NULL, 'Manual ticket created by ' + ?, GETUTCDATE())";
+                 VALUES (?, ?, 'Ticket Created', NULL, CONCAT('Manual ticket created by ', ?), UTC_TIMESTAMP())";
     $auditStmt = $conn->prepare($auditSql);
     $auditStmt->execute([$ticketId, $analystId, $analystName]);
 

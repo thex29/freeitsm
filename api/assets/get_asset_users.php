@@ -27,8 +27,9 @@ try {
     $conn = connectToDatabase();
 
     // Check if users_assets table exists
-    $tableCheck = $conn->query("SELECT OBJECT_ID('users_assets', 'U') as table_exists");
-    $tableExists = $tableCheck->fetch(PDO::FETCH_ASSOC)['table_exists'] !== null;
+    $tableCheck = $conn->prepare("SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = 'users_assets'");
+    $tableCheck->execute([DB_NAME]);
+    $tableExists = (int)$tableCheck->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
     if (!$tableExists) {
         // Table doesn't exist yet, return empty array

@@ -28,17 +28,15 @@ try {
 
     $conn = connectToDatabase();
 
-    // Embed validated dates directly - PDO ODBC has issues with date parameters
-    // Use CONVERT to get just the date portion as VARCHAR (format 23 = yyyy-mm-dd)
     $sql = "SELECT DATE_FORMAT(r.CheckDate, '%Y-%m-%d') as CheckDate, r.Status, COUNT(*) as Count
             FROM morningChecks_Results r
             INNER JOIN morningChecks_Checks c ON r.CheckID = c.CheckID
-            WHERE r.CheckDate >= '$startDate' AND r.CheckDate <= '$endDate'
+            WHERE r.CheckDate >= ? AND r.CheckDate <= ?
             GROUP BY DATE_FORMAT(r.CheckDate, '%Y-%m-%d'), r.Status
             ORDER BY DATE_FORMAT(r.CheckDate, '%Y-%m-%d')";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute();
+    $stmt->execute([$startDate, $endDate]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Build data structure - generate all dates for the 30 days ending on endDate

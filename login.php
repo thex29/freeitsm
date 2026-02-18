@@ -215,16 +215,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $maxFailed = (int)(getSecuritySetting($conn, 'max_failed_logins') ?? 0);
                     $lockoutMins = (int)(getSecuritySetting($conn, 'lockout_duration_minutes') ?? 30);
 
-                    // Interpolate int values — PDO ODBC sends all params as text type
-                    $cnt = intval($newCount);
-                    $mins = intval($lockoutMins);
-                    $aid = intval($analyst['id']);
                     if ($maxFailed > 0 && $newCount >= $maxFailed) {
-                        $lockStmt = $conn->prepare("UPDATE analysts SET failed_login_count = {$cnt}, locked_until = DATE_ADD(UTC_TIMESTAMP(), INTERVAL {$mins} MINUTE) WHERE id = {$aid}");
-                        $lockStmt->execute();
+                        $lockStmt = $conn->prepare("UPDATE analysts SET failed_login_count = ?, locked_until = DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? MINUTE) WHERE id = ?");
+                        $lockStmt->execute([(int)$newCount, (int)$lockoutMins, (int)$analyst['id']]);
                     } else {
-                        $incStmt = $conn->prepare("UPDATE analysts SET failed_login_count = {$cnt} WHERE id = {$aid}");
-                        $incStmt->execute();
+                        $incStmt = $conn->prepare("UPDATE analysts SET failed_login_count = ? WHERE id = ?");
+                        $incStmt->execute([(int)$newCount, (int)$analyst['id']]);
                     }
                 }
 

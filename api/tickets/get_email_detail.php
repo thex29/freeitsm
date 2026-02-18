@@ -82,8 +82,7 @@ try {
         exit;
     }
 
-    // Clean body_content of ODBC-inserted characters
-    // ODBC can insert control characters and Unicode replacement characters when reading from SQL Server
+    // Clean body_content of control characters and Unicode replacement characters
     if ($email['body_content']) {
         // Remove control characters (0x00-0x1F except tab, newline, carriage return, and 0x7F)
         $email['body_content'] = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $email['body_content']);

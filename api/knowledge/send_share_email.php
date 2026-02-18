@@ -180,7 +180,7 @@ function sendMailboxEmail($conn, $mailboxId, $toEmail, $subject, $htmlBody, $pdf
         return ['success' => false, 'error' => 'Mailbox is not authenticated. Please authenticate in Settings.'];
     }
 
-    // Parse token data (clean ODBC control characters)
+    // Parse token data (clean any control characters)
     $cleanedTokenData = preg_replace('/[\x00-\x1F\x7F]/', '', $mailbox['token_data']);
     $tokenData = json_decode($cleanedTokenData, true);
 
@@ -327,11 +327,9 @@ function refreshAccessToken($mailbox, $refreshToken) {
  */
 function saveTokenData($conn, $mailboxId, $tokenData) {
     $jsonData = json_encode($tokenData);
-    // Escape single quotes and use direct SQL to avoid ODBC encoding issues
-    $escapedJson = str_replace("'", "''", $jsonData);
 
-    $sql = "UPDATE target_mailboxes SET token_data = '$escapedJson' WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET token_data = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$mailboxId]);
+    $stmt->execute([$jsonData, $mailboxId]);
 }
 ?>

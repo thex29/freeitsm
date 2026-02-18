@@ -30,7 +30,7 @@ if (empty($title)) {
     exit;
 }
 
-// Helper to coerce empty/null values for ODBC compatibility
+// Helper to coerce empty/null values
 function nullInt($val) {
     return (isset($val) && $val !== '' && $val !== null) ? (int)$val : null;
 }
@@ -40,7 +40,7 @@ function nullStr($val) {
 function nullDatetime($val) {
     if (!isset($val) || $val === '' || $val === null) return null;
     $val = str_replace('T', ' ', $val);
-    // Ensure seconds are present for ODBC driver compatibility
+    // Ensure seconds are present
     if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $val)) {
         $val .= ':00';
     }

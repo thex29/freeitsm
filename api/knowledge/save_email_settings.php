@@ -61,7 +61,7 @@ try {
         $settingsToSave['knowledge_recycle_bin_days'] = (string)$days;
     }
 
-    // Use MERGE/UPSERT pattern for SQL Server
+    // Use UPDATE/INSERT upsert pattern
     foreach ($settingsToSave as $key => $value) {
         // Try to update first
         $updateSql = "UPDATE system_settings SET setting_value = ?, updated_datetime = UTC_TIMESTAMP() WHERE setting_key = ?";

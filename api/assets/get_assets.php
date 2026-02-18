@@ -22,17 +22,20 @@ try {
     $conn = connectToDatabase();
 
     // Check if users_assets table exists
-    $tableCheck = $conn->query("SELECT OBJECT_ID('users_assets', 'U') as table_exists");
-    $tableExists = $tableCheck->fetch(PDO::FETCH_ASSOC)['table_exists'] !== null;
+    $tableCheck = $conn->prepare("SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = 'users_assets'");
+    $tableCheck->execute([DB_NAME]);
+    $tableExists = (int)$tableCheck->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
     // Check if asset lookup tables exist
-    $typeTableCheck = $conn->query("SELECT OBJECT_ID('asset_types', 'U') as table_exists");
-    $typeTableExists = $typeTableCheck->fetch(PDO::FETCH_ASSOC)['table_exists'] !== null;
+    $typeTableCheck = $conn->prepare("SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = 'asset_types'");
+    $typeTableCheck->execute([DB_NAME]);
+    $typeTableExists = (int)$typeTableCheck->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
-    $statusTableCheck = $conn->query("SELECT OBJECT_ID('asset_status_types', 'U') as table_exists");
-    $statusTableExists = $statusTableCheck->fetch(PDO::FETCH_ASSOC)['table_exists'] !== null;
+    $statusTableCheck = $conn->prepare("SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = 'asset_status_types'");
+    $statusTableCheck->execute([DB_NAME]);
+    $statusTableExists = (int)$statusTableCheck->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
-    // Build query with optional search - use LEFT JOIN instead of subquery for ODBC compatibility
+    // Build query with optional search
     if ($tableExists) {
         $sql = "SELECT
                     a.id,

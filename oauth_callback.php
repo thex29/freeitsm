@@ -61,21 +61,13 @@ try {
 }
 
 /**
- * Connect to SQL Server database using PDO with ODBC
+ * Connect to MySQL database using PDO
  */
 function connectToDatabase() {
-    $drivers = ['ODBC Driver 17 for SQL Server', 'ODBC Driver 18 for SQL Server', 'SQL Server Native Client 11.0', 'SQL Server'];
-    foreach ($drivers as $driver) {
-        try {
-            $dsn = "odbc:Driver={{$driver}};Server=" . DB_SERVER . ";Database=" . DB_NAME;
-            $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $conn;
-        } catch (PDOException $e) {
-            continue;
-        }
-    }
-    throw new Exception('Database connection failed');
+    $dsn = "mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $conn;
 }
 
 /**
@@ -147,13 +139,9 @@ function getTokensFromAuthCodeForMailbox($authCode, $mailbox) {
 function saveTokensToDatabase($conn, $mailboxId, $tokens) {
     $jsonData = json_encode($tokens);
 
-    // Use direct SQL to avoid ODBC encoding issues with parameterized NVARCHAR
-    // Escape single quotes for SQL
-    $escapedJson = str_replace("'", "''", $jsonData);
-
-    $sql = "UPDATE target_mailboxes SET token_data = '$escapedJson' WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET token_data = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$mailboxId]);
+    $stmt->execute([$jsonData, $mailboxId]);
 
     if ($stmt->rowCount() === 0) {
         throw new Exception('Failed to save tokens to database');

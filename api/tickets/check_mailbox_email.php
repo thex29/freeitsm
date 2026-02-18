@@ -49,7 +49,7 @@ try {
     }
 
     // Get valid access token
-    // Clean token data by removing any null bytes or control characters that ODBC may have inserted
+    // Clean token data by removing any null bytes or control characters
     $rawTokenData = $mailbox['token_data'];
     $cleanedTokenData = preg_replace('/[\x00-\x1F\x7F]/', '', $rawTokenData);
 

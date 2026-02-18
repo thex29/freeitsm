@@ -14,10 +14,13 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 
 | ID  | Module            | Type        | Description |
 |-----|-------------------|-------------|-------------|
-| 042 | System            | Improvement | Convert all SQL Server OUTPUT INSERTED.id and SCOPE_IDENTITY() patterns to MySQL lastInsertId() across 17 API files |
-| 043 | System            | Improvement | Convert all GETUTCDATE() calls to MySQL UTC_TIMESTAMP() and GETDATE() to NOW() across 33 PHP files |
-| 044 | Tickets           | Fix         | Parameterize token_data SQL update in check_mailbox_email.php to prevent SQL injection |
-| 045 | System            | Improvement | Convert SQL Server syntax (DATEADD, DATEDIFF, CONVERT, TOP, CAST NVARCHAR, OFFSET/FETCH) to MySQL equivalents across 28 PHP files |
+| 042 | System            | Feature     | Migrate entire database layer from SQL Server Express (PDO ODBC) to MySQL 8.0+ (PDO MySQL) across ~55 PHP files and 47 tables |
+| 043 | System            | Improvement | Replace all OUTPUT INSERTED.id and SCOPE_IDENTITY() patterns with MySQL lastInsertId() across 18 API files |
+| 044 | System            | Improvement | Convert all SQL Server syntax (GETUTCDATE, DATEADD, DATEDIFF, CONVERT, TOP, CAST NVARCHAR, OFFSET/FETCH) to MySQL equivalents |
+| 045 | System            | Improvement | Rewrite database schema file (freeitsm.sql) and schema engine (db_verify.php) for MySQL with InnoDB and utf8mb4 |
+| 046 | System            | Improvement | Replace OBJECT_ID table existence checks with information_schema queries |
+| 047 | System            | Fix         | Parameterize all raw token_data SQL updates and integer interpolation to prevent SQL injection (6 files) |
+| 048 | System            | Improvement | Update setup page to check for pdo_mysql extension instead of pdo_odbc |
 
 ### 16 February 2026
 

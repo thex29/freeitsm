@@ -47,7 +47,7 @@ try {
 
     // Parse JSON details for each log
     foreach ($logs as &$log) {
-        // Clean control characters that ODBC may have inserted (same issue as token_data)
+        // Clean any control characters from stored JSON
         $rawDetails = $log['details'] ?? '';
         $cleanedDetails = preg_replace('/[\x00-\x1F\x7F]/', '', $rawDetails);
         $log['details'] = json_decode($cleanedDetails, true);

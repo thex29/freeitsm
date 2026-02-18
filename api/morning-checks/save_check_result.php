@@ -41,31 +41,24 @@ try {
 
     $conn = connectToDatabase();
 
-    // Embed validated date directly - PDO ODBC has issues with date parameters
-    $checkIdInt = (int)$checkId;
-
     // Check if result already exists for the selected date
-    $sql = "SELECT ResultID FROM morningChecks_Results WHERE CheckID = $checkIdInt AND CheckDate = '$checkDate'";
+    $sql = "SELECT ResultID FROM morningChecks_Results WHERE CheckID = ? AND CheckDate = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute();
+    $stmt->execute([(int)$checkId, $checkDate]);
     $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($existing) {
         // Update existing result
-        $sql = "UPDATE morningChecks_Results SET Status = :status, Notes = :notes, ModifiedDate = UTC_TIMESTAMP()
-                WHERE CheckID = $checkIdInt AND CheckDate = '$checkDate'";
+        $sql = "UPDATE morningChecks_Results SET Status = ?, Notes = ?, ModifiedDate = UTC_TIMESTAMP()
+                WHERE CheckID = ? AND CheckDate = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':status', $status, PDO::PARAM_STR);
-        $stmt->bindValue(':notes', $notes, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute([$status, $notes, (int)$checkId, $checkDate]);
     } else {
         // Insert new result
         $sql = "INSERT INTO morningChecks_Results (CheckID, CheckDate, Status, Notes, CreatedDate, ModifiedDate)
-                VALUES ($checkIdInt, '$checkDate', :status, :notes, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
+                VALUES (?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':status', $status, PDO::PARAM_STR);
-        $stmt->bindValue(':notes', $notes, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute([(int)$checkId, $checkDate, $status, $notes]);
     }
 
     echo json_encode(['success' => true]);

@@ -18,11 +18,10 @@ A comprehensive web-based IT Service Management (ITSM) platform with 11 integrat
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Web Server**: Windows Server with IIS or WAMP/XAMPP
+- **Web Server**: WAMP, XAMPP, LAMP, or any PHP-capable web server
 - **PHP**: 7.4 or higher
-- **Database**: Microsoft SQL Server (Express or higher)
-- **ODBC Driver**: [Microsoft ODBC Driver 17 or 18 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
-- **Extensions**: PHP PDO, PDO_ODBC, curl, openssl, mbstring
+- **Database**: MySQL 8.0 or higher (included with WAMP/XAMPP)
+- **Extensions**: PHP PDO, pdo_mysql, curl, openssl, mbstring
 - **Database credentials file**: A `db_config.php` file stored **outside your web root** (e.g. `C:\wamp64\db_config.php`) — see step 2 below. The path is configured in `config.php`.
 
 ### Installation
@@ -40,19 +39,18 @@ A comprehensive web-based IT Service Management (ITSM) platform with 11 integrat
      ```
      C:\wamp64\db_config.php  (recommended)
      ```
-   - Edit the copied file with your SQL Server credentials:
+   - Edit the copied file with your MySQL credentials:
      ```php
-     define('DB_SERVER', 'localhost\SQLEXPRESS');
-     define('DB_NAME', 'FREEITSM');
+     define('DB_SERVER', 'localhost');
+     define('DB_NAME', 'freeitsm');
      define('DB_USERNAME', 'your_username');
      define('DB_PASSWORD', 'your_password');
      ```
    - Update `config.php` line 10 if you chose a different location
 
 3. **Create the database**
-   - Create a new database named `FREEITSM` in SQL Server
-   - Run the SQL scripts in the `database/` folder to create tables
-   - Enable Mixed Mode Authentication in SQL Server (required for SQL auth)
+   - Create a new database named `freeitsm` in MySQL
+   - Run `database/freeitsm.sql` to create tables, or use the Setup page's DB Verify to auto-create them
 
 4. **Set up encryption key** (for sensitive settings)
    ```bash
@@ -63,7 +61,7 @@ A comprehensive web-based IT Service Management (ITSM) platform with 11 integrat
 
 5. **Configure web server**
    - Point your web server to the application root
-   - Ensure PHP extensions are enabled: `pdo_odbc`, `curl`, `openssl`, `mbstring`
+   - Ensure PHP extensions are enabled: `pdo_mysql`, `curl`, `openssl`, `mbstring`
    - Restart your web server
 
 6. **Verify setup**
@@ -97,12 +95,12 @@ A comprehensive web-based IT Service Management (ITSM) platform with 11 integrat
 | Component | Technology |
 |-----------|------------|
 | Backend | PHP 7.4+ |
-| Database | Microsoft SQL Server (PDO with ODBC drivers) |
+| Database | MySQL 8.0+ (PDO MySQL) |
 | Frontend | Vanilla JavaScript, HTML5, CSS3 (no frameworks) |
 | Rich Text Editor | TinyMCE 6+ |
 | Email Integration | Microsoft Graph API (OAuth 2.0) |
 | Encryption | AES-256-GCM (sensitive data at rest) |
-| Web Server | IIS on Windows Server |
+| Web Server | Apache (WAMP/XAMPP/LAMP) or any PHP-capable server |
 
 ---
 
@@ -311,7 +309,7 @@ Currently encrypted in `target_mailboxes`:
 - `oauth_redirect_uri`, `imap_server`, `target_mailbox`
 
 ### Functions (`includes/functions.php`)
-Contains `connectToDatabase()` which returns a PDO connection. Tries multiple ODBC drivers in order: ODBC Driver 17, ODBC Driver 18, SQL Server Native Client 11.0, and legacy SQL Server. Also contains `getAnalystAllowedModules()` which loads module access permissions for an analyst.
+Contains `connectToDatabase()` which returns a PDO MySQL connection using the credentials from `db_config.php`. Also contains `getAnalystAllowedModules()` which loads module access permissions for an analyst.
 
 ### Module Header Pattern
 Each module has its own `includes/header.php` that:
@@ -572,7 +570,7 @@ if (!isset($_SESSION['analyst_id'])) {
 ## Database
 
 ### Connection
-PDO with ODBC drivers connecting to Microsoft SQL Server. Connection handled by `includes/functions.php`:
+PDO MySQL connecting to MySQL 8.0+. Connection handled by `includes/functions.php`:
 
 ```php
 $conn = connectToDatabase();
@@ -582,12 +580,12 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
 ```
 
 ### Identity Pattern
-SQL Server `IDENTITY(1,1)` for auto-increment. Use `OUTPUT INSERTED.id` to retrieve new IDs (not `SCOPE_IDENTITY()` which doesn't work reliably with PDO ODBC):
+MySQL `AUTO_INCREMENT` for auto-increment. Use `$conn->lastInsertId()` to retrieve new IDs after INSERT:
 
 ```php
-$stmt = $conn->prepare("INSERT INTO table (col) OUTPUT INSERTED.id VALUES (?)");
+$stmt = $conn->prepare("INSERT INTO table (col) VALUES (?)");
 $stmt->execute([$value]);
-$newId = (int)$stmt->fetch(PDO::FETCH_ASSOC)['id'];
+$newId = (int)$conn->lastInsertId();
 ```
 
 ### Core Tables
@@ -598,7 +596,7 @@ id, username, password_hash, full_name, email, is_active, totp_secret, totp_enab
 created_datetime, last_modified_datetime, last_login_datetime
 ```
 - `totp_secret`: AES-256-GCM encrypted TOTP secret (NULL when MFA not set up)
-- `totp_enabled`: BIT flag indicating whether MFA is active for this analyst
+- `totp_enabled`: Boolean flag indicating whether MFA is active for this analyst
 
 #### tickets
 ```sql
@@ -634,7 +632,7 @@ token_data (JSON), is_active, created_datetime, last_checked_datetime
 #### servers
 ```sql
 id, vm_name, guest_os, ip_address, host, cluster, cpu_count, memory_mb, disk_gb,
-power_state, raw_data (VARCHAR MAX - full vCenter JSON), source, last_synced
+power_state, raw_data (LONGTEXT - full vCenter JSON), source, last_synced
 ```
 
 ### Forms Tables
@@ -857,9 +855,6 @@ $path_prefix = '../';
 3. Register in `includes/waffle-menu.php` (add to `$modules` array + CSS colours)
 4. Add card to `index.php` landing page (icon, colour, link)
 5. Create SQL schema file if needed
-
-### ODBC Gotcha
-Do not combine correlated subqueries with parameterised `LIKE` in WHERE clauses. The ODBC driver has binding issues. Use `LEFT JOIN` + `GROUP BY` instead.
 
 ### Important: exchange_message_id
 The `emails.exchange_message_id` column does NOT allow NULL. Manual tickets must use a placeholder: `'manual-' . time() . '-' . uniqid()`.
