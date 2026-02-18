@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAnalysts();
     initTinyMCE();
     initTagInput();
+
+    // Auto-open AI chat if redirected from Settings/Review
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('askai') === '1') {
+        history.replaceState(null, '', window.location.pathname);
+        openAiChat();
+    }
 });
 
 // Load analysts for owner dropdown
@@ -883,7 +890,7 @@ function blobToBase64(blob) {
     });
 }
 
-// Check for URL parameters on page load (article links, Ask AI redirect)
+// Check for article ID in URL on page load (for shared links)
 (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const articleId = urlParams.get('article');
@@ -897,14 +904,6 @@ function blobToBase64(blob) {
         }, 100);
         // Timeout after 5 seconds
         setTimeout(() => clearInterval(checkAndLoad), 5000);
-    }
-
-    // Auto-open AI chat if redirected from another knowledge page
-    if (urlParams.get('askai') === '1') {
-        // Clean the URL so refreshing doesn't re-open
-        history.replaceState(null, '', window.location.pathname);
-        // Small delay to let the page render
-        setTimeout(() => openAiChat(), 200);
     }
 })();
 
@@ -1013,7 +1012,7 @@ function formatAiResponse(text, articlesList) {
             const escapedTitle = article.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             // Match with optional " (ID: X)" suffix that AI sometimes adds
             const regex = new RegExp('["\u201c]' + escapedTitle + '(\\s*\\(ID:\\s*\\d+\\))?["\u201d]', 'gi');
-            const link = '<a href="#" onclick="viewArticle(' + article.id + '); return false;" class="ai-article-link">\u201c' + escapeHtml(article.title) + '\u201d</a>';
+            const link = '<a href="javascript:void(0)" data-article-id="' + article.id + '" class="ai-article-link">\u201c' + escapeHtml(article.title) + '\u201d</a>';
             text = text.replace(regex, link);
         });
     }
@@ -1080,5 +1079,15 @@ document.addEventListener('keydown', function(e) {
         if (panel && panel.classList.contains('active')) {
             closeAiChat();
         }
+    }
+});
+
+// Handle article link clicks inside AI chat — load article without closing chat
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('.ai-article-link[data-article-id]');
+    if (link) {
+        e.preventDefault();
+        e.stopPropagation();
+        viewArticle(link.dataset.articleId);
     }
 });
