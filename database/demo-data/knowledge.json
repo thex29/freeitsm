@@ -1,0 +1,166 @@
+{
+    "tier1": {
+        "knowledge_tags": [
+            {
+                "_ref": "tag_vpn",
+                "name": "VPN"
+            },
+            {
+                "_ref": "tag_outlook",
+                "name": "Outlook"
+            },
+            {
+                "_ref": "tag_password",
+                "name": "Password"
+            },
+            {
+                "_ref": "tag_printing",
+                "name": "Printing"
+            },
+            {
+                "_ref": "tag_onboarding",
+                "name": "Onboarding"
+            },
+            {
+                "_ref": "tag_wifi",
+                "name": "WiFi"
+            },
+            {
+                "_ref": "tag_windows",
+                "name": "Windows"
+            },
+            {
+                "_ref": "tag_security",
+                "name": "Security"
+            }
+        ],
+        "analysts": [
+            {
+                "_ref": "admin",
+                "_skip_insert": true,
+                "_match_by": "username",
+                "_match_value": "admin"
+            },
+            {
+                "_ref": "jsmith",
+                "_skip_insert": true,
+                "_match_by": "username",
+                "_match_value": "jsmith"
+            },
+            {
+                "_ref": "swilliams",
+                "_skip_insert": true,
+                "_match_by": "username",
+                "_match_value": "swilliams"
+            }
+        ]
+    },
+    "tier2": {
+        "knowledge_articles": [
+            {
+                "_ref": "ka1",
+                "title": "How to Connect to the Corporate VPN",
+                "body": "<h3>Prerequisites</h3><p>Before connecting, ensure you have the <strong>GlobalProtect VPN client</strong> installed on your device and that your account has been provisioned for remote access by IT.</p><h3>Connection Steps</h3><ol><li>Open the GlobalProtect application from your system tray or Applications folder.</li><li>Enter the portal address: <strong>vpn.company.com</strong></li><li>Authenticate using your corporate credentials and approve the MFA prompt on your mobile device.</li><li>Wait for the status to show <strong>Connected</strong> before accessing internal resources.</li></ol><h3>Troubleshooting</h3><p>If the connection fails, check that you are not on a restricted network. Try switching from WiFi to a mobile hotspot. If the issue persists, restart the VPN client and retry. Contact the Service Desk if problems continue.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-30d__",
+                "modified_datetime": "__RELATIVE_DATE:-30d__",
+                "is_published": 1,
+                "view_count": 142,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka2",
+                "title": "Setting Up Outlook on a New Device",
+                "body": "<h3>Automatic Setup (Recommended)</h3><p>Outlook supports <strong>Autodiscover</strong> for company email. Open Outlook, enter your corporate email address, and click <strong>Connect</strong>. Outlook will automatically detect the Exchange server settings and configure your mailbox.</p><h3>Manual Setup</h3><ol><li>Open Outlook and go to <strong>File &gt; Add Account</strong>.</li><li>Select <strong>Manual setup</strong> and choose Exchange or Microsoft 365.</li><li>Enter the server address: <strong>mail.company.com</strong></li><li>Enter your full email address and password, then click <strong>Next</strong>.</li></ol><h3>Post-Setup</h3><p>Once connected, allow up to 15 minutes for your mailbox to fully synchronise. Shared calendars and distribution lists will appear automatically after the initial sync completes.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-25d__",
+                "modified_datetime": "__RELATIVE_DATE:-25d__",
+                "is_published": 1,
+                "view_count": 89,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka3",
+                "title": "Password Reset Procedure",
+                "body": "<h3>Self-Service Password Reset</h3><p>You can reset your password at any time using the <strong>self-service portal</strong> at <strong>reset.company.com</strong>. You will need access to your registered mobile phone for verification.</p><ol><li>Navigate to <strong>reset.company.com</strong> and click <strong>Forgot Password</strong>.</li><li>Enter your username and verify your identity via SMS or authenticator app.</li><li>Create a new password that meets the complexity requirements: minimum 12 characters, including uppercase, lowercase, a number, and a special character.</li></ol><h3>When to Contact IT</h3><p>If your account is locked out after multiple failed attempts, or if you no longer have access to your MFA device, contact the Service Desk directly. A technician will verify your identity before performing a manual reset.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-20d__",
+                "modified_datetime": "__RELATIVE_DATE:-20d__",
+                "is_published": 1,
+                "view_count": 256,
+                "next_review_date": "__RELATIVE_DATEONLY:+30d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka4",
+                "title": "Network Printer Setup Guide",
+                "body": "<h3>Finding Your Floor Printer</h3><p>Each floor has a designated network printer. Refer to the <strong>printer map</strong> on the intranet to find the printer name and IP address for your floor.</p><h3>Installation Steps</h3><ol><li>Open <strong>Settings &gt; Printers &amp; Scanners</strong> and click <strong>Add a printer</strong>.</li><li>Select <strong>Add a printer using a TCP/IP address</strong> and enter the printer IP from the floor map.</li><li>Windows will automatically detect the printer model and install the correct driver.</li><li>Print a test page to confirm the setup is working correctly.</li></ol><h3>Driver Issues</h3><p>If the driver does not install automatically, download the latest driver from the manufacturer website or contact the Service Desk to have it pushed to your device via software deployment.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-15d__",
+                "modified_datetime": "__RELATIVE_DATE:-15d__",
+                "is_published": 1,
+                "view_count": 67,
+                "next_review_date": "__RELATIVE_DATEONLY:+120d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka5",
+                "title": "New Starter IT Onboarding Checklist",
+                "body": "<h3>IT Onboarding Checklist</h3><p>Complete the following items during your first week to ensure you have full access to all company systems and resources.</p><ol><li><strong>Laptop Setup</strong> - Collect your laptop from IT and sign in with your new credentials.</li><li><strong>Email Configuration</strong> - Set up Outlook using the company email setup guide.</li><li><strong>VPN Access</strong> - Install GlobalProtect and test your VPN connection for remote work.</li><li><strong>Security Training</strong> - Complete the mandatory cybersecurity awareness module on the learning portal.</li><li><strong>Badge Access</strong> - Visit reception to activate your building access badge.</li></ol><p>If you encounter any issues during onboarding, raise a ticket with the Service Desk or speak to your line manager for assistance.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-10d__",
+                "modified_datetime": "__RELATIVE_DATE:-10d__",
+                "is_published": 1,
+                "view_count": 34,
+                "next_review_date": "__RELATIVE_DATEONLY:+180d__",
+                "owner_id": "@analysts.swilliams"
+            }
+        ]
+    },
+    "tier3": {
+        "knowledge_article_tags": [
+            {
+                "article_id": "@knowledge_articles.ka1",
+                "tag_id": "@knowledge_tags.tag_vpn"
+            },
+            {
+                "article_id": "@knowledge_articles.ka1",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka2",
+                "tag_id": "@knowledge_tags.tag_outlook"
+            },
+            {
+                "article_id": "@knowledge_articles.ka2",
+                "tag_id": "@knowledge_tags.tag_onboarding"
+            },
+            {
+                "article_id": "@knowledge_articles.ka3",
+                "tag_id": "@knowledge_tags.tag_password"
+            },
+            {
+                "article_id": "@knowledge_articles.ka3",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka4",
+                "tag_id": "@knowledge_tags.tag_printing"
+            },
+            {
+                "article_id": "@knowledge_articles.ka4",
+                "tag_id": "@knowledge_tags.tag_wifi"
+            },
+            {
+                "article_id": "@knowledge_articles.ka5",
+                "tag_id": "@knowledge_tags.tag_onboarding"
+            },
+            {
+                "article_id": "@knowledge_articles.ka5",
+                "tag_id": "@knowledge_tags.tag_windows"
+            }
+        ]
+    }
+}
