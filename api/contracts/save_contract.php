@@ -72,12 +72,10 @@ try {
                     cost_centre, dms_link, terms_status,
                     personal_data_transferred, dpia_required, dpia_completed_date, dpia_dms_link,
                     is_active)
-                OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute($fields);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $id = $row['id'];
+        $id = $conn->lastInsertId();
     }
 
     echo json_encode(['success' => true, 'id' => $id]);

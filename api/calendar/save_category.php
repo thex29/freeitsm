@@ -39,7 +39,7 @@ try {
     if ($id) {
         // Update existing category
         $sql = "UPDATE calendar_categories
-                SET name = ?, color = ?, description = ?, is_active = ?, updated_at = GETUTCDATE()
+                SET name = ?, color = ?, description = ?, is_active = ?, updated_at = UTC_TIMESTAMP()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $color, $description, $isActive ? 1 : 0, $id]);
@@ -52,11 +52,10 @@ try {
     } else {
         // Create new category
         $sql = "INSERT INTO calendar_categories (name, color, description, is_active)
-                OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $color, $description, $isActive ? 1 : 0]);
-        $newId = $stmt->fetchColumn();
+        $newId = $conn->lastInsertId();
 
         echo json_encode([
             'success' => true,

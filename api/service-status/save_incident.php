@@ -44,30 +44,28 @@ try {
 
         $resolvedDatetime = null;
         if ($status === 'Resolved' && (!$current || $current['status'] !== 'Resolved')) {
-            $resolvedDatetime = 'GETUTCDATE()';
+            $resolvedDatetime = 'UTC_TIMESTAMP()';
         }
 
         if ($status === 'Resolved') {
-            $sql = "UPDATE status_incidents SET title = ?, status = ?, comment = ?, updated_datetime = GETUTCDATE(), resolved_datetime = COALESCE(resolved_datetime, GETUTCDATE()) WHERE id = ?";
+            $sql = "UPDATE status_incidents SET title = ?, status = ?, comment = ?, updated_datetime = UTC_TIMESTAMP(), resolved_datetime = COALESCE(resolved_datetime, UTC_TIMESTAMP()) WHERE id = ?";
             $conn->prepare($sql)->execute([$title, $status, $comment, $id]);
         } else {
-            $sql = "UPDATE status_incidents SET title = ?, status = ?, comment = ?, updated_datetime = GETUTCDATE(), resolved_datetime = NULL WHERE id = ?";
+            $sql = "UPDATE status_incidents SET title = ?, status = ?, comment = ?, updated_datetime = UTC_TIMESTAMP(), resolved_datetime = NULL WHERE id = ?";
             $conn->prepare($sql)->execute([$title, $status, $comment, $id]);
         }
     } else {
-        // Insert new incident with OUTPUT to get the new ID
+        // Insert new incident
         if ($status === 'Resolved') {
             $sql = "INSERT INTO status_incidents (title, status, comment, created_by_id, resolved_datetime)
-                    OUTPUT INSERTED.id
-                    VALUES (?, ?, ?, ?, GETUTCDATE())";
+                    VALUES (?, ?, ?, ?, UTC_TIMESTAMP())";
         } else {
             $sql = "INSERT INTO status_incidents (title, status, comment, created_by_id)
-                    OUTPUT INSERTED.id
                     VALUES (?, ?, ?, ?)";
         }
         $stmt = $conn->prepare($sql);
         $stmt->execute([$title, $status, $comment, $_SESSION['analyst_id']]);
-        $id = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $id = $conn->lastInsertId();
     }
 
     // Re-insert affected services

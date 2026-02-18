@@ -35,11 +35,10 @@ try {
         $stmt = $conn->prepare($sql);
         $stmt->execute([$supplier_id ?: null, $first_name, $surname, $email ?: null, $mobile ?: null, $job_title, $direct_dial, $switchboard, $is_active, $id]);
     } else {
-        $sql = "INSERT INTO contacts (supplier_id, first_name, surname, email, mobile, job_title, direct_dial, switchboard, is_active) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO contacts (supplier_id, first_name, surname, email, mobile, job_title, direct_dial, switchboard, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$supplier_id ?: null, $first_name, $surname, $email ?: null, $mobile ?: null, $job_title, $direct_dial, $switchboard, $is_active]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $id = $row['id'];
+        $id = $conn->lastInsertId();
     }
 
     echo json_encode(['success' => true, 'id' => $id]);

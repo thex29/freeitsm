@@ -63,11 +63,10 @@ try {
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO change_attachments (change_id, file_name, file_path, file_size, file_type, uploaded_by_id, uploaded_datetime)
-            OUTPUT INSERTED.id
-            VALUES (?, ?, ?, ?, ?, ?, GETUTCDATE())";
+            VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP())";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$changeId, $fileName, $relativePath, $fileSize, $fileType, $analystId]);
-    $attachmentId = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+    $attachmentId = $conn->lastInsertId();
 
     echo json_encode([
         'success' => true,

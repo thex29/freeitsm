@@ -49,7 +49,7 @@ try {
                 SET app_id = ?, licence_type = ?, licence_key = ?, quantity = ?,
                     renewal_date = ?, notice_period_days = ?, portal_url = ?,
                     cost = ?, currency = ?, purchase_date = ?, vendor_contact = ?,
-                    notes = ?, status = ?, updated_at = GETUTCDATE()
+                    notes = ?, status = ?, updated_at = UTC_TIMESTAMP()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -65,7 +65,6 @@ try {
                 (app_id, licence_type, licence_key, quantity, renewal_date,
                  notice_period_days, portal_url, cost, currency, purchase_date,
                  vendor_contact, notes, status, created_by)
-                OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -73,7 +72,7 @@ try {
             $notice_period_days, $portal_url, $cost, $currency, $purchase_date,
             $vendor_contact, $notes, $status, $_SESSION['analyst_id']
         ]);
-        $newId = $stmt->fetchColumn();
+        $newId = $conn->lastInsertId();
 
         echo json_encode(['success' => true, 'message' => 'Licence created', 'id' => $newId]);
     }

@@ -20,10 +20,10 @@ try {
     // Generate a secure random 40-character hex key
     $apikey = bin2hex(random_bytes(20));
 
-    $sql = "INSERT INTO apikeys (apikey) OUTPUT INSERTED.id VALUES (?)";
+    $sql = "INSERT INTO apikeys (apikey) VALUES (?)";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$apikey]);
-    $newId = $stmt->fetchColumn();
+    $newId = $conn->lastInsertId();
 
     echo json_encode([
         'success' => true,

@@ -97,7 +97,7 @@ try {
                     test_plan = ?,
                     rollback_plan = ?,
                     post_implementation_review = ?,
-                    modified_datetime = GETUTCDATE()
+                    modified_datetime = UTC_TIMESTAMP()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -119,8 +119,7 @@ try {
                     test_plan, rollback_plan, post_implementation_review,
                     created_by_id, created_datetime, modified_datetime
                 )
-                OUTPUT INSERTED.id
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
             $title, $changeType, $status, $priority, $impact, $category,
@@ -130,7 +129,7 @@ try {
             $testPlan, $rollbackPlan, $postImplementationReview,
             $analystId
         ]);
-        $changeId = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $changeId = $conn->lastInsertId();
     }
 
     echo json_encode([

@@ -58,9 +58,9 @@ try {
     $conn->beginTransaction();
 
     // Create submission
-    $stmt = $conn->prepare("INSERT INTO form_submissions (form_id, submitted_by) OUTPUT INSERTED.id VALUES (?, ?)");
+    $stmt = $conn->prepare("INSERT INTO form_submissions (form_id, submitted_by) VALUES (?, ?)");
     $stmt->execute([$formId, $_SESSION['analyst_id']]);
-    $submissionId = (int)$stmt->fetch(PDO::FETCH_ASSOC)['id'];
+    $submissionId = (int)$conn->lastInsertId();
 
     // Save field values
     foreach ($data as $fieldId => $value) {

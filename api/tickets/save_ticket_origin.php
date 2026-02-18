@@ -51,9 +51,7 @@ try {
         $stmt->execute([$name, $description, $displayOrder, $isActive]);
 
         // Get the new ID
-        $stmt->nextRowset();
-        $idStmt = $conn->query("SELECT SCOPE_IDENTITY() as id");
-        $newId = $idStmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $newId = $conn->lastInsertId();
 
         echo json_encode([
             'success' => true,

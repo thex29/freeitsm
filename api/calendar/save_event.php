@@ -47,7 +47,7 @@ try {
         // Update existing event
         $sql = "UPDATE calendar_events
                 SET title = ?, description = ?, category_id = ?, start_datetime = ?,
-                    end_datetime = ?, all_day = ?, location = ?, updated_at = GETUTCDATE()
+                    end_datetime = ?, all_day = ?, location = ?, updated_at = UTC_TIMESTAMP()
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -69,7 +69,6 @@ try {
     } else {
         // Create new event
         $sql = "INSERT INTO calendar_events (title, description, category_id, start_datetime, end_datetime, all_day, location, created_by)
-                OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -82,7 +81,7 @@ try {
             $location,
             $_SESSION['analyst_id']
         ]);
-        $newId = $stmt->fetchColumn();
+        $newId = $conn->lastInsertId();
 
         echo json_encode([
             'success' => true,

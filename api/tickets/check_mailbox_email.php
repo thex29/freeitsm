@@ -247,19 +247,17 @@ function refreshAccessToken($mailbox, $refreshToken) {
  */
 function saveTokenData($conn, $mailboxId, $tokenData) {
     $jsonData = json_encode($tokenData);
-    // Escape single quotes and use direct SQL to avoid ODBC encoding issues
-    $escapedJson = str_replace("'", "''", $jsonData);
 
-    $sql = "UPDATE target_mailboxes SET token_data = '$escapedJson' WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET token_data = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$mailboxId]);
+    $stmt->execute([$jsonData, $mailboxId]);
 }
 
 /**
  * Update last checked datetime
  */
 function updateLastChecked($conn, $mailboxId) {
-    $sql = "UPDATE target_mailboxes SET last_checked_datetime = GETUTCDATE() WHERE id = ?";
+    $sql = "UPDATE target_mailboxes SET last_checked_datetime = UTC_TIMESTAMP() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mailboxId]);
 }
@@ -413,15 +411,11 @@ function getOrCreateUser($conn, $email, $displayName) {
     }
 
     // Create new user
-    $insertSql = "INSERT INTO users (email, display_name, created_at) VALUES (?, ?, GETUTCDATE());
-                  SELECT SCOPE_IDENTITY() AS user_id";
+    $insertSql = "INSERT INTO users (email, display_name, created_at) VALUES (?, ?, UTC_TIMESTAMP())";
     $insertStmt = $conn->prepare($insertSql);
     $insertStmt->execute([$email, $displayName]);
 
-    $insertStmt->nextRowset();
-    $newUser = $insertStmt->fetch(PDO::FETCH_ASSOC);
-
-    return $newUser['user_id'];
+    return $conn->lastInsertId();
 }
 
 /**
@@ -506,8 +500,7 @@ function saveAttachment($conn, $dbEmailId, $attachment) {
     $sql = "INSERT INTO email_attachments (
         email_id, exchange_attachment_id, filename, content_type,
         content_id, file_path, file_size, is_inline
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-    SELECT SCOPE_IDENTITY() AS attachment_id";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([
@@ -515,11 +508,10 @@ function saveAttachment($conn, $dbEmailId, $attachment) {
         $contentId, $filePath, $fileSize, $isInline ? 1 : 0
     ]);
 
-    $stmt->nextRowset();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $dbAttachmentId = $conn->lastInsertId();
 
     return [
-        'id' => $result['attachment_id'],
+        'id' => $dbAttachmentId,
         'content_id' => $contentId,
         'filename' => $filename
     ];
@@ -614,7 +606,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         $ticketId = findTicketByNumber($conn, $ticketRef);
         if ($ticketId) {
             $isInitial = 0;
-            $updateTicketSql = "UPDATE tickets SET updated_datetime = GETUTCDATE() WHERE id = ?";
+            $updateTicketSql = "UPDATE tickets SET updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
             $updateTicketStmt = $conn->prepare($updateTicketSql);
             $updateTicketStmt->execute([$ticketId]);
 
@@ -634,17 +626,14 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         $ticketSql = "INSERT INTO tickets (
             ticket_number, subject, status, priority, requester_email,
             requester_name, created_datetime, updated_datetime, user_id
-        ) VALUES (?, ?, 'Open', 'Normal', ?, ?, ?, GETUTCDATE(), ?);
-        SELECT SCOPE_IDENTITY() AS ticket_id";
+        ) VALUES (?, ?, 'Open', 'Normal', ?, ?, ?, UTC_TIMESTAMP(), ?)";
 
         $ticketStmt = $conn->prepare($ticketSql);
         $ticketStmt->execute([
             $ticketNumber, $subject, $fromAddress, $fromName, $receivedDateTime, $userId
         ]);
 
-        $ticketStmt->nextRowset();
-        $result = $ticketStmt->fetch(PDO::FETCH_ASSOC);
-        $ticketId = $result['ticket_id'];
+        $ticketId = $conn->lastInsertId();
     }
 
     // Insert email
@@ -653,8 +642,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         cc_recipients, received_datetime, body_preview, body_content, body_type,
         has_attachments, importance, is_read, processed_datetime, ticket_id,
         is_initial, direction, mailbox_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETUTCDATE(), ?, ?, 'Inbound', ?);
-    SELECT SCOPE_IDENTITY() AS email_id";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, 'Inbound', ?)";
 
     $params = [
         $emailId, $subject, $fromAddress, $fromName, $toRecipientsStr,
@@ -666,9 +654,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
 
-    $stmt->nextRowset();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $dbEmailId = $result['email_id'];
+    $dbEmailId = $conn->lastInsertId();
 
     // Process attachments
     // Check for inline images by looking for cid: references in the body
@@ -773,7 +759,7 @@ function logEmailImport($conn, $mailboxId, $details) {
     try {
         $details['mailbox_id'] = $mailboxId;
         $logSql = "INSERT INTO system_logs (log_type, analyst_id, details, created_datetime)
-                   VALUES ('email_import', NULL, ?, GETUTCDATE())";
+                   VALUES ('email_import', NULL, ?, UTC_TIMESTAMP())";
         $logStmt = $conn->prepare($logSql);
         $logStmt->execute([json_encode($details)]);
     } catch (Exception $e) {

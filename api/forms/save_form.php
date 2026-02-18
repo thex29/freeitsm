@@ -37,7 +37,7 @@ try {
 
     if ($formId > 0) {
         // Update form metadata
-        $stmt = $conn->prepare("UPDATE forms SET title = ?, description = ?, modified_date = GETUTCDATE() WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE forms SET title = ?, description = ?, modified_date = UTC_TIMESTAMP() WHERE id = ?");
         $stmt->execute([$title, $description, $formId]);
 
         // Get existing field IDs in sort order
@@ -83,9 +83,9 @@ try {
         }
     } else {
         // Create new form
-        $stmt = $conn->prepare("INSERT INTO forms (title, description, created_by) OUTPUT INSERTED.id VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO forms (title, description, created_by) VALUES (?, ?, ?)");
         $stmt->execute([$title, $description, $_SESSION['analyst_id']]);
-        $formId = (int)$stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $formId = (int)$conn->lastInsertId();
 
         // Insert fields
         $sortOrder = 0;

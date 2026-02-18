@@ -109,8 +109,7 @@ try {
                     oauth_redirect_uri, oauth_scopes, imap_server, imap_port,
                     imap_encryption, target_mailbox, email_folder, max_emails_per_check,
                     mark_as_read, is_active
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-                SELECT SCOPE_IDENTITY() AS id";
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -120,9 +119,7 @@ try {
             $mark_as_read, $is_active
         ]);
 
-        $stmt->nextRowset();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $newId = $result['id'];
+        $newId = $conn->lastInsertId();
 
         echo json_encode([
             'success' => true,

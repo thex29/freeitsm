@@ -10,6 +10,14 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 
 ## Unpublished
 
+### 18 February 2026
+
+| ID  | Module            | Type        | Description |
+|-----|-------------------|-------------|-------------|
+| 042 | System            | Improvement | Convert all SQL Server OUTPUT INSERTED.id and SCOPE_IDENTITY() patterns to MySQL lastInsertId() across 17 API files |
+| 043 | System            | Improvement | Convert all GETUTCDATE() calls to MySQL UTC_TIMESTAMP() across 17 API files |
+| 044 | Tickets           | Fix         | Parameterize token_data SQL update in check_mailbox_email.php to prevent SQL injection |
+
 ### 16 February 2026
 
 | ID  | Module            | Type        | Description |

@@ -39,7 +39,7 @@ try {
 
     if ($id) {
         // Update existing team
-        $sql = "UPDATE teams SET name = ?, description = ?, display_order = ?, is_active = ?, updated_datetime = GETUTCDATE() WHERE id = ?";
+        $sql = "UPDATE teams SET name = ?, description = ?, display_order = ?, is_active = ?, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $description, $displayOrder, $isActive, $id]);
         $message = 'Team updated successfully';
@@ -49,10 +49,7 @@ try {
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $description, $displayOrder, $isActive]);
 
-        // Get the inserted ID using SCOPE_IDENTITY() (ODBC doesn't support lastInsertId)
-        $idStmt = $conn->query("SELECT SCOPE_IDENTITY() as id");
-        $idResult = $idStmt->fetch(PDO::FETCH_ASSOC);
-        $id = $idResult['id'];
+        $id = $conn->lastInsertId();
         $message = 'Team created successfully';
     }
 

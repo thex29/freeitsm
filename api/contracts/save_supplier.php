@@ -55,12 +55,10 @@ try {
                     supplier_type_id, supplier_status_id,
                     address_line_1, address_line_2, city, county, postcode, country,
                     questionnaire_date_issued, questionnaire_date_received, comments, is_active)
-                OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute($fields);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $id = $row['id'];
+        $id = $conn->lastInsertId();
     }
 
     echo json_encode(['success' => true, 'id' => $id]);
