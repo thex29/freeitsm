@@ -17,6 +17,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 042 | System            | Improvement | Convert all SQL Server OUTPUT INSERTED.id and SCOPE_IDENTITY() patterns to MySQL lastInsertId() across 17 API files |
 | 043 | System            | Improvement | Convert all GETUTCDATE() calls to MySQL UTC_TIMESTAMP() and GETDATE() to NOW() across 33 PHP files |
 | 044 | Tickets           | Fix         | Parameterize token_data SQL update in check_mailbox_email.php to prevent SQL injection |
+| 045 | System            | Improvement | Convert SQL Server syntax (DATEADD, DATEDIFF, CONVERT, TOP, CAST NVARCHAR, OFFSET/FETCH) to MySQL equivalents across 28 PHP files |
 
 ### 16 February 2026
 

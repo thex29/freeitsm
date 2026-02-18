@@ -21,7 +21,7 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : null;
 try {
     $conn = connectToDatabase();
 
-    $scanStmt = $conn->prepare("SELECT TOP 1 id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC");
+    $scanStmt = $conn->prepare("SELECT id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
     $scanStmt->execute();
     $scan = $scanStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -46,19 +46,19 @@ try {
             $sql .= " AND (f.folder_path = '' OR f.folder_path IS NULL)";
         } else {
             // Files in this folder AND all subfolders
-            $sql .= " AND (f.folder_path = CAST(? AS NVARCHAR(500)) OR f.folder_path LIKE CAST(? AS NVARCHAR(500)))";
+            $sql .= " AND (f.folder_path = ? OR f.folder_path LIKE ?)";
             $params[] = $folder;
             $params[] = $folder . '/%';
         }
     }
 
     if ($type) {
-        $sql .= " AND f.file_type = CAST(? AS NVARCHAR(10))";
+        $sql .= " AND f.file_type = ?";
         $params[] = strtoupper($type);
     }
 
     if ($search) {
-        $sql .= " AND (f.file_name LIKE CAST(? AS NVARCHAR(255)) OR f.file_path LIKE CAST(? AS NVARCHAR(500)) OR f.description LIKE CAST(? AS NVARCHAR(MAX)))";
+        $sql .= " AND (f.file_name LIKE ? OR f.file_path LIKE ? OR f.description LIKE ?)";
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';

@@ -57,7 +57,7 @@ try {
     }
 
     if ($search) {
-        $sql .= " AND (c.title LIKE ? OR CAST(c.id AS VARCHAR) LIKE ?)";
+        $sql .= " AND (c.title LIKE ? OR CAST(c.id AS CHAR) LIKE ?)";
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';
     }

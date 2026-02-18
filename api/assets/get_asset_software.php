@@ -29,7 +29,7 @@ try {
                 a.publisher,
                 d.display_version,
                 d.install_date,
-                CONVERT(VARCHAR(10), d.last_seen, 23) as last_seen
+                DATE_FORMAT(d.last_seen, '%Y-%m-%d') as last_seen
             FROM software_inventory_detail d
             INNER JOIN software_inventory_apps a ON a.id = d.app_id
             WHERE d.host_id = ?

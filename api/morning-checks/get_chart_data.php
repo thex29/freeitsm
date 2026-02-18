@@ -30,12 +30,12 @@ try {
 
     // Embed validated dates directly - PDO ODBC has issues with date parameters
     // Use CONVERT to get just the date portion as VARCHAR (format 23 = yyyy-mm-dd)
-    $sql = "SELECT CONVERT(VARCHAR(10), r.CheckDate, 23) as CheckDate, r.Status, COUNT(*) as Count
+    $sql = "SELECT DATE_FORMAT(r.CheckDate, '%Y-%m-%d') as CheckDate, r.Status, COUNT(*) as Count
             FROM morningChecks_Results r
             INNER JOIN morningChecks_Checks c ON r.CheckID = c.CheckID
             WHERE r.CheckDate >= '$startDate' AND r.CheckDate <= '$endDate'
-            GROUP BY CONVERT(VARCHAR(10), r.CheckDate, 23), r.Status
-            ORDER BY CONVERT(VARCHAR(10), r.CheckDate, 23)";
+            GROUP BY DATE_FORMAT(r.CheckDate, '%Y-%m-%d'), r.Status
+            ORDER BY DATE_FORMAT(r.CheckDate, '%Y-%m-%d')";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute();

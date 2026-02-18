@@ -20,7 +20,7 @@ try {
     // All active services with their worst current status from open incidents
     $svcSql = "SELECT ss.id, ss.name, ss.description, ss.display_order,
         COALESCE(
-            (SELECT TOP 1 sis.impact_level
+            (SELECT sis.impact_level
              FROM status_incident_services sis
              JOIN status_incidents si ON sis.incident_id = si.id
              WHERE sis.service_id = ss.id
@@ -33,7 +33,8 @@ try {
                      WHEN 'Maintenance' THEN 4
                      WHEN 'Operational' THEN 5
                      WHEN 'No Disruption' THEN 6
-                 END ASC),
+                 END ASC
+             LIMIT 1),
             'Operational'
         ) AS current_status
     FROM status_services ss
@@ -51,7 +52,7 @@ try {
                FROM status_incidents i
                LEFT JOIN analysts a ON i.created_by_id = a.id
                WHERE i.status != 'Resolved'
-                  OR i.resolved_datetime >= DATEADD(DAY, -30, UTC_TIMESTAMP())
+                  OR i.resolved_datetime >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL 30 DAY)
                ORDER BY
                    CASE WHEN i.status != 'Resolved' THEN 0 ELSE 1 END,
                    i.updated_datetime DESC";

@@ -37,11 +37,11 @@ try {
         $params = ['%' . $search . '%', '%' . $search . '%', '%' . $search . '%'];
     }
 
-    if ($limit) {
-        $sql = str_replace("SELECT c.id", "SELECT TOP " . intval($limit) . " c.id", $sql);
-    }
-
     $sql .= " ORDER BY c.created_datetime DESC";
+
+    if ($limit) {
+        $sql .= " LIMIT " . intval($limit);
+    }
 
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);

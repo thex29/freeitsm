@@ -120,11 +120,12 @@ try {
  */
 function getMailboxForTicket($conn, $ticketId) {
     // Get the mailbox_id from the ticket's emails (use the first/initial email's mailbox)
-    $sql = "SELECT TOP 1 tm.*
+    $sql = "SELECT tm.*
             FROM emails e
             INNER JOIN target_mailboxes tm ON e.mailbox_id = tm.id
             WHERE e.ticket_id = ?
-            ORDER BY e.is_initial DESC, e.received_datetime ASC";
+            ORDER BY e.is_initial DESC, e.received_datetime ASC
+            LIMIT 1";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$ticketId]);
     $mailbox = $stmt->fetch(PDO::FETCH_ASSOC);

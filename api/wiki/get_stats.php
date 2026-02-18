@@ -17,7 +17,7 @@ try {
     $conn = connectToDatabase();
 
     // Get latest completed scan
-    $scanStmt = $conn->prepare("SELECT TOP 1 id, started_at, completed_at, files_scanned, functions_found, classes_found, DATEDIFF(SECOND, started_at, completed_at) as duration_seconds FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC");
+    $scanStmt = $conn->prepare("SELECT id, started_at, completed_at, files_scanned, functions_found, classes_found, TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
     $scanStmt->execute();
     $scan = $scanStmt->fetch(PDO::FETCH_ASSOC);
 

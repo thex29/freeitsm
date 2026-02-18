@@ -23,7 +23,7 @@ if (empty($tableName)) {
 try {
     $conn = connectToDatabase();
 
-    $scanStmt = $conn->prepare("SELECT TOP 1 id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC");
+    $scanStmt = $conn->prepare("SELECT id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
     $scanStmt->execute();
     $scan = $scanStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -38,7 +38,7 @@ try {
                                    f.id as file_id, f.file_path, f.file_name, f.folder_path
                             FROM wiki_db_references dr
                             INNER JOIN wiki_files f ON dr.file_id = f.id
-                            WHERE dr.table_name = CAST(? AS NVARCHAR(255)) AND f.scan_id = $scanId
+                            WHERE dr.table_name = ? AND f.scan_id = $scanId
                             ORDER BY dr.reference_type, f.file_path");
     $stmt->execute([$tableName]);
     $references = $stmt->fetchAll(PDO::FETCH_ASSOC);

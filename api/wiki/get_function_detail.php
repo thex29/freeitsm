@@ -41,7 +41,7 @@ try {
     $callerStmt = $conn->prepare("SELECT fc.line_number, f.id as file_id, f.file_path, f.file_name
                                   FROM wiki_function_calls fc
                                   INNER JOIN wiki_files f ON fc.file_id = f.id
-                                  WHERE fc.function_name = CAST(? AS NVARCHAR(255)) AND f.id != $defFileId
+                                  WHERE fc.function_name = ? AND f.id != $defFileId
                                   ORDER BY f.file_path, fc.line_number");
     $callerStmt->execute([$func['function_name']]);
     $callers = $callerStmt->fetchAll(PDO::FETCH_ASSOC);

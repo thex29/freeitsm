@@ -18,8 +18,8 @@ try {
 
     $sql = "SELECT f.id, f.title, f.description, f.is_active,
                    f.created_by, a.full_name as created_by_name,
-                   CONVERT(VARCHAR(19), f.created_date, 120) as created_date,
-                   CONVERT(VARCHAR(19), f.modified_date, 120) as modified_date,
+                   DATE_FORMAT(f.created_date, '%Y-%m-%d %H:%i:%s') as created_date,
+                   DATE_FORMAT(f.modified_date, '%Y-%m-%d %H:%i:%s') as modified_date,
                    (SELECT COUNT(*) FROM form_fields WHERE form_id = f.id) as field_count,
                    (SELECT COUNT(*) FROM form_submissions WHERE form_id = f.id) as submission_count
             FROM forms f

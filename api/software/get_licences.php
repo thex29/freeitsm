@@ -25,19 +25,19 @@ try {
                 l.licence_type,
                 l.licence_key,
                 l.quantity,
-                CONVERT(VARCHAR(10), l.renewal_date, 23) AS renewal_date,
+                DATE_FORMAT(l.renewal_date, '%Y-%m-%d') AS renewal_date,
                 l.notice_period_days,
                 l.portal_url,
                 l.cost,
                 l.currency,
-                CONVERT(VARCHAR(10), l.purchase_date, 23) AS purchase_date,
+                DATE_FORMAT(l.purchase_date, '%Y-%m-%d') AS purchase_date,
                 l.vendor_contact,
                 l.notes,
                 l.status,
                 l.created_by,
                 an.full_name AS created_by_name,
-                CONVERT(VARCHAR(19), l.created_at, 120) AS created_at,
-                CONVERT(VARCHAR(19), l.updated_at, 120) AS updated_at
+                DATE_FORMAT(l.created_at, '%Y-%m-%d %H:%i:%s') AS created_at,
+                DATE_FORMAT(l.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
             FROM software_licences l
             INNER JOIN software_inventory_apps a ON l.app_id = a.id
             LEFT JOIN analysts an ON l.created_by = an.id

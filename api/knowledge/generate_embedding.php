@@ -40,7 +40,7 @@ try {
     $apiKey = decryptValue($keyRow['setting_value']);
 
     // Get article content
-    $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body FROM knowledge_articles WHERE id = ? AND is_published = 1";
+    $articleSql = "SELECT id, title, body FROM knowledge_articles WHERE id = ? AND is_published = 1";
     $articleStmt = $conn->prepare($articleSql);
     $articleStmt->execute([$articleId]);
     $article = $articleStmt->fetch(PDO::FETCH_ASSOC);

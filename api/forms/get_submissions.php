@@ -39,7 +39,7 @@ try {
 
     // Get submissions with data
     $stmt = $conn->prepare("SELECT s.id, a.full_name as submitted_by,
-                                   CONVERT(VARCHAR(19), s.submitted_date, 120) as submitted_date
+                                   DATE_FORMAT(s.submitted_date, '%Y-%m-%d %H:%i:%s') as submitted_date
                             FROM form_submissions s
                             LEFT JOIN analysts a ON s.submitted_by = a.id
                             WHERE s.form_id = ?

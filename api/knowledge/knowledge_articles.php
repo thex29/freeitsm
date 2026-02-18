@@ -21,7 +21,7 @@ try {
 
     // Build the query
     $sql = "SELECT DISTINCT a.id, a.title, a.created_datetime, a.modified_datetime, a.view_count,
-                   LEFT(CAST(a.body AS NVARCHAR(MAX)), 300) as preview,
+                   LEFT(a.body, 300) as preview,
                    an.full_name as author_name
             FROM knowledge_articles a
             INNER JOIN analysts an ON an.id = a.author_id
@@ -32,7 +32,7 @@ try {
 
     // Search filter
     if (!empty($search)) {
-        $sql .= " AND (a.title LIKE ? OR CAST(a.body AS NVARCHAR(MAX)) LIKE ?)";
+        $sql .= " AND (a.title LIKE ? OR a.body LIKE ?)";
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';
     }

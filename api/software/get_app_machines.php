@@ -28,7 +28,7 @@ try {
                 h.hostname,
                 d.display_version,
                 d.install_date,
-                CONVERT(VARCHAR(10), d.last_seen, 23) as last_seen
+                DATE_FORMAT(d.last_seen, '%Y-%m-%d') as last_seen
             FROM software_inventory_detail d
             INNER JOIN assets h ON h.id = d.host_id
             WHERE d.app_id = ?

@@ -23,7 +23,7 @@ try {
     $conn = connectToDatabase();
 
     $stmt = $conn->prepare("SELECT id, title, description, is_active, created_by,
-                                   CONVERT(VARCHAR(19), created_date, 120) as created_date
+                                   DATE_FORMAT(created_date, '%Y-%m-%d %H:%i:%s') as created_date
                             FROM forms WHERE id = ?");
     $stmt->execute([$formId]);
     $form = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -39,8 +39,7 @@ try {
     }
 
     $sql .= " ORDER BY sl.created_datetime DESC";
-    // SQL Server requires integers for OFFSET/FETCH - embed directly since already sanitized
-    $sql .= " OFFSET " . (int)$offset . " ROWS FETCH NEXT " . (int)$limit . " ROWS ONLY";
+    $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
 
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);

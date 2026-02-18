@@ -124,8 +124,7 @@ try {
 
         if ($questionEmbedding) {
             // Fetch all articles with embeddings
-            // CAST embedding to VARCHAR(MAX) to avoid NVARCHAR null-byte encoding issues with PDO ODBC
-            $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body, CAST(embedding AS VARCHAR(MAX)) as embedding
+            $articleSql = "SELECT id, title, body, embedding
                           FROM knowledge_articles
                           WHERE is_published = 1" . $archiveFilter . " AND embedding IS NOT NULL AND DATALENGTH(embedding) > 0";
             $articleStmt = $conn->prepare($articleSql);
@@ -163,7 +162,7 @@ try {
     if (!$useVectorSearch) {
         // Fallback: fetch all published articles
         $searchMethod = 'all';
-        $articleSql = "SELECT id, title, CAST(body AS NVARCHAR(MAX)) as body FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " ORDER BY title";
+        $articleSql = "SELECT id, title, body FROM knowledge_articles WHERE is_published = 1" . $archiveFilter . " ORDER BY title";
         $articleStmt = $conn->prepare($articleSql);
         $articleStmt->execute();
         $articles = $articleStmt->fetchAll(PDO::FETCH_ASSOC);

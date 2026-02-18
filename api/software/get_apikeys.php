@@ -18,7 +18,7 @@ try {
     $conn = connectToDatabase();
 
     $sql = "SELECT id, apikey,
-                   CONVERT(VARCHAR(19), datestamp, 120) AS created_at,
+                   DATE_FORMAT(datestamp, '%Y-%m-%d %H:%i:%s') AS created_at,
                    active
             FROM apikeys
             ORDER BY datestamp DESC";

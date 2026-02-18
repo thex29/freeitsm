@@ -28,7 +28,7 @@ try {
                        (SELECT COUNT(*) FROM wiki_dependencies WHERE file_id = f.id) as dependency_count
                 FROM wiki_files f
                 WHERE f.scan_id = $scanId
-                AND (CAST(f.folder_path AS NVARCHAR(500)) = ? OR CAST(f.folder_path AS NVARCHAR(500)) LIKE ?)
+                AND (f.folder_path = ? OR f.folder_path LIKE ?)
                 ORDER BY f.folder_path, f.file_name";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$folder, $folder . '/%']);
@@ -39,8 +39,8 @@ try {
     }
     echo "\n";
 
-    // ---- Test B: CAST on the parameter side ----
-    echo "=== Test B: CAST on parameter (CAST(? AS NVARCHAR(500))) ===\n";
+    // ---- Test B: Plain parameter comparison ----
+    echo "=== Test B: Plain parameter comparison ===\n";
     try {
         $sql = "SELECT f.id, f.file_path, f.file_name, f.folder_path, f.file_type,
                        f.file_size_bytes, f.line_count, f.last_modified, f.description,
@@ -48,7 +48,7 @@ try {
                        (SELECT COUNT(*) FROM wiki_dependencies WHERE file_id = f.id) as dependency_count
                 FROM wiki_files f
                 WHERE f.scan_id = $scanId
-                AND (f.folder_path = CAST(? AS NVARCHAR(500)) OR f.folder_path LIKE CAST(? AS NVARCHAR(500)))
+                AND (f.folder_path = ? OR f.folder_path LIKE ?)
                 ORDER BY f.folder_path, f.file_name";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$folder, $folder . '/%']);
@@ -60,7 +60,7 @@ try {
     echo "\n";
 
     // ---- Test C: CAST on BOTH sides ----
-    echo "=== Test C: CAST on both column and parameter ===\n";
+    echo "=== Test C: Plain comparison (both sides) ===\n";
     try {
         $sql = "SELECT f.id, f.file_path, f.file_name, f.folder_path, f.file_type,
                        f.file_size_bytes, f.line_count, f.last_modified, f.description,
@@ -68,7 +68,7 @@ try {
                        (SELECT COUNT(*) FROM wiki_dependencies WHERE file_id = f.id) as dependency_count
                 FROM wiki_files f
                 WHERE f.scan_id = $scanId
-                AND (CAST(f.folder_path AS NVARCHAR(500)) = CAST(? AS NVARCHAR(500)) OR CAST(f.folder_path AS NVARCHAR(500)) LIKE CAST(? AS NVARCHAR(500)))
+                AND (f.folder_path = ? OR f.folder_path LIKE ?)
                 ORDER BY f.folder_path, f.file_name";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$folder, $folder . '/%']);
@@ -184,11 +184,11 @@ try {
     echo "\n";
 
     // ---- Test I: Full query WITH description but using CAST(description) ----
-    echo "=== Test I: Full query with CAST(description AS NVARCHAR(MAX)) ===\n";
+    echo "=== Test I: Full query with description column ===\n";
     try {
         $sql = "SELECT f.id, f.file_path, f.file_name, f.folder_path, f.file_type,
                        f.file_size_bytes, f.line_count, f.last_modified,
-                       CAST(f.description AS NVARCHAR(MAX)) as description,
+                       f.description,
                        (SELECT COUNT(*) FROM wiki_functions WHERE file_id = f.id) as function_count,
                        (SELECT COUNT(*) FROM wiki_dependencies WHERE file_id = f.id) as dependency_count
                 FROM wiki_files f

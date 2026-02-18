@@ -17,7 +17,7 @@ try {
     $conn = connectToDatabase();
 
     $stmt = $conn->prepare("SELECT id, started_at, completed_at, status, files_scanned, functions_found, classes_found,
-                                   DATEDIFF(SECOND, started_at, completed_at) as duration_seconds,
+                                   TIMESTAMPDIFF(SECOND, started_at, completed_at) as duration_seconds,
                                    error_message, scanned_by
                             FROM wiki_scan_runs
                             ORDER BY id DESC");

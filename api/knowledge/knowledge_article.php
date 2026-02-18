@@ -26,7 +26,7 @@ try {
     $includeArchived = (int)($_GET['include_archived'] ?? 0);
 
     // Get article
-    $sql = "SELECT a.id, a.title, CAST(a.body AS NVARCHAR(MAX)) as body,
+    $sql = "SELECT a.id, a.title, a.body,
                    a.author_id, a.owner_id, a.next_review_date,
                    a.created_datetime, a.modified_datetime, a.view_count,
                    a.is_archived, a.archived_datetime,

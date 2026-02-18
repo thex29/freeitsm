@@ -16,7 +16,7 @@ if (!isset($_SESSION['analyst_id'])) {
 try {
     $conn = connectToDatabase();
 
-    $sql = "SELECT id, vm_id, name, power_state, memory_gb, num_cpu, ip_address, hard_disk_size_gb, host, cluster, guest_os, raw_data, CONVERT(VARCHAR(19), last_synced, 120) as last_synced FROM servers ORDER BY name";
+    $sql = "SELECT id, vm_id, name, power_state, memory_gb, num_cpu, ip_address, hard_disk_size_gb, host, cluster, guest_os, raw_data, DATE_FORMAT(last_synced, '%Y-%m-%d %H:%i:%s') as last_synced FROM servers ORDER BY name";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $servers = $stmt->fetchAll(PDO::FETCH_ASSOC);

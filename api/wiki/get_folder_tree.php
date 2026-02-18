@@ -16,7 +16,7 @@ if (!isset($_SESSION['analyst_id'])) {
 try {
     $conn = connectToDatabase();
 
-    $scanStmt = $conn->prepare("SELECT TOP 1 id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC");
+    $scanStmt = $conn->prepare("SELECT id FROM wiki_scan_runs WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
     $scanStmt->execute();
     $scan = $scanStmt->fetch(PDO::FETCH_ASSOC);
 

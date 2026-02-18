@@ -93,7 +93,7 @@ try {
             $aid = intval($analystId);
             $days = intval($trustDays);
             $insStmt = $conn->prepare("INSERT INTO trusted_devices (analyst_id, device_token_hash, user_agent, ip_address, created_datetime, expires_datetime)
-                                       VALUES ({$aid}, ?, ?, ?, UTC_TIMESTAMP(), DATEADD(DAY, {$days}, UTC_TIMESTAMP()))");
+                                       VALUES ({$aid}, ?, ?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL {$days} DAY))");
             $insStmt->execute([$tokenHash, $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['REMOTE_ADDR'] ?? '']);
 
             setcookie('trusted_device', $cookieValue, time() + $expirySeconds, '/', '', false, true);
