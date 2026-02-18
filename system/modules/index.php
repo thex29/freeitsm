@@ -257,25 +257,15 @@ $path_prefix = '../../';
             font-size: 13px;
         }
 
-        /* Toast */
+        /* Toast — override global inbox.css toast (which uses left:50% + translateX) */
         .toast {
-            position: fixed;
-            bottom: 24px;
+            left: auto;
             right: 24px;
-            background: #333;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            opacity: 0;
             transform: translateY(10px);
-            transition: all 0.3s;
+            max-width: 350px;
         }
 
         .toast.show {
-            opacity: 1;
             transform: translateY(0);
         }
 
