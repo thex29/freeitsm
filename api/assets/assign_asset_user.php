@@ -32,8 +32,9 @@ try {
     $conn = connectToDatabase();
 
     // Check if users_assets table exists
-    $tableCheck = $conn->query("SELECT OBJECT_ID('users_assets', 'U') as table_exists");
-    $tableExists = $tableCheck->fetch(PDO::FETCH_ASSOC)['table_exists'] !== null;
+    $tableCheck = $conn->prepare("SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = 'users_assets'");
+    $tableCheck->execute([DB_NAME]);
+    $tableExists = (int)$tableCheck->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
 
     if (!$tableExists) {
         echo json_encode([
@@ -61,7 +62,7 @@ try {
 
     // Insert the assignment
     $sql = "INSERT INTO users_assets (asset_id, user_id, assigned_by_analyst_id, notes, assigned_datetime)
-            VALUES (?, ?, ?, ?, GETUTCDATE())";
+            VALUES (?, ?, ?, ?, UTC_TIMESTAMP())";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$assetId, $userId, $_SESSION['analyst_id'], $notes]);
@@ -75,7 +76,7 @@ try {
         $oldUserName = $prevRow ? $prevRow['display_name'] : $previousUserId;
     }
     $auditSql = "INSERT INTO asset_history (asset_id, analyst_id, field_name, old_value, new_value, created_datetime)
-                 VALUES (?, ?, 'Assigned User', ?, ?, GETUTCDATE())";
+                 VALUES (?, ?, 'Assigned User', ?, ?, UTC_TIMESTAMP())";
     $auditStmt = $conn->prepare($auditSql);
     $auditStmt->execute([$assetId, $_SESSION['analyst_id'], $oldUserName, $userName]);
 

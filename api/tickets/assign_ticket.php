@@ -75,7 +75,7 @@ try {
     }
 
     // Always update the updated_datetime
-    $updates[] = "updated_datetime = GETUTCDATE()";
+    $updates[] = "updated_datetime = UTC_TIMESTAMP()";
 
     $params[] = $ticket_id;
 

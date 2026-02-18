@@ -36,10 +36,10 @@ try {
 
     switch ($filter) {
         case 'overdue':
-            $sql .= " AND ka.next_review_date < CAST(GETUTCDATE() AS DATE)";
+            $sql .= " AND ka.next_review_date < DATE(UTC_TIMESTAMP())";
             break;
         case 'upcoming':
-            $sql .= " AND ka.next_review_date >= CAST(GETUTCDATE() AS DATE) AND ka.next_review_date <= DATEADD(day, 30, GETUTCDATE())";
+            $sql .= " AND ka.next_review_date >= DATE(UTC_TIMESTAMP()) AND ka.next_review_date <= DATE_ADD(UTC_TIMESTAMP(), INTERVAL 30 DAY)";
             break;
         case 'no_date':
             $sql .= " AND ka.next_review_date IS NULL";
@@ -74,8 +74,8 @@ try {
     // Get counts for filter badges
     $countsSql = "SELECT
         COUNT(*) as total,
-        SUM(CASE WHEN next_review_date < CAST(GETUTCDATE() AS DATE) THEN 1 ELSE 0 END) as overdue,
-        SUM(CASE WHEN next_review_date >= CAST(GETUTCDATE() AS DATE) AND next_review_date <= DATEADD(day, 30, GETUTCDATE()) THEN 1 ELSE 0 END) as upcoming,
+        SUM(CASE WHEN next_review_date < CAST(UTC_TIMESTAMP() AS DATE) THEN 1 ELSE 0 END) as overdue,
+        SUM(CASE WHEN next_review_date >= CAST(UTC_TIMESTAMP() AS DATE) AND next_review_date <= DATEADD(day, 30, UTC_TIMESTAMP()) THEN 1 ELSE 0 END) as upcoming,
         SUM(CASE WHEN next_review_date IS NULL THEN 1 ELSE 0 END) as no_date
     FROM knowledge_articles
     WHERE is_published = 1

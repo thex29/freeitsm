@@ -30,7 +30,7 @@ try {
     // Soft-archive: move to recycle bin
     $sql = "UPDATE knowledge_articles
             SET is_archived = 1,
-                archived_datetime = GETUTCDATE(),
+                archived_datetime = UTC_TIMESTAMP(),
                 archived_by_id = ?
             WHERE id = ? AND (is_archived = 0 OR is_archived IS NULL)";
     $stmt = $conn->prepare($sql);

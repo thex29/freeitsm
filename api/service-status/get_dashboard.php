@@ -51,7 +51,7 @@ try {
                FROM status_incidents i
                LEFT JOIN analysts a ON i.created_by_id = a.id
                WHERE i.status != 'Resolved'
-                  OR i.resolved_datetime >= DATEADD(DAY, -30, GETUTCDATE())
+                  OR i.resolved_datetime >= DATEADD(DAY, -30, UTC_TIMESTAMP())
                ORDER BY
                    CASE WHEN i.status != 'Resolved' THEN 0 ELSE 1 END,
                    i.updated_datetime DESC";

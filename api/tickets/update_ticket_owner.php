@@ -49,7 +49,7 @@ try {
     }
 
     // Update ticket owner
-    $sql = "UPDATE tickets SET owner_id = ?, updated_datetime = GETUTCDATE() WHERE id = ?";
+    $sql = "UPDATE tickets SET owner_id = ?, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$ownerId, $ticketId]);
 

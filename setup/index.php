@@ -63,7 +63,7 @@ if (file_exists($configPath)) {
                 if ($analystCount === 0) {
                     try {
                         $hash = password_hash('freeitsm', PASSWORD_DEFAULT);
-                        $stmt = $conn->prepare("INSERT INTO analysts (username, password_hash, full_name, email, is_active, created_datetime) VALUES (?, ?, ?, ?, 1, GETUTCDATE())");
+                        $stmt = $conn->prepare("INSERT INTO analysts (username, password_hash, full_name, email, is_active, created_datetime) VALUES (?, ?, ?, ?, 1, UTC_TIMESTAMP())");
                         $stmt->execute(['admin', $hash, 'Administrator', 'admin@localhost']);
                         $adminCreated = true;
                         $analystCount = 1;

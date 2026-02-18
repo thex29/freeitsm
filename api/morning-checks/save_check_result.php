@@ -52,7 +52,7 @@ try {
 
     if ($existing) {
         // Update existing result
-        $sql = "UPDATE morningChecks_Results SET Status = :status, Notes = :notes, ModifiedDate = GETUTCDATE()
+        $sql = "UPDATE morningChecks_Results SET Status = :status, Notes = :notes, ModifiedDate = UTC_TIMESTAMP()
                 WHERE CheckID = $checkIdInt AND CheckDate = '$checkDate'";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':status', $status, PDO::PARAM_STR);
@@ -61,7 +61,7 @@ try {
     } else {
         // Insert new result
         $sql = "INSERT INTO morningChecks_Results (CheckID, CheckDate, Status, Notes, CreatedDate, ModifiedDate)
-                VALUES ($checkIdInt, '$checkDate', :status, :notes, GETUTCDATE(), GETUTCDATE())";
+                VALUES ($checkIdInt, '$checkDate', :status, :notes, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':status', $status, PDO::PARAM_STR);
         $stmt->bindValue(':notes', $notes, PDO::PARAM_STR);

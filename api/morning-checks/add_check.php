@@ -27,7 +27,7 @@ try {
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO morningChecks_Checks (CheckName, CheckDescription, SortOrder, IsActive, CreatedDate, ModifiedDate)
-            VALUES (?, ?, ?, 1, GETUTCDATE(), GETUTCDATE())";
+            VALUES (?, ?, ?, 1, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([trim($checkName), trim($checkDescription), (int)$sortOrder]);

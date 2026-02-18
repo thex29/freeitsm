@@ -28,12 +28,12 @@ try {
 
     if ($workStart === null) {
         // Clear the schedule
-        $sql = "UPDATE tickets SET work_start_datetime = NULL, updated_datetime = GETUTCDATE() WHERE id = ?";
+        $sql = "UPDATE tickets SET work_start_datetime = NULL, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$ticketId]);
     } else {
         // Set the schedule
-        $sql = "UPDATE tickets SET work_start_datetime = ?, updated_datetime = GETUTCDATE() WHERE id = ?";
+        $sql = "UPDATE tickets SET work_start_datetime = ?, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$workStart, $ticketId]);
     }

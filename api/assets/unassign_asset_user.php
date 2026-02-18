@@ -44,7 +44,7 @@ try {
             $userName = $userRow ? $userRow['display_name'] : $userId;
 
             $auditSql = "INSERT INTO asset_history (asset_id, analyst_id, field_name, old_value, new_value, created_datetime)
-                         VALUES (?, ?, 'Assigned User', ?, NULL, GETUTCDATE())";
+                         VALUES (?, ?, 'Assigned User', ?, NULL, UTC_TIMESTAMP())";
             $auditStmt = $conn->prepare($auditSql);
             $auditStmt->execute([$assetId, $_SESSION['analyst_id'], $userName]);
         }

@@ -69,7 +69,7 @@ try {
                     email = ?,
                     password_hash = ?,
                     is_active = ?,
-                    last_modified_datetime = GETUTCDATE()
+                    last_modified_datetime = UTC_TIMESTAMP()
                     WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$username, $fullName, $email, $passwordHash, $isActive ? 1 : 0, $id]);
@@ -80,7 +80,7 @@ try {
                     full_name = ?,
                     email = ?,
                     is_active = ?,
-                    last_modified_datetime = GETUTCDATE()
+                    last_modified_datetime = UTC_TIMESTAMP()
                     WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$username, $fullName, $email, $isActive ? 1 : 0, $id]);
@@ -92,7 +92,7 @@ try {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO analysts (username, password_hash, full_name, email, is_active, created_datetime, last_modified_datetime)
-                VALUES (?, ?, ?, ?, ?, GETUTCDATE(), GETUTCDATE())";
+                VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$username, $passwordHash, $fullName, $email, $isActive ? 1 : 0]);
 

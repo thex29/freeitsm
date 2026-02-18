@@ -52,12 +52,12 @@ try {
     // Update password and track change datetime
     $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
     try {
-        $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETUTCDATE(), password_changed_datetime = GETUTCDATE() WHERE id = ?";
+        $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = UTC_TIMESTAMP(), password_changed_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->execute([$newHash, $analystId]);
     } catch (Exception $colEx) {
         // Fallback if password_changed_datetime column doesn't exist yet
-        $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = GETUTCDATE() WHERE id = ?";
+        $updateSql = "UPDATE analysts SET password_hash = ?, last_modified_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->execute([$newHash, $analystId]);
     }

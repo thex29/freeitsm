@@ -40,10 +40,10 @@ try {
         $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row['cnt'] > 0) {
-            $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ?, updated_datetime = GETUTCDATE() WHERE setting_key = ?");
+            $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ?, updated_datetime = UTC_TIMESTAMP() WHERE setting_key = ?");
             $stmt->execute([$value, $key]);
         } else {
-            $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value, updated_datetime) VALUES (?, ?, GETUTCDATE())");
+            $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value, updated_datetime) VALUES (?, ?, UTC_TIMESTAMP())");
             $stmt->execute([$key, $value]);
         }
     }

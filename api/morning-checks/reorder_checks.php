@@ -23,7 +23,7 @@ try {
 
     $conn = connectToDatabase();
 
-    $stmt = $conn->prepare("UPDATE morningChecks_Checks SET SortOrder = ?, ModifiedDate = GETUTCDATE() WHERE CheckID = ?");
+    $stmt = $conn->prepare("UPDATE morningChecks_Checks SET SortOrder = ?, ModifiedDate = UTC_TIMESTAMP() WHERE CheckID = ?");
 
     foreach ($order as $index => $checkId) {
         $stmt->execute([(int)$index, (int)$checkId]);

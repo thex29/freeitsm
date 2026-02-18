@@ -587,7 +587,7 @@ function saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $body) {
         $sql = "INSERT INTO emails (
             subject, from_address, from_name, to_recipients, cc_recipients,
             received_datetime, body_content, body_type, ticket_id, is_initial, direction, mailbox_id
-        ) VALUES (?, ?, ?, ?, ?, GETUTCDATE(), ?, 'html', ?, 0, 'Outbound', ?)";
+        ) VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, 'html', ?, 0, 'Outbound', ?)";
 
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -602,7 +602,7 @@ function saveSentEmail($conn, $ticketId, $mailbox, $to, $cc, $subject, $body) {
         ]);
 
         // Update ticket's updated_datetime
-        $updateSql = "UPDATE tickets SET updated_datetime = GETUTCDATE() WHERE id = ?";
+        $updateSql = "UPDATE tickets SET updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->execute([$ticketId]);
     } catch (Exception $e) {

@@ -37,7 +37,7 @@ try {
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($existing) {
-            $stmt = $conn->prepare("UPDATE contract_term_values SET content = ?, updated_datetime = GETDATE() WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE contract_term_values SET content = ?, updated_datetime = NOW() WHERE id = ?");
             $stmt->execute([$content, $existing['id']]);
         } else {
             $stmt = $conn->prepare("INSERT INTO contract_term_values (contract_id, term_tab_id, content) VALUES (?, ?, ?)");

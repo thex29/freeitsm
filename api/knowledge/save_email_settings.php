@@ -64,13 +64,13 @@ try {
     // Use MERGE/UPSERT pattern for SQL Server
     foreach ($settingsToSave as $key => $value) {
         // Try to update first
-        $updateSql = "UPDATE system_settings SET setting_value = ?, updated_datetime = GETUTCDATE() WHERE setting_key = ?";
+        $updateSql = "UPDATE system_settings SET setting_value = ?, updated_datetime = UTC_TIMESTAMP() WHERE setting_key = ?";
         $stmt = $conn->prepare($updateSql);
         $stmt->execute([$value, $key]);
 
         // If no rows affected, insert
         if ($stmt->rowCount() === 0) {
-            $insertSql = "INSERT INTO system_settings (setting_key, setting_value, updated_datetime) VALUES (?, ?, GETUTCDATE())";
+            $insertSql = "INSERT INTO system_settings (setting_key, setting_value, updated_datetime) VALUES (?, ?, UTC_TIMESTAMP())";
             $stmt = $conn->prepare($insertSql);
             $stmt->execute([$key, $value]);
         }

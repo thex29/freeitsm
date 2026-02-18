@@ -63,7 +63,7 @@ try {
     // Log the change to asset_history
     $fieldLabel = $field === 'asset_type_id' ? 'Type' : ($field === 'asset_status_id' ? 'Status' : $field);
     $auditSql = "INSERT INTO asset_history (asset_id, analyst_id, field_name, old_value, new_value, created_datetime)
-                 VALUES (?, ?, ?, ?, ?, GETUTCDATE())";
+                 VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP())";
     $auditStmt = $conn->prepare($auditSql);
     $auditStmt->execute([$asset_id, $_SESSION['analyst_id'], $fieldLabel, $oldDisplay, $newDisplay]);
 

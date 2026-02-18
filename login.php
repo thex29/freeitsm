@@ -45,7 +45,7 @@ function logLoginAttempt($conn, $analystId, $username, $success) {
         ]);
 
         $sql = "INSERT INTO system_logs (log_type, analyst_id, details, created_datetime)
-                VALUES ('login', ?, ?, GETUTCDATE())";
+                VALUES ('login', ?, ?, UTC_TIMESTAMP())";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$analystId, $details]);
     } catch (Exception $e) {
@@ -84,30 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Connect to database
-            $drivers = [
-                'ODBC Driver 17 for SQL Server',
-                'ODBC Driver 18 for SQL Server',
-                'SQL Server Native Client 11.0',
-                'SQL Server'
-            ];
-
-            $conn = null;
-            $lastException = null;
-            foreach ($drivers as $driver) {
-                try {
-                    $dsn = "odbc:Driver={{$driver}};Server=" . DB_SERVER . ";Database=" . DB_NAME;
-                    $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    break;
-                } catch (PDOException $e) {
-                    $lastException = $e;
-                    continue;
-                }
-            }
-
-            if (!$conn) {
-                throw new Exception('Database connection failed: ' . $lastException->getMessage());
-            }
+            $dsn = "mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            $conn = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             // Query for user (include MFA, lockout, trust, and password fields)
             // Falls back to basic query if security columns don't exist yet (pre db-verify)
@@ -159,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $trustedDeviceValid = false;
                     if (!empty($_COOKIE['trusted_device']) && !empty($analyst['trust_device_enabled'])) {
                         $tokenHash = hash('sha256', hex2bin($_COOKIE['trusted_device']));
-                        $tdStmt = $conn->prepare("SELECT id FROM trusted_devices WHERE device_token_hash = ? AND analyst_id = ? AND expires_datetime > GETUTCDATE()");
+                        $tdStmt = $conn->prepare("SELECT id FROM trusted_devices WHERE device_token_hash = ? AND analyst_id = ? AND expires_datetime > UTC_TIMESTAMP()");
                         $tdStmt->execute([$tokenHash, $analyst['id']]);
                         if ($tdStmt->fetch()) {
                             $trustedDeviceValid = true;
@@ -173,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['analyst_name'] = $analyst['full_name'];
                         $_SESSION['analyst_email'] = $analyst['email'];
 
-                        $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
+                        $updateSql = "UPDATE analysts SET last_login_datetime = UTC_TIMESTAMP() WHERE id = ?";
                         $updateStmt = $conn->prepare($updateSql);
                         $updateStmt->execute([$analyst['id']]);
 
@@ -210,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['analyst_email'] = $analyst['email'];
 
                     // Update last login time
-                    $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
+                    $updateSql = "UPDATE analysts SET last_login_datetime = UTC_TIMESTAMP() WHERE id = ?";
                     $updateStmt = $conn->prepare($updateSql);
                     $updateStmt->execute([$analyst['id']]);
 
@@ -241,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $mins = intval($lockoutMins);
                     $aid = intval($analyst['id']);
                     if ($maxFailed > 0 && $newCount >= $maxFailed) {
-                        $lockStmt = $conn->prepare("UPDATE analysts SET failed_login_count = {$cnt}, locked_until = DATEADD(MINUTE, {$mins}, GETUTCDATE()) WHERE id = {$aid}");
+                        $lockStmt = $conn->prepare("UPDATE analysts SET failed_login_count = {$cnt}, locked_until = DATE_ADD(UTC_TIMESTAMP(), INTERVAL {$mins} MINUTE) WHERE id = {$aid}");
                         $lockStmt->execute();
                     } else {
                         $incStmt = $conn->prepare("UPDATE analysts SET failed_login_count = {$cnt} WHERE id = {$aid}");

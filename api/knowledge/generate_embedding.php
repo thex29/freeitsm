@@ -110,7 +110,7 @@ try {
     // Store embedding as JSON
     $embeddingJson = json_encode($embedding);
 
-    $updateSql = "UPDATE knowledge_articles SET embedding = ?, embedding_updated = GETUTCDATE() WHERE id = ?";
+    $updateSql = "UPDATE knowledge_articles SET embedding = ?, embedding_updated = UTC_TIMESTAMP() WHERE id = ?";
     $updateStmt = $conn->prepare($updateSql);
     $updateStmt->execute([$embeddingJson, $articleId]);
 

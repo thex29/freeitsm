@@ -71,7 +71,7 @@ try {
     unset($_SESSION['mfa_pending_allowed_modules']);
 
     // Update last login time
-    $updateSql = "UPDATE analysts SET last_login_datetime = GETUTCDATE() WHERE id = ?";
+    $updateSql = "UPDATE analysts SET last_login_datetime = UTC_TIMESTAMP() WHERE id = ?";
     $updateStmt = $conn->prepare($updateSql);
     $updateStmt->execute([$analystId]);
 
@@ -93,13 +93,13 @@ try {
             $aid = intval($analystId);
             $days = intval($trustDays);
             $insStmt = $conn->prepare("INSERT INTO trusted_devices (analyst_id, device_token_hash, user_agent, ip_address, created_datetime, expires_datetime)
-                                       VALUES ({$aid}, ?, ?, ?, GETUTCDATE(), DATEADD(DAY, {$days}, GETUTCDATE()))");
+                                       VALUES ({$aid}, ?, ?, ?, UTC_TIMESTAMP(), DATEADD(DAY, {$days}, UTC_TIMESTAMP()))");
             $insStmt->execute([$tokenHash, $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['REMOTE_ADDR'] ?? '']);
 
             setcookie('trusted_device', $cookieValue, time() + $expirySeconds, '/', '', false, true);
 
             // Clean up expired tokens for this analyst
-            $cleanStmt = $conn->prepare("DELETE FROM trusted_devices WHERE analyst_id = {$aid} AND expires_datetime < GETUTCDATE()");
+            $cleanStmt = $conn->prepare("DELETE FROM trusted_devices WHERE analyst_id = {$aid} AND expires_datetime < UTC_TIMESTAMP()");
             $cleanStmt->execute();
         }
     }

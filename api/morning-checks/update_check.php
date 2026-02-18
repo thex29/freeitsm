@@ -33,7 +33,7 @@ try {
     $conn = connectToDatabase();
 
     $sql = "UPDATE morningChecks_Checks
-            SET CheckName = ?, CheckDescription = ?, SortOrder = ?, IsActive = ?, ModifiedDate = GETUTCDATE()
+            SET CheckName = ?, CheckDescription = ?, SortOrder = ?, IsActive = ?, ModifiedDate = UTC_TIMESTAMP()
             WHERE CheckID = ?";
 
     $stmt = $conn->prepare($sql);

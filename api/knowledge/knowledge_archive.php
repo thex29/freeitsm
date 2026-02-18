@@ -128,7 +128,7 @@ function purgeExpired($conn) {
 
     $sql = "DELETE FROM knowledge_articles
             WHERE is_archived = 1
-            AND archived_datetime < DATEADD(day, -?, GETUTCDATE())";
+            AND archived_datetime < DATE_SUB(UTC_TIMESTAMP(), INTERVAL ? DAY)";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$days]);
 
