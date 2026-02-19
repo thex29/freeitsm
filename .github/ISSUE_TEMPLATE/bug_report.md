@@ -9,6 +9,7 @@ assignees: ''
 
 **Which module is the bug in**
 Tickets/Knowledge/Assets etc.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
