@@ -54,10 +54,10 @@ try {
     $currentTicket = $currentStmt->fetch(PDO::FETCH_ASSOC);
     $oldOwnerId = $currentTicket ? $currentTicket['owner_id'] : null;
 
-    // Update ticket owner
-    $sql = "UPDATE tickets SET owner_id = ?, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
+    // Update ticket owner and assigned analyst
+    $sql = "UPDATE tickets SET owner_id = ?, assigned_analyst_id = ?, updated_datetime = UTC_TIMESTAMP() WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$ownerId, $ticketId]);
+    $stmt->execute([$ownerId, $ownerId, $ticketId]);
 
     echo json_encode(['success' => true, 'message' => 'Ticket owner updated successfully']);
 
