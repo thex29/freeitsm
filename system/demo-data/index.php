@@ -186,10 +186,10 @@ if (!isset($_SESSION['analyst_id'])) {
 
         .import-btn.success {
             background: #2e7d32;
-            cursor: default;
+            cursor: pointer;
         }
 
-        .import-btn.success:hover { background: #2e7d32; }
+        .import-btn.success:hover { background: #1b5e20; }
 
         .import-btn-lg {
             padding: 10px 24px;
@@ -444,6 +444,10 @@ if (!isset($_SESSION['analyst_id'])) {
         const checkSvg = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
         async function importModule(module, btn) {
+            if (btn.classList.contains('success')) {
+                if (!confirm('This will delete existing ' + module + ' demo data and re-import fresh. Continue?')) return;
+            }
+
             btn.disabled = true;
             const origHtml = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-inline"></span> Importing...';
@@ -459,9 +463,9 @@ if (!isset($_SESSION['analyst_id'])) {
                 const data = await response.json();
 
                 if (data.success) {
-                    btn.className = 'import-btn success';
+                    btn.className = btn.className.includes('import-btn-lg') ? 'import-btn import-btn-lg success' : 'import-btn success';
                     btn.innerHTML = checkSvg + ' ' + data.total + ' imported';
-                    btn.disabled = true;
+                    btn.disabled = false;
                     importedModules[module] = true;
 
                     if (module === 'core') {
@@ -521,7 +525,6 @@ if (!isset($_SESSION['analyst_id'])) {
                     const btn = document.getElementById('btn-core');
                     btn.className = 'import-btn import-btn-lg success';
                     btn.innerHTML = checkSvg + ' Already imported';
-                    btn.disabled = true;
                     enableModuleButtons();
                 }
                 // Track which modules have data so bonus sections appear
@@ -535,7 +538,6 @@ if (!isset($_SESSION['analyst_id'])) {
                         if (saBtn) {
                             saBtn.className = 'import-btn success';
                             saBtn.innerHTML = checkSvg + ' Already imported';
-                            saBtn.disabled = true;
                         }
                     }
                     if (data.modules.dashboards) {
@@ -544,7 +546,6 @@ if (!isset($_SESSION['analyst_id'])) {
                         if (dbBtn) {
                             dbBtn.className = 'import-btn success';
                             dbBtn.innerHTML = checkSvg + ' Already imported';
-                            dbBtn.disabled = true;
                         }
                     }
                     checkBonusEligibility();
