@@ -22,6 +22,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 060 | Tickets           | Feature     | Per-mailbox email whitelist (domains and addresses) with searchable activity log for imported and rejected emails |
 | 061 | Tickets           | Improvement | Configurable email actions for rejected and imported emails (delete, move to deleted, mark as read, move to folder) with modern toggle switch for active state |
 | 062 | Tickets           | Fix         | Fix move-to-folder by resolving display names to Graph API folder IDs, add processing log JSON with clickable detail view in activity log, and folder Verify button |
+| 063 | Tickets           | Feature     | Full-screen mailbox activity log with left-hand mailbox panel, search, pagination, and processing log detail view |
 
 ---
 

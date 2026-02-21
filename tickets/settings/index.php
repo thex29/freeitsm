@@ -299,6 +299,7 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
             <div class="section-header">
                 <h2>Mailboxes</h2>
                 <div>
+                    <button class="btn btn-secondary" onclick="window.location.href='../activity.php'" style="margin-right: 10px;">Logs</button>
                     <button class="btn btn-primary" onclick="checkAllMailboxes()" style="margin-right: 10px;">Check All</button>
                     <button class="add-btn" onclick="openMailboxModal()">Add</button>
                 </div>
