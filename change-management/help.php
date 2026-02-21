@@ -395,13 +395,22 @@ $path_prefix = '../';
         });
 
         // Smooth scroll to section on click (scroll within container, not the page)
+        function getOffsetTop(el, container) {
+            let top = 0;
+            while (el && el !== container) {
+                top += el.offsetTop;
+                el = el.offsetParent;
+            }
+            return top;
+        }
+
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const id = this.dataset.section;
                 const el = document.getElementById(id);
                 if (el) {
-                    helpMain.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+                    helpMain.scrollTo({ top: getOffsetTop(el, helpMain) - 20, behavior: 'smooth' });
                 }
                 navLinks.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
