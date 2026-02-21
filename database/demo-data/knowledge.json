@@ -32,6 +32,54 @@
             {
                 "_ref": "tag_security",
                 "name": "Security"
+            },
+            {
+                "_ref": "tag_sharepoint",
+                "name": "SharePoint"
+            },
+            {
+                "_ref": "tag_teams",
+                "name": "Teams"
+            },
+            {
+                "_ref": "tag_mfa",
+                "name": "MFA"
+            },
+            {
+                "_ref": "tag_hardware",
+                "name": "Hardware"
+            },
+            {
+                "_ref": "tag_network",
+                "name": "Network"
+            },
+            {
+                "_ref": "tag_email",
+                "name": "Email"
+            },
+            {
+                "_ref": "tag_software",
+                "name": "Software"
+            },
+            {
+                "_ref": "tag_server",
+                "name": "Server"
+            },
+            {
+                "_ref": "tag_mobile",
+                "name": "Mobile"
+            },
+            {
+                "_ref": "tag_licensing",
+                "name": "Licensing"
+            },
+            {
+                "_ref": "tag_firewall",
+                "name": "Firewall"
+            },
+            {
+                "_ref": "tag_backup",
+                "name": "Backup"
             }
         ],
         "analysts": [
@@ -60,7 +108,7 @@
             {
                 "_ref": "ka1",
                 "title": "How to Connect to the Corporate VPN",
-                "body": "<h3>Prerequisites</h3><p>Before connecting, ensure you have the <strong>GlobalProtect VPN client</strong> installed on your device and that your account has been provisioned for remote access by IT.</p><h3>Connection Steps</h3><ol><li>Open the GlobalProtect application from your system tray or Applications folder.</li><li>Enter the portal address: <strong>vpn.company.com</strong></li><li>Authenticate using your corporate credentials and approve the MFA prompt on your mobile device.</li><li>Wait for the status to show <strong>Connected</strong> before accessing internal resources.</li></ol><h3>Troubleshooting</h3><p>If the connection fails, check that you are not on a restricted network. Try switching from WiFi to a mobile hotspot. If the issue persists, restart the VPN client and retry. Contact the Service Desk if problems continue.</p>",
+                "body": "<h3>Prerequisites</h3><p>Before connecting, ensure you have the <strong>GlobalProtect VPN client</strong> installed on your device and that your account has been provisioned for remote access by IT.</p><h3>Connection Steps</h3><ol><li>Open the GlobalProtect application from your system tray or Applications folder.</li><li>Enter the portal address: <strong>vpn.company.com</strong></li><li>Authenticate using your corporate credentials and approve the MFA prompt on your mobile device.</li><li>Wait for the status to show <strong>Connected</strong> before accessing internal resources.</li></ol><h3>Troubleshooting</h3><p>If the connection fails, check that you are not on a restricted network. Try switching from WiFi to a mobile hotspot. If the issue persists, restart the VPN client and retry. Contact the Service Desk if problems continue.</p><h3>Contractor VPN Access</h3><p>Contractors require a <strong>sponsored VPN account</strong>. The sponsoring manager must submit a VPN access request via the Service Desk, specifying the contractor's name, company, and required access duration. Contractor VPN accounts are time-limited and automatically disabled on the agreed end date.</p>",
                 "author_id": "@analysts.jsmith",
                 "created_datetime": "__RELATIVE_DATE:-30d__",
                 "modified_datetime": "__RELATIVE_DATE:-30d__",
@@ -72,7 +120,7 @@
             {
                 "_ref": "ka2",
                 "title": "Setting Up Outlook on a New Device",
-                "body": "<h3>Automatic Setup (Recommended)</h3><p>Outlook supports <strong>Autodiscover</strong> for company email. Open Outlook, enter your corporate email address, and click <strong>Connect</strong>. Outlook will automatically detect the Exchange server settings and configure your mailbox.</p><h3>Manual Setup</h3><ol><li>Open Outlook and go to <strong>File &gt; Add Account</strong>.</li><li>Select <strong>Manual setup</strong> and choose Exchange or Microsoft 365.</li><li>Enter the server address: <strong>mail.company.com</strong></li><li>Enter your full email address and password, then click <strong>Next</strong>.</li></ol><h3>Post-Setup</h3><p>Once connected, allow up to 15 minutes for your mailbox to fully synchronise. Shared calendars and distribution lists will appear automatically after the initial sync completes.</p>",
+                "body": "<h3>Automatic Setup (Recommended)</h3><p>Outlook supports <strong>Autodiscover</strong> for company email. Open Outlook, enter your corporate email address, and click <strong>Connect</strong>. Outlook will automatically detect the Exchange server settings and configure your mailbox.</p><h3>Manual Setup</h3><ol><li>Open Outlook and go to <strong>File &gt; Add Account</strong>.</li><li>Select <strong>Manual setup</strong> and choose Exchange or Microsoft 365.</li><li>Enter the server address: <strong>mail.company.com</strong></li><li>Enter your full email address and password, then click <strong>Next</strong>.</li></ol><h3>Post-Setup</h3><p>Once connected, allow up to 15 minutes for your mailbox to fully synchronise. Shared calendars and distribution lists will appear automatically after the initial sync completes.</p><h3>Outlook Crashing or Freezing</h3><p>If Outlook crashes when opening attachments or during normal use, try the following:</p><ol><li>Start Outlook in <strong>Safe Mode</strong> by holding Ctrl while launching, then disable any third-party add-ins under File &gt; Options &gt; Add-ins.</li><li>Run <strong>Outlook Repair</strong> from Control Panel &gt; Programs &gt; Microsoft Office &gt; Change &gt; Repair.</li><li>Clear the Outlook cache by deleting the contents of <code>%localappdata%\\Microsoft\\Outlook\\RoamCache</code>.</li><li>If crashes persist, create a new Outlook profile under Control Panel &gt; Mail &gt; Show Profiles &gt; Add.</li></ol>",
                 "author_id": "@analysts.swilliams",
                 "created_datetime": "__RELATIVE_DATE:-25d__",
                 "modified_datetime": "__RELATIVE_DATE:-25d__",
@@ -84,7 +132,7 @@
             {
                 "_ref": "ka3",
                 "title": "Password Reset Procedure",
-                "body": "<h3>Self-Service Password Reset</h3><p>You can reset your password at any time using the <strong>self-service portal</strong> at <strong>reset.company.com</strong>. You will need access to your registered mobile phone for verification.</p><ol><li>Navigate to <strong>reset.company.com</strong> and click <strong>Forgot Password</strong>.</li><li>Enter your username and verify your identity via SMS or authenticator app.</li><li>Create a new password that meets the complexity requirements: minimum 12 characters, including uppercase, lowercase, a number, and a special character.</li></ol><h3>When to Contact IT</h3><p>If your account is locked out after multiple failed attempts, or if you no longer have access to your MFA device, contact the Service Desk directly. A technician will verify your identity before performing a manual reset.</p>",
+                "body": "<h3>Self-Service Password Reset</h3><p>You can reset your password at any time using the <strong>self-service portal</strong> at <strong>reset.company.com</strong>. You will need access to your registered mobile phone for verification.</p><ol><li>Navigate to <strong>reset.company.com</strong> and click <strong>Forgot Password</strong>.</li><li>Enter your username and verify your identity via SMS or authenticator app.</li><li>Create a new password that meets the complexity requirements: minimum 12 characters, including uppercase, lowercase, a number, and a special character.</li></ol><h3>Legacy System Password Resets</h3><p>Some older systems (e.g., finance ERP, legacy CRM) maintain separate credentials that do not sync with Active Directory. To reset a legacy system password, raise a ticket with the Service Desk specifying the system name. A technician will reset the password and provide new credentials securely.</p><h3>When to Contact IT</h3><p>If your account is locked out after multiple failed attempts, or if you no longer have access to your MFA device, contact the Service Desk directly. A technician will verify your identity before performing a manual reset.</p><h3>After a Password Reset</h3><p>After changing your password, remember to update it on all devices: your laptop, mobile phone email app, VPN client, and any other services where you use your corporate credentials. Failing to update all devices may trigger account lockouts.</p>",
                 "author_id": "@analysts.admin",
                 "created_datetime": "__RELATIVE_DATE:-20d__",
                 "modified_datetime": "__RELATIVE_DATE:-20d__",
@@ -96,7 +144,7 @@
             {
                 "_ref": "ka4",
                 "title": "Network Printer Setup Guide",
-                "body": "<h3>Finding Your Floor Printer</h3><p>Each floor has a designated network printer. Refer to the <strong>printer map</strong> on the intranet to find the printer name and IP address for your floor.</p><h3>Installation Steps</h3><ol><li>Open <strong>Settings &gt; Printers &amp; Scanners</strong> and click <strong>Add a printer</strong>.</li><li>Select <strong>Add a printer using a TCP/IP address</strong> and enter the printer IP from the floor map.</li><li>Windows will automatically detect the printer model and install the correct driver.</li><li>Print a test page to confirm the setup is working correctly.</li></ol><h3>Driver Issues</h3><p>If the driver does not install automatically, download the latest driver from the manufacturer website or contact the Service Desk to have it pushed to your device via software deployment.</p>",
+                "body": "<h3>Finding Your Floor Printer</h3><p>Each floor has a designated network printer. Refer to the <strong>printer map</strong> on the intranet to find the printer name and IP address for your floor.</p><h3>Installation Steps</h3><ol><li>Open <strong>Settings &gt; Printers &amp; Scanners</strong> and click <strong>Add a printer</strong>.</li><li>Select <strong>Add a printer using a TCP/IP address</strong> and enter the printer IP from the floor map.</li><li>Windows will automatically detect the printer model and install the correct driver.</li><li>Print a test page to confirm the setup is working correctly.</li></ol><h3>Printer Not Working</h3><p>If your floor printer is not responding:</p><ol><li>Check the printer display panel for error messages (paper jam, toner empty, etc.).</li><li>Verify the printer is powered on and showing a <strong>Ready</strong> status.</li><li>Try printing from another computer to determine if the issue is with your device or the printer itself.</li><li>Restart the print spooler service: open Command Prompt as admin and run <code>net stop spooler &amp;&amp; net start spooler</code>.</li></ol><h3>Driver Issues</h3><p>If the driver does not install automatically, download the latest driver from the manufacturer website or contact the Service Desk to have it pushed to your device via software deployment.</p>",
                 "author_id": "@analysts.jsmith",
                 "created_datetime": "__RELATIVE_DATE:-15d__",
                 "modified_datetime": "__RELATIVE_DATE:-15d__",
@@ -108,13 +156,193 @@
             {
                 "_ref": "ka5",
                 "title": "New Starter IT Onboarding Checklist",
-                "body": "<h3>IT Onboarding Checklist</h3><p>Complete the following items during your first week to ensure you have full access to all company systems and resources.</p><ol><li><strong>Laptop Setup</strong> - Collect your laptop from IT and sign in with your new credentials.</li><li><strong>Email Configuration</strong> - Set up Outlook using the company email setup guide.</li><li><strong>VPN Access</strong> - Install GlobalProtect and test your VPN connection for remote work.</li><li><strong>Security Training</strong> - Complete the mandatory cybersecurity awareness module on the learning portal.</li><li><strong>Badge Access</strong> - Visit reception to activate your building access badge.</li></ol><p>If you encounter any issues during onboarding, raise a ticket with the Service Desk or speak to your line manager for assistance.</p>",
+                "body": "<h3>IT Onboarding Checklist</h3><p>Complete the following items during your first week to ensure you have full access to all company systems and resources.</p><ol><li><strong>Laptop Setup</strong> — Collect your laptop from IT and sign in with your new credentials.</li><li><strong>Email Configuration</strong> — Set up Outlook using the company email setup guide.</li><li><strong>VPN Access</strong> — Install GlobalProtect and test your VPN connection for remote work.</li><li><strong>Security Training</strong> — Complete the mandatory cybersecurity awareness module on the learning portal.</li><li><strong>Badge Access</strong> — Visit reception to activate your building access badge.</li><li><strong>Shared Drives</strong> — Request access to your department's shared drive and any project folders you need.</li><li><strong>Software</strong> — Check that all required applications are installed. If anything is missing, raise a request with the Service Desk.</li></ol><h3>New Laptop Setup for Starters</h3><p>When setting up a new laptop for a starter, ensure the following are completed before handover: domain join, Windows updates, standard software suite (Office 365, VPN client, browser), department-specific applications, and printer configuration for their floor.</p><p>If you encounter any issues during onboarding, raise a ticket with the Service Desk or speak to your line manager for assistance.</p>",
                 "author_id": "@analysts.swilliams",
                 "created_datetime": "__RELATIVE_DATE:-10d__",
                 "modified_datetime": "__RELATIVE_DATE:-10d__",
                 "is_published": 1,
                 "view_count": 34,
                 "next_review_date": "__RELATIVE_DATEONLY:+180d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka6",
+                "title": "Requesting Shared Drive and Folder Access",
+                "body": "<h3>Overview</h3><p>Shared drives are organised by department and project. Access is controlled via <strong>Active Directory security groups</strong> and must be requested through the Service Desk.</p><h3>How to Request Access</h3><ol><li>Raise a ticket with the Service Desk specifying the <strong>exact folder path</strong> you need access to (e.g., <code>\\\\fileserver\\Finance\\Reports</code>).</li><li>Include your <strong>manager's name</strong> for approval — all shared drive requests require line manager authorisation.</li><li>Specify whether you need <strong>read-only</strong> or <strong>read-write</strong> access.</li></ol><h3>Mapping the Drive</h3><p>Once access is granted, map the network drive on your PC:</p><ol><li>Open <strong>File Explorer</strong> and click <strong>Map network drive</strong>.</li><li>Choose a drive letter and enter the UNC path provided by IT.</li><li>Tick <strong>Reconnect at sign-in</strong> so the drive maps automatically.</li></ol><h3>Common Issues</h3><p>If you receive an <strong>Access Denied</strong> error after access has been granted, try logging out and back in to refresh your security group membership. Group policy changes can take up to 2 hours to propagate.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-28d__",
+                "modified_datetime": "__RELATIVE_DATE:-28d__",
+                "is_published": 1,
+                "view_count": 78,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka7",
+                "title": "Troubleshooting Wi-Fi and Slow Network Connectivity",
+                "body": "<h3>Wi-Fi Keeps Disconnecting</h3><p>If your Wi-Fi connection drops frequently in meeting rooms or specific areas of the building:</p><ol><li>Check you are connected to the correct SSID: <strong>Corporate-WiFi</strong> (not the guest network).</li><li>Forget the network and reconnect — go to <strong>Settings &gt; Network &gt; Wi-Fi</strong>, select the network, and click <strong>Forget</strong>, then reconnect.</li><li>Update your Wi-Fi adapter driver: open <strong>Device Manager</strong>, expand <strong>Network adapters</strong>, right-click your wireless adapter, and select <strong>Update driver</strong>.</li><li>If the issue is isolated to one room, report it to the Service Desk so the infrastructure team can check the access point.</li></ol><h3>Slow Internet Speeds</h3><p>If you are experiencing slow internet in a specific building or floor:</p><ol><li>Run a speed test at <strong>speedtest.company.com</strong> and note the results.</li><li>Try connecting via an <strong>Ethernet cable</strong> to rule out Wi-Fi issues.</li><li>Check if the slowness affects all websites or just specific applications.</li><li>Raise a ticket with the speed test results and your location so the network team can investigate.</li></ol><h3>Meeting Room Wi-Fi</h3><p>Meeting rooms use dedicated access points. If multiple users report issues in the same room, the access point may need rebooting or replacement. Contact the Service Desk with the room name and building.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-22d__",
+                "modified_datetime": "__RELATIVE_DATE:-22d__",
+                "is_published": 1,
+                "view_count": 112,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka8",
+                "title": "Software Licence Requests and Renewals",
+                "body": "<h3>Requesting New Software</h3><p>To request a new software application or additional licences:</p><ol><li>Raise a ticket with the Service Desk specifying the <strong>software name and version</strong>.</li><li>Include a <strong>business justification</strong> explaining why the software is needed.</li><li>Provide the <strong>cost centre</strong> for billing if the software requires purchase.</li></ol><h3>Licence Renewals</h3><p>The IT team tracks licence expiry dates for all enterprise software. When a renewal is approaching:</p><ol><li>The software asset manager will contact the vendor for renewal pricing.</li><li>A purchase order is raised through the finance system.</li><li>Once approved, the licence is renewed and users are notified.</li></ol><h3>Common Software</h3><p>The following software is included in the standard desktop build and does not require a separate request: Microsoft Office 365, Microsoft Teams, GlobalProtect VPN, Google Chrome, and Adobe Acrobat Reader.</p><h3>Specialist Software (e.g., Adobe Creative Suite)</h3><p>Specialist software such as Adobe Creative Suite, AutoCAD, and development tools require <strong>department head approval</strong> and are billed to the requesting department's budget. Allow 3-5 working days for procurement and deployment.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-18d__",
+                "modified_datetime": "__RELATIVE_DATE:-18d__",
+                "is_published": 1,
+                "view_count": 45,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka9",
+                "title": "Troubleshooting Email Delivery Delays",
+                "body": "<h3>Symptoms</h3><p>Emails to external recipients are delayed or not arriving. Internal emails between colleagues work normally.</p><h3>Common Causes</h3><ul><li><strong>Mail queue backlog</strong> — High email volume can cause temporary delays. Check the Exchange admin centre for queue length.</li><li><strong>SPF/DKIM/DMARC failures</strong> — If the recipient's mail server rejects or quarantines messages due to authentication failures, contact IT to review DNS records.</li><li><strong>Attachment size</strong> — Emails with attachments over 25 MB may be rejected by the recipient's mail server. Use OneDrive sharing links for large files.</li><li><strong>Greylisting</strong> — Some external mail servers temporarily reject first delivery attempts. The message will be retried automatically within 15 minutes.</li></ul><h3>What to Include in Your Ticket</h3><p>When reporting email delivery issues, include: the <strong>exact recipient email address</strong>, the <strong>date and time</strong> the email was sent, and the <strong>subject line</strong>. This allows the mail team to trace the message in the mail flow logs.</p><h3>Sending to Large Distribution Lists</h3><p>If you are sending to more than 100 external recipients, the email may be throttled by Microsoft 365. Contact the Service Desk to arrange bulk sending through the approved mass-mail platform.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-16d__",
+                "modified_datetime": "__RELATIVE_DATE:-16d__",
+                "is_published": 1,
+                "view_count": 53,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka10",
+                "title": "Multi-Factor Authentication (MFA) Troubleshooting",
+                "body": "<h3>MFA Not Working After Phone Replacement</h3><p>If you have replaced your mobile phone and MFA prompts are no longer working:</p><ol><li>If you still have access to your old phone, open the <strong>Microsoft Authenticator</strong> app and transfer your accounts to the new device using the app's cloud backup feature.</li><li>If you no longer have the old phone, contact the Service Desk to request an <strong>MFA reset</strong>. A technician will verify your identity and clear your existing MFA registration.</li><li>Once reset, sign in at <strong>aka.ms/setupmfa</strong> to register your new device.</li></ol><h3>MFA Prompt Not Appearing</h3><p>If you are not receiving MFA prompts:</p><ul><li>Ensure the Authenticator app is installed and notifications are enabled on your phone.</li><li>Check your phone has an active internet connection (Wi-Fi or mobile data).</li><li>Try the <strong>SMS code</strong> option instead — click \"I can't use my app right now\" on the MFA screen.</li></ul><h3>Temporary Access Pass</h3><p>If you are locked out and need urgent access, the Service Desk can issue a <strong>Temporary Access Pass</strong> that is valid for a limited time, allowing you to sign in and reconfigure MFA.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-14d__",
+                "modified_datetime": "__RELATIVE_DATE:-14d__",
+                "is_published": 1,
+                "view_count": 91,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka11",
+                "title": "Setting Up Company Email on Mobile Devices",
+                "body": "<h3>iOS (iPhone/iPad)</h3><ol><li>Go to <strong>Settings &gt; Mail &gt; Accounts &gt; Add Account</strong>.</li><li>Select <strong>Microsoft Exchange</strong>.</li><li>Enter your corporate email address and tap <strong>Next</strong>.</li><li>Choose <strong>Sign In</strong> when prompted and authenticate with your password and MFA.</li><li>Select which items to sync (Mail, Contacts, Calendar) and tap <strong>Save</strong>.</li></ol><h3>Android</h3><ol><li>Download the <strong>Microsoft Outlook</strong> app from the Google Play Store.</li><li>Open the app and enter your corporate email address.</li><li>Authenticate with your password and approve the MFA prompt.</li><li>Outlook will automatically configure and begin syncing your mailbox.</li></ol><h3>Troubleshooting</h3><p>If the setup fails, ensure your device is running the latest operating system version. Some older OS versions do not support modern authentication. Also check that your account has been enabled for mobile device access — some security policies restrict mobile email to managed devices only.</p><h3>Security Requirements</h3><p>Corporate email on mobile devices requires a <strong>device PIN or biometric lock</strong>. If your device does not have a screen lock configured, you will be prompted to set one before email access is granted.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-12d__",
+                "modified_datetime": "__RELATIVE_DATE:-12d__",
+                "is_published": 1,
+                "view_count": 76,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka12",
+                "title": "Troubleshooting Windows Blue Screen (BSOD) Errors",
+                "body": "<h3>What is a BSOD?</h3><p>A Blue Screen of Death (BSOD) indicates a critical Windows system error that forces the computer to restart. Common causes include driver conflicts, hardware failures, and corrupt system files.</p><h3>Immediate Steps</h3><ol><li>Note the <strong>stop code</strong> displayed on the blue screen (e.g., DRIVER_IRQL_NOT_LESS_OR_EQUAL, CRITICAL_PROCESS_DIED).</li><li>Allow the PC to restart and check if it boots normally.</li><li>If the BSOD recurs, boot into <strong>Safe Mode</strong> by holding Shift while clicking Restart, then Troubleshoot &gt; Advanced &gt; Startup Settings.</li></ol><h3>Common Fixes</h3><ul><li><strong>Recent driver update</strong> — Roll back the last driver update via Device Manager &gt; right-click the device &gt; Properties &gt; Driver &gt; Roll Back.</li><li><strong>Windows Update issue</strong> — If the BSOD started after a Windows update, uninstall the update via Settings &gt; Update &amp; Security &gt; View update history &gt; Uninstall updates.</li><li><strong>Disk check</strong> — Run <code>chkdsk /f /r</code> from an elevated Command Prompt to check for disk errors.</li><li><strong>System file repair</strong> — Run <code>sfc /scannow</code> followed by <code>DISM /Online /Cleanup-Image /RestoreHealth</code>.</li></ul><h3>Recurring BSODs</h3><p>If BSODs happen repeatedly, the issue is likely hardware-related (failing RAM, dying hard drive, or overheating). Raise a ticket with the stop code and the Service Desk will arrange diagnostics or a replacement device.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-11d__",
+                "modified_datetime": "__RELATIVE_DATE:-11d__",
+                "is_published": 1,
+                "view_count": 63,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka13",
+                "title": "Microsoft Teams Troubleshooting Guide",
+                "body": "<h3>Calls Dropping or Poor Quality</h3><p>If Teams calls drop intermittently or you experience poor audio/video quality:</p><ol><li>Check your <strong>internet connection</strong> — run a speed test and ensure you have at least 5 Mbps upload/download for video calls.</li><li>Switch from <strong>Wi-Fi to Ethernet</strong> if possible, as wired connections are more stable for calls.</li><li>Close other bandwidth-heavy applications (streaming, large downloads) during calls.</li><li>Check Teams call health: during a call, click the <strong>...</strong> menu and select <strong>Call health</strong> to see real-time network statistics.</li></ol><h3>Teams Not Loading or Crashing</h3><ul><li>Clear the Teams cache: close Teams, then delete the contents of <code>%appdata%\\Microsoft\\Teams</code> and relaunch.</li><li>Ensure Teams is up to date — click your profile picture and select <strong>Check for updates</strong>.</li><li>If using the desktop app, try the web version at <strong>teams.microsoft.com</strong> to determine if the issue is app-specific.</li></ul><h3>Audio/Microphone Issues</h3><p>If others cannot hear you or you cannot hear them:</p><ol><li>Check Teams settings: click <strong>Settings &gt; Devices</strong> and verify the correct speaker and microphone are selected.</li><li>Test your audio using the <strong>Make a test call</strong> option under Devices.</li><li>Ensure your microphone is not muted at the system level (check the Windows sound settings).</li></ol>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-9d__",
+                "modified_datetime": "__RELATIVE_DATE:-9d__",
+                "is_published": 1,
+                "view_count": 88,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka14",
+                "title": "How to Request IT Hardware and Equipment",
+                "body": "<h3>Standard Hardware Requests</h3><p>To request hardware such as monitors, keyboards, mice, headsets, or docking stations:</p><ol><li>Raise a ticket with the Service Desk specifying the <strong>item required</strong> and your <strong>desk/building location</strong>.</li><li>Standard items (single monitor, keyboard, mouse, headset) are fulfilled from stock within <strong>2 working days</strong>.</li><li>Non-standard items (dual monitors, specialist equipment) require <strong>manager approval</strong> and may take 5-10 working days depending on stock.</li></ol><h3>Replacement Parts</h3><p>If existing hardware is faulty (e.g., broken docking station, damaged monitor):</p><ol><li>Raise a ticket describing the fault and the <strong>asset tag number</strong> of the faulty item if visible.</li><li>The Service Desk will arrange a replacement or repair. Faulty items may need to be collected for warranty processing.</li><li>If replacement parts need to be ordered, the ticket will be placed on hold and you will be notified with an estimated delivery date.</li></ol><h3>Returning Equipment</h3><p>When leaving the company or no longer needing equipment, return all IT hardware to the Service Desk. This includes laptops, monitors, docking stations, headsets, and any other company-issued equipment.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-8d__",
+                "modified_datetime": "__RELATIVE_DATE:-8d__",
+                "is_published": 1,
+                "view_count": 41,
+                "next_review_date": "__RELATIVE_DATEONLY:+120d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka15",
+                "title": "Accessing SharePoint and the Company Intranet Remotely",
+                "body": "<h3>Remote Access to SharePoint</h3><p>SharePoint sites and the company intranet are accessible remotely via your web browser without needing VPN, as they are hosted on <strong>Microsoft 365</strong>.</p><ol><li>Navigate to <strong>intranet.company.com</strong> or <strong>company.sharepoint.com</strong> in your browser.</li><li>Sign in with your corporate email address and password.</li><li>Approve the MFA prompt on your mobile device.</li></ol><h3>Access Issues After Password Reset</h3><p>If you cannot access SharePoint after a password reset:</p><ol><li>Clear your browser cache and cookies, then try signing in again with the new password.</li><li>If using Edge or Chrome, check for <strong>saved passwords</strong> that may be sending the old credentials: Settings &gt; Passwords &gt; search for \"sharepoint\" and update or delete the entry.</li><li>Try using an <strong>InPrivate/Incognito</strong> browser window to rule out cached credential issues.</li><li>Ensure your password change has fully propagated — this can take up to 15 minutes across all Microsoft 365 services.</li></ol><h3>SharePoint Mobile Access</h3><p>Install the <strong>SharePoint mobile app</strong> from your device's app store for on-the-go access to documents and intranet content. Sign in with your corporate credentials.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-7d__",
+                "modified_datetime": "__RELATIVE_DATE:-7d__",
+                "is_published": 1,
+                "view_count": 58,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka16",
+                "title": "Server Room Environmental Monitoring and Alerts",
+                "body": "<h3>Temperature Alerts</h3><p>The server room is monitored 24/7 by environmental sensors. Temperature alerts are triggered when the ambient temperature exceeds <strong>27°C</strong> (warning) or <strong>30°C</strong> (critical).</p><h3>Responding to a Temperature Alert</h3><ol><li><strong>Warning (27°C)</strong> — Check the HVAC system status on the building management dashboard. Verify that all cooling units are operational. If a unit has failed, contact Facilities Management immediately.</li><li><strong>Critical (30°C)</strong> — Escalate to the Infrastructure team lead. If temperature continues rising above 35°C, initiate an orderly shutdown of non-essential servers to reduce heat output.</li><li>Document all actions taken in the ticket for audit purposes.</li></ol><h3>Preventive Measures</h3><ul><li>Ensure server room doors remain closed at all times.</li><li>Check that blanking panels are installed in all empty rack slots to maintain proper airflow.</li><li>HVAC maintenance is scheduled quarterly — check the maintenance calendar for upcoming dates.</li></ul><h3>Other Environmental Alerts</h3><p>Sensors also monitor <strong>humidity</strong> (target: 40-60%) and <strong>water leaks</strong>. Any environmental alert generates an automatic ticket. Acknowledge and investigate all alerts promptly.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-6d__",
+                "modified_datetime": "__RELATIVE_DATE:-6d__",
+                "is_published": 1,
+                "view_count": 29,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka17",
+                "title": "New User Account Creation and Provisioning",
+                "body": "<h3>Requesting a New User Account</h3><p>New user accounts must be requested by the new starter's <strong>line manager</strong> at least <strong>5 working days</strong> before the start date.</p><h3>Information Required</h3><ul><li>Full name, job title, and department</li><li>Start date</li><li>Line manager's name (for approval)</li><li>Required systems access (email, VPN, SharePoint, department-specific applications)</li><li>Hardware requirements (laptop, monitor, phone)</li></ul><h3>What IT Provisions</h3><p>When a new account request is received, IT will:</p><ol><li>Create an <strong>Active Directory account</strong> with the standard naming convention (firstname.lastname).</li><li>Assign the user to the appropriate <strong>department security groups</strong> for email distribution lists, shared drives, and application access.</li><li>Create a <strong>Microsoft 365 mailbox</strong> and assign the appropriate licence.</li><li>Provision <strong>MFA</strong> — the new starter will be prompted to register their device on first sign-in.</li><li>Prepare and configure the user's <strong>laptop and equipment</strong>.</li></ol><h3>Account Ready Notification</h3><p>The Service Desk will notify the line manager when the account is ready, including the username and initial password. The new starter will be prompted to change their password on first login.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-5d__",
+                "modified_datetime": "__RELATIVE_DATE:-5d__",
+                "is_published": 1,
+                "view_count": 37,
+                "next_review_date": "__RELATIVE_DATEONLY:+90d__",
+                "owner_id": "@analysts.swilliams"
+            },
+            {
+                "_ref": "ka18",
+                "title": "Firewall Rule Change Request Process",
+                "body": "<h3>When a Firewall Change is Needed</h3><p>Firewall rule changes are required when a new application needs to communicate through the corporate firewall, or when existing rules need modification (e.g., new web application deployment, vendor remote access, API integrations).</p><h3>How to Request a Change</h3><ol><li>Raise a ticket with the Service Desk including: <strong>source IP/subnet</strong>, <strong>destination IP/subnet</strong>, <strong>port(s) and protocol</strong> (TCP/UDP), and the <strong>business justification</strong>.</li><li>The request will be reviewed by the <strong>security team</strong> for risk assessment.</li><li>Once approved, the change will be scheduled and implemented during the next <strong>change window</strong> (Tuesday and Thursday evenings).</li></ol><h3>Emergency Changes</h3><p>If a firewall change is urgently needed (e.g., to restore a business-critical service), the request can be escalated as an <strong>emergency change</strong>. This requires approval from the IT Security Manager and the Change Advisory Board (CAB) chair.</p><h3>Review and Expiry</h3><p>All firewall rules are reviewed quarterly. Temporary rules (e.g., for vendor access) must have an <strong>expiry date</strong> specified in the request. Expired rules are automatically disabled and removed after 30 days.</p>",
+                "author_id": "@analysts.admin",
+                "created_datetime": "__RELATIVE_DATE:-4d__",
+                "modified_datetime": "__RELATIVE_DATE:-4d__",
+                "is_published": 1,
+                "view_count": 22,
+                "next_review_date": "__RELATIVE_DATEONLY:+60d__",
+                "owner_id": "@analysts.admin"
+            },
+            {
+                "_ref": "ka19",
+                "title": "Backup Job Monitoring and Failure Resolution",
+                "body": "<h3>Backup Schedule</h3><p>All file servers and critical systems are backed up nightly using Veeam Backup &amp; Replication. Backups run between <strong>22:00 and 06:00</strong> and should complete within this window.</p><h3>Responding to a Backup Failure</h3><ol><li>Check the <strong>Veeam console</strong> for the failed job and review the error message.</li><li>Common causes: <strong>insufficient disk space</strong> on the backup repository, <strong>VSS errors</strong> on the source server, or <strong>network connectivity</strong> issues between the server and backup target.</li><li>For disk space issues, run the storage cleanup job or extend the repository volume.</li><li>For VSS errors, restart the Volume Shadow Copy service on the affected server and retry the job.</li><li>For network issues, verify connectivity between the source server and backup repository.</li></ol><h3>Retry and Escalation</h3><p>After resolving the root cause, manually trigger a retry of the failed backup job. If the backup fails for <strong>3 consecutive nights</strong>, escalate to the Infrastructure team lead.</p><h3>Backup Verification</h3><p>Monthly restore tests are performed on a random selection of backups to verify data integrity. Results are documented in the backup verification log.</p>",
+                "author_id": "@analysts.jsmith",
+                "created_datetime": "__RELATIVE_DATE:-3d__",
+                "modified_datetime": "__RELATIVE_DATE:-3d__",
+                "is_published": 1,
+                "view_count": 18,
+                "next_review_date": "__RELATIVE_DATEONLY:+30d__",
+                "owner_id": "@analysts.jsmith"
+            },
+            {
+                "_ref": "ka20",
+                "title": "Developer Workstation Setup Guide",
+                "body": "<h3>Standard Developer Tools</h3><p>The following tools are available for installation on developer workstations. Raise a ticket specifying which tools you need:</p><ul><li><strong>IDEs</strong>: Visual Studio Code, Visual Studio 2022, JetBrains IntelliJ IDEA</li><li><strong>Runtimes</strong>: Node.js (LTS), Python 3.x, .NET SDK, Java JDK</li><li><strong>Databases</strong>: SQL Server Management Studio, MySQL Workbench, pgAdmin</li><li><strong>Source control</strong>: Git, GitHub Desktop, TortoiseGit</li><li><strong>Containers</strong>: Docker Desktop (requires Hyper-V — check with IT if not already enabled)</li><li><strong>API tools</strong>: Postman, curl</li></ul><h3>Admin Access</h3><p>Developers are granted <strong>local administrator access</strong> on their workstations to install and configure development tools. This access is provisioned automatically when your account is added to the <strong>Developers</strong> security group.</p><h3>Access to Development Environments</h3><p>Development, staging, and test environment access is controlled separately from production. Request access to specific environments in your ticket, including the environment name and the level of access required (read-only, deploy, full admin).</p><h3>Source Code Repositories</h3><p>Source code is hosted on <strong>GitHub Enterprise</strong>. Your GitHub account will be linked to your corporate SSO. Request repository access from your team lead, who manages team membership in GitHub.</p>",
+                "author_id": "@analysts.swilliams",
+                "created_datetime": "__RELATIVE_DATE:-2d__",
+                "modified_datetime": "__RELATIVE_DATE:-2d__",
+                "is_published": 1,
+                "view_count": 25,
+                "next_review_date": "__RELATIVE_DATEONLY:+120d__",
                 "owner_id": "@analysts.swilliams"
             }
         ]
@@ -130,8 +358,16 @@
                 "tag_id": "@knowledge_tags.tag_security"
             },
             {
+                "article_id": "@knowledge_articles.ka1",
+                "tag_id": "@knowledge_tags.tag_network"
+            },
+            {
                 "article_id": "@knowledge_articles.ka2",
                 "tag_id": "@knowledge_tags.tag_outlook"
+            },
+            {
+                "article_id": "@knowledge_articles.ka2",
+                "tag_id": "@knowledge_tags.tag_email"
             },
             {
                 "article_id": "@knowledge_articles.ka2",
@@ -150,16 +386,136 @@
                 "tag_id": "@knowledge_tags.tag_printing"
             },
             {
-                "article_id": "@knowledge_articles.ka4",
-                "tag_id": "@knowledge_tags.tag_wifi"
-            },
-            {
                 "article_id": "@knowledge_articles.ka5",
                 "tag_id": "@knowledge_tags.tag_onboarding"
             },
             {
                 "article_id": "@knowledge_articles.ka5",
                 "tag_id": "@knowledge_tags.tag_windows"
+            },
+            {
+                "article_id": "@knowledge_articles.ka6",
+                "tag_id": "@knowledge_tags.tag_sharepoint"
+            },
+            {
+                "article_id": "@knowledge_articles.ka6",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka7",
+                "tag_id": "@knowledge_tags.tag_wifi"
+            },
+            {
+                "article_id": "@knowledge_articles.ka7",
+                "tag_id": "@knowledge_tags.tag_network"
+            },
+            {
+                "article_id": "@knowledge_articles.ka8",
+                "tag_id": "@knowledge_tags.tag_software"
+            },
+            {
+                "article_id": "@knowledge_articles.ka8",
+                "tag_id": "@knowledge_tags.tag_licensing"
+            },
+            {
+                "article_id": "@knowledge_articles.ka9",
+                "tag_id": "@knowledge_tags.tag_email"
+            },
+            {
+                "article_id": "@knowledge_articles.ka9",
+                "tag_id": "@knowledge_tags.tag_network"
+            },
+            {
+                "article_id": "@knowledge_articles.ka10",
+                "tag_id": "@knowledge_tags.tag_mfa"
+            },
+            {
+                "article_id": "@knowledge_articles.ka10",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka10",
+                "tag_id": "@knowledge_tags.tag_mobile"
+            },
+            {
+                "article_id": "@knowledge_articles.ka11",
+                "tag_id": "@knowledge_tags.tag_email"
+            },
+            {
+                "article_id": "@knowledge_articles.ka11",
+                "tag_id": "@knowledge_tags.tag_mobile"
+            },
+            {
+                "article_id": "@knowledge_articles.ka12",
+                "tag_id": "@knowledge_tags.tag_windows"
+            },
+            {
+                "article_id": "@knowledge_articles.ka12",
+                "tag_id": "@knowledge_tags.tag_hardware"
+            },
+            {
+                "article_id": "@knowledge_articles.ka13",
+                "tag_id": "@knowledge_tags.tag_teams"
+            },
+            {
+                "article_id": "@knowledge_articles.ka13",
+                "tag_id": "@knowledge_tags.tag_network"
+            },
+            {
+                "article_id": "@knowledge_articles.ka14",
+                "tag_id": "@knowledge_tags.tag_hardware"
+            },
+            {
+                "article_id": "@knowledge_articles.ka15",
+                "tag_id": "@knowledge_tags.tag_sharepoint"
+            },
+            {
+                "article_id": "@knowledge_articles.ka15",
+                "tag_id": "@knowledge_tags.tag_vpn"
+            },
+            {
+                "article_id": "@knowledge_articles.ka15",
+                "tag_id": "@knowledge_tags.tag_password"
+            },
+            {
+                "article_id": "@knowledge_articles.ka16",
+                "tag_id": "@knowledge_tags.tag_server"
+            },
+            {
+                "article_id": "@knowledge_articles.ka17",
+                "tag_id": "@knowledge_tags.tag_onboarding"
+            },
+            {
+                "article_id": "@knowledge_articles.ka17",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka18",
+                "tag_id": "@knowledge_tags.tag_firewall"
+            },
+            {
+                "article_id": "@knowledge_articles.ka18",
+                "tag_id": "@knowledge_tags.tag_security"
+            },
+            {
+                "article_id": "@knowledge_articles.ka18",
+                "tag_id": "@knowledge_tags.tag_network"
+            },
+            {
+                "article_id": "@knowledge_articles.ka19",
+                "tag_id": "@knowledge_tags.tag_backup"
+            },
+            {
+                "article_id": "@knowledge_articles.ka19",
+                "tag_id": "@knowledge_tags.tag_server"
+            },
+            {
+                "article_id": "@knowledge_articles.ka20",
+                "tag_id": "@knowledge_tags.tag_software"
+            },
+            {
+                "article_id": "@knowledge_articles.ka20",
+                "tag_id": "@knowledge_tags.tag_onboarding"
             }
         ]
     }
