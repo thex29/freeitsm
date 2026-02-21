@@ -10,10 +10,23 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 
 ## Unpublished
 
-### 18 February 2026
+*(No unpublished entries)*
+
+---
+
+## Published
+
+### 21 February 2026
 
 | ID  | Module            | Type        | Description |
 |-----|-------------------|-------------|-------------|
+| 035 | Contracts         | Feature     | Configurable contract terms tabs with TinyMCE rich text editors for detailed terms like special terms, KPIs, SLAs, and termination conditions |
+| 036 | Contracts         | Improvement | Widened contract edit and view pages from 800px/900px to 1120px for better use of screen space |
+| 037 | Contracts         | Improvement | Unified contract and terms saving into a single Save button with automatic ID handling for new contracts |
+| 038 | System            | Feature     | Global toast notification system with configurable position (9 positions via visual grid picker in System settings), colour-coded types with icons, and slide-in animations |
+| 039 | System            | Feature     | Security settings with trusted device (skip OTP for configurable days with per-user toggle), password expiry policy, and account lockout after failed login attempts |
+| 040 | Service Status    | Feature     | Service status dashboard with configurable services, incident tracking, multi-service impact levels, and worst-status board view |
+| 041 | System            | Feature     | Configurable module colours with per-module primary and secondary colour pickers, live preview, and reset to defaults |
 | 042 | System            | Feature     | Migrate entire database layer from SQL Server Express (PDO ODBC) to MySQL 8.0+ (PDO MySQL) across ~55 PHP files and 47 tables |
 | 043 | System            | Improvement | Replace all OUTPUT INSERTED.id and SCOPE_IDENTITY() patterns with MySQL lastInsertId() across 18 API files |
 | 044 | System            | Improvement | Convert all SQL Server syntax (GETUTCDATE, DATEADD, DATEDIFF, CONVERT, TOP, CAST NVARCHAR, OFFSET/FETCH) to MySQL equivalents |
@@ -27,22 +40,6 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 052 | Knowledge         | Improvement | Clicking an article link in AI chat loads the article in-page while keeping the chat panel open |
 | 053 | Software          | Improvement | Expand software demo data from 5 to 20 applications and 13 licences with varied types (subscription, perpetual, expired, bundled), realistic notes, and vendor details |
 | 054 | Software          | Feature     | Cross-module demo data linking software installations to asset computers, with conditional import prompt when both modules are imported |
-
-### 16 February 2026
-
-| ID  | Module            | Type        | Description |
-|-----|-------------------|-------------|-------------|
-| 035 | Contracts         | Feature     | Configurable contract terms tabs with TinyMCE rich text editors for detailed terms like special terms, KPIs, SLAs, and termination conditions |
-| 036 | Contracts         | Improvement | Widened contract edit and view pages from 800px/900px to 1120px for better use of screen space |
-| 037 | Contracts         | Improvement | Unified contract and terms saving into a single Save button with automatic ID handling for new contracts |
-| 038 | System            | Feature     | Global toast notification system with configurable position (9 positions via visual grid picker in System settings), colour-coded types with icons, and slide-in animations |
-| 039 | System            | Feature     | Security settings with trusted device (skip OTP for configurable days with per-user toggle), password expiry policy, and account lockout after failed login attempts |
-| 040 | Service Status    | Feature     | Service status dashboard with configurable services, incident tracking, multi-service impact levels, and worst-status board view |
-| 041 | System            | Feature     | Configurable module colours with per-module primary and secondary colour pickers, live preview, and reset to defaults |
-
----
-
-## Published
 
 ### 15 February 2026
 
