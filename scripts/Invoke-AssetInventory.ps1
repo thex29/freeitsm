@@ -181,19 +181,25 @@ $software = @(
     } | Where-Object {
         $_.DisplayName -and $_.DisplayName.Trim() -ne ''
     } | Sort-Object DisplayName -Unique | ForEach-Object {
+        # SystemComponent=1 or ParentKeyName set = hidden from Add/Remove Programs
+        $isComponent = ($_.SystemComponent -eq 1) -or ($_.ParentKeyName -and $_.ParentKeyName -ne '')
+
         @{
-            display_name     = $_.DisplayName
-            publisher        = $_.Publisher
-            display_version  = $_.DisplayVersion
-            install_date     = $_.InstallDate
-            install_location = $_.InstallLocation
-            uninstall_string = $_.UninstallString
-            estimated_size   = if ($_.EstimatedSize) { "$($_.EstimatedSize)" } else { $null }
+            display_name      = $_.DisplayName
+            publisher         = $_.Publisher
+            display_version   = $_.DisplayVersion
+            install_date      = $_.InstallDate
+            install_location  = $_.InstallLocation
+            uninstall_string  = $_.UninstallString
+            estimated_size    = if ($_.EstimatedSize) { "$($_.EstimatedSize)" } else { $null }
+            system_component  = $isComponent
         }
     }
 )
 
-Write-Host "  Software inventory collected ($($software.Count) applications)" -ForegroundColor Green
+$appCount = ($software | Where-Object { -not $_.system_component }).Count
+$componentCount = ($software | Where-Object { $_.system_component }).Count
+Write-Host "  Software inventory collected ($appCount applications, $componentCount system components)" -ForegroundColor Green
 
 # ─── Logged-in user ──────────────────────────────────────────────────────────────
 

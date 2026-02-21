@@ -556,6 +556,7 @@ CREATE TABLE IF NOT EXISTS `software_inventory_detail` (
     `uninstall_string`  LONGTEXT NULL,
     `install_location`  LONGTEXT NULL,
     `estimated_size`    VARCHAR(100) NULL,
+    `system_component`  TINYINT(1) NOT NULL DEFAULT 0,
     `created_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_seen`         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),

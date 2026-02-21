@@ -197,6 +197,7 @@ foreach ($softwareList as $item) {
     $uninstallString = $item['Uninstall String'] ?? null;
     $installLocation = $item['Install Location'] ?? null;
     $estimatedSize   = $item['Estimated Size']   ?? null;
+    $systemComponent = !empty($item['System Component']) ? 1 : 0;
 
     // Build case-insensitive cache key
     $appKey = strtolower($displayName) . '|' . strtolower($publisher ?? '');
@@ -319,6 +320,7 @@ foreach ($softwareList as $item) {
                     uninstall_string = ?,
                     install_location = ?,
                     estimated_size   = ?,
+                    system_component = ?,
                     last_seen        = UTC_TIMESTAMP()
                 WHERE host_id = ? AND app_id = ?
             ");
@@ -328,6 +330,7 @@ foreach ($softwareList as $item) {
                 $uninstallString,
                 $installLocation,
                 $estimatedSize,
+                $systemComponent,
                 $hostId,
                 $appId
             ]);
@@ -343,10 +346,11 @@ foreach ($softwareList as $item) {
                     uninstall_string,
                     install_location,
                     estimated_size,
+                    system_component,
                     created_at,
                     last_seen
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())
             ");
             $stmt->execute([
                 $hostId,
@@ -355,7 +359,8 @@ foreach ($softwareList as $item) {
                 $installDate,
                 $uninstallString,
                 $installLocation,
-                $estimatedSize
+                $estimatedSize,
+                $systemComponent
             ]);
             $insertedDetails++;
         }

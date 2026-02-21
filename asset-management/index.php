@@ -613,6 +613,50 @@ $path_prefix = '../';
             font-weight: 600;
             margin-left: 8px;
         }
+
+        .sw-filter-tabs {
+            display: flex;
+            gap: 0;
+            padding: 0 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #fff;
+        }
+
+        .sw-filter-tab {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .sw-filter-tab:hover {
+            color: #333;
+        }
+
+        .sw-filter-tab.active {
+            color: #3f51b5;
+            border-bottom-color: #3f51b5;
+        }
+
+        .sw-filter-tab .sw-tab-count {
+            display: inline-block;
+            background-color: #eee;
+            color: #666;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .sw-filter-tab.active .sw-tab-count {
+            background-color: #e8eaf6;
+            color: #3f51b5;
+        }
     </style>
 </head>
 <body>
@@ -691,6 +735,8 @@ $path_prefix = '../';
         let currentAssignedUserId = null;
         let assetTypes = [];
         let assetStatusTypes = [];
+        let allAssetSoftware = [];
+        let activeSwFilter = 'apps';
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -873,6 +919,11 @@ $path_prefix = '../';
                         <div class="section-header">
                             <span class="section-title">Installed Software <span class="software-count-badge" id="softwareCountBadge">...</span></span>
                         </div>
+                        <div class="sw-filter-tabs">
+                            <button class="sw-filter-tab active" data-swfilter="apps" onclick="switchSwTab('apps')">Applications <span class="sw-tab-count" id="swCountApps">0</span></button>
+                            <button class="sw-filter-tab" data-swfilter="components" onclick="switchSwTab('components')">Components <span class="sw-tab-count" id="swCountComponents">0</span></button>
+                            <button class="sw-filter-tab" data-swfilter="" onclick="switchSwTab('')">All <span class="sw-tab-count" id="swCountAll">0</span></button>
+                        </div>
                         <div class="software-list" id="installedSoftwareList">
                             <div class="loading"><div class="spinner"></div></div>
                         </div>
@@ -925,50 +976,82 @@ $path_prefix = '../';
 
         // Load installed software for an asset
         async function loadInstalledSoftware(assetId) {
+            activeSwFilter = 'apps';
             try {
                 const response = await fetch(`${API_BASE}get_asset_software.php?asset_id=${assetId}`);
                 const data = await response.json();
 
-                const container = document.getElementById('installedSoftwareList');
-                const badge = document.getElementById('softwareCountBadge');
-
                 if (data.success) {
-                    badge.textContent = data.software.length;
-
-                    if (data.software.length === 0) {
-                        container.innerHTML = '<div class="empty-state" style="padding: 20px;">No software inventory data for this asset</div>';
-                        return;
-                    }
-
-                    container.innerHTML = `
-                        <table class="software-table">
-                            <thead>
-                                <tr>
-                                    <th>Application</th>
-                                    <th>Publisher</th>
-                                    <th>Version</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${data.software.map(sw => `
-                                    <tr>
-                                        <td>${escapeHtml(sw.display_name)}</td>
-                                        <td>${escapeHtml(sw.publisher || '\u2014')}</td>
-                                        <td>${escapeHtml(sw.display_version || '\u2014')}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    allAssetSoftware = data.software;
+                    updateSwTabCounts();
+                    renderAssetSoftware();
                 } else {
-                    badge.textContent = '0';
-                    container.innerHTML = '<div class="empty-state" style="padding: 20px;">Error loading software</div>';
+                    allAssetSoftware = [];
+                    document.getElementById('softwareCountBadge').textContent = '0';
+                    document.getElementById('installedSoftwareList').innerHTML = '<div class="empty-state" style="padding: 20px;">Error loading software</div>';
                 }
             } catch (error) {
                 console.error('Error loading installed software:', error);
+                allAssetSoftware = [];
                 document.getElementById('installedSoftwareList').innerHTML = '<div class="empty-state" style="padding: 20px;">Error loading software</div>';
                 document.getElementById('softwareCountBadge').textContent = '0';
             }
+        }
+
+        function updateSwTabCounts() {
+            const apps = allAssetSoftware.filter(s => !parseInt(s.system_component));
+            const components = allAssetSoftware.filter(s => parseInt(s.system_component));
+            document.getElementById('swCountApps').textContent = apps.length;
+            document.getElementById('swCountComponents').textContent = components.length;
+            document.getElementById('swCountAll').textContent = allAssetSoftware.length;
+        }
+
+        function switchSwTab(filter) {
+            activeSwFilter = filter;
+            document.querySelectorAll('.sw-filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.swfilter === filter);
+            });
+            renderAssetSoftware();
+        }
+
+        function renderAssetSoftware() {
+            const container = document.getElementById('installedSoftwareList');
+            const badge = document.getElementById('softwareCountBadge');
+
+            let software = allAssetSoftware;
+            if (activeSwFilter === 'apps') {
+                software = software.filter(s => !parseInt(s.system_component));
+            } else if (activeSwFilter === 'components') {
+                software = software.filter(s => parseInt(s.system_component));
+            }
+
+            badge.textContent = software.length;
+
+            if (software.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="padding: 20px;">No software inventory data for this asset</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="software-table">
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Publisher</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${software.map(sw => `
+                            <tr>
+                                <td>${escapeHtml(sw.display_name)}</td>
+                                <td>${escapeHtml(sw.publisher || '\u2014')}</td>
+                                <td>${escapeHtml(sw.display_version || '\u2014')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
         }
 
         // Open assign user modal

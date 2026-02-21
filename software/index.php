@@ -66,6 +66,50 @@ $path_prefix = '../';
             white-space: nowrap;
         }
 
+        .filter-tabs {
+            display: flex;
+            gap: 0;
+            padding: 0 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #fff;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .filter-tab:hover {
+            color: #333;
+        }
+
+        .filter-tab.active {
+            color: #5c6bc0;
+            border-bottom-color: #5c6bc0;
+        }
+
+        .filter-tab .tab-count {
+            display: inline-block;
+            background-color: #eee;
+            color: #666;
+            padding: 1px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+
+        .filter-tab.active .tab-count {
+            background-color: #e8eaf6;
+            color: #5c6bc0;
+        }
+
         .software-table-container {
             flex: 1;
             overflow-y: auto;
@@ -332,6 +376,11 @@ $path_prefix = '../';
                 <span class="software-count" id="softwareCount"></span>
             </div>
         </div>
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="apps" onclick="switchTab('apps')">Applications <span class="tab-count" id="countApps">0</span></button>
+            <button class="filter-tab" data-filter="components" onclick="switchTab('components')">Components <span class="tab-count" id="countComponents">0</span></button>
+            <button class="filter-tab" data-filter="" onclick="switchTab('')">All <span class="tab-count" id="countAll">0</span></button>
+        </div>
         <div class="software-table-container">
             <table class="software-table">
                 <thead>
@@ -385,6 +434,7 @@ $path_prefix = '../';
         let searchTimeout = null;
         let sortColumn = 'display_name';
         let sortDirection = 'asc';
+        let activeFilter = 'apps';
 
         document.addEventListener('DOMContentLoaded', function() {
             loadSoftware();
@@ -392,12 +442,13 @@ $path_prefix = '../';
 
         async function loadSoftware() {
             try {
+                // Load all apps to get counts, then filter client-side
                 const response = await fetch(API_BASE + 'get_apps.php');
                 const data = await response.json();
                 if (data.success) {
                     allApps = data.apps;
-                    filteredApps = [...allApps];
-                    applySortAndRender();
+                    updateTabCounts();
+                    applyFilters();
                 } else {
                     document.getElementById('softwareTableBody').innerHTML =
                         '<tr><td colspan="3"><div class="empty-state">Error loading software: ' + escapeHtml(data.error) + '</div></td></tr>';
@@ -409,19 +460,48 @@ $path_prefix = '../';
             }
         }
 
+        function updateTabCounts() {
+            const apps = allApps.filter(a => !parseInt(a.system_component));
+            const components = allApps.filter(a => parseInt(a.system_component));
+            document.getElementById('countApps').textContent = apps.length;
+            document.getElementById('countComponents').textContent = components.length;
+            document.getElementById('countAll').textContent = allApps.length;
+        }
+
+        function switchTab(filter) {
+            activeFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.filter === filter);
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            // Apply tab filter
+            let apps = allApps;
+            if (activeFilter === 'apps') {
+                apps = apps.filter(a => !parseInt(a.system_component));
+            } else if (activeFilter === 'components') {
+                apps = apps.filter(a => parseInt(a.system_component));
+            }
+
+            // Apply search filter
+            const search = document.getElementById('softwareSearch').value.toLowerCase().trim();
+            if (search !== '') {
+                apps = apps.filter(app =>
+                    (app.display_name || '').toLowerCase().includes(search) ||
+                    (app.publisher || '').toLowerCase().includes(search)
+                );
+            }
+
+            filteredApps = apps;
+            applySortAndRender();
+        }
+
         function searchSoftware() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                const search = document.getElementById('softwareSearch').value.toLowerCase().trim();
-                if (search === '') {
-                    filteredApps = [...allApps];
-                } else {
-                    filteredApps = allApps.filter(app =>
-                        (app.display_name || '').toLowerCase().includes(search) ||
-                        (app.publisher || '').toLowerCase().includes(search)
-                    );
-                }
-                applySortAndRender();
+                applyFilters();
             }, 300);
         }
 
@@ -457,7 +537,8 @@ $path_prefix = '../';
             const tbody = document.getElementById('softwareTableBody');
             const countEl = document.getElementById('softwareCount');
 
-            countEl.textContent = filteredApps.length + ' application' + (filteredApps.length !== 1 ? 's' : '');
+            const label = activeFilter === 'components' ? 'component' : 'application';
+            countEl.textContent = filteredApps.length + ' ' + label + (filteredApps.length !== 1 ? 's' : '');
 
             if (filteredApps.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3"><div class="empty-state">No software found</div></td></tr>';

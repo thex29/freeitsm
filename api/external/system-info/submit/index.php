@@ -346,12 +346,13 @@ if (!empty($data['software']) && is_array($data['software'])) {
             $displayName = isset($item['display_name']) ? trim($item['display_name']) : '';
             if ($displayName === '') continue;
 
-            $publisher       = isset($item['publisher']) && trim($item['publisher']) !== '' ? trim($item['publisher']) : null;
-            $displayVersion  = $item['display_version'] ?? null;
-            $installDate     = $item['install_date'] ?? null;
-            $uninstallString = $item['uninstall_string'] ?? null;
-            $installLocation = $item['install_location'] ?? null;
-            $estimatedSize   = $item['estimated_size'] ?? null;
+            $publisher        = isset($item['publisher']) && trim($item['publisher']) !== '' ? trim($item['publisher']) : null;
+            $displayVersion   = $item['display_version'] ?? null;
+            $installDate      = $item['install_date'] ?? null;
+            $uninstallString  = $item['uninstall_string'] ?? null;
+            $installLocation  = $item['install_location'] ?? null;
+            $estimatedSize    = $item['estimated_size'] ?? null;
+            $systemComponent  = !empty($item['system_component']) ? 1 : 0;
 
             $appKey = strtolower($displayName) . '|' . strtolower($publisher ?? '');
             $appId = null;
@@ -390,18 +391,19 @@ if (!empty($data['software']) && is_array($data['software'])) {
                 $stmt = $conn->prepare("
                     UPDATE software_inventory_detail SET
                         display_version = ?, install_date = ?, uninstall_string = ?,
-                        install_location = ?, estimated_size = ?, last_seen = UTC_TIMESTAMP()
+                        install_location = ?, estimated_size = ?, system_component = ?,
+                        last_seen = UTC_TIMESTAMP()
                     WHERE host_id = ? AND app_id = ?
                 ");
-                $stmt->execute([$displayVersion, $installDate, $uninstallString, $installLocation, $estimatedSize, $hostId, $appId]);
+                $stmt->execute([$displayVersion, $installDate, $uninstallString, $installLocation, $estimatedSize, $systemComponent, $hostId, $appId]);
                 $updatedDetails++;
             } else {
                 $stmt = $conn->prepare("
                     INSERT INTO software_inventory_detail
-                        (host_id, app_id, display_version, install_date, uninstall_string, install_location, estimated_size, created_at, last_seen)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())
+                        (host_id, app_id, display_version, install_date, uninstall_string, install_location, estimated_size, system_component, created_at, last_seen)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())
                 ");
-                $stmt->execute([$hostId, $appId, $displayVersion, $installDate, $uninstallString, $installLocation, $estimatedSize]);
+                $stmt->execute([$hostId, $appId, $displayVersion, $installDate, $uninstallString, $installLocation, $estimatedSize, $systemComponent]);
                 $insertedDetails++;
             }
 
