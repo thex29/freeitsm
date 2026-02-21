@@ -378,7 +378,7 @@ $path_prefix = '../../';
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
+    <script src="../../assets/js/chart.min.js"></script>
     <script>
         const API_BASE = '../../api/assets/';
         let dashboardWidgets = [];
