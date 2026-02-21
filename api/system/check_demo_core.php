@@ -43,12 +43,28 @@ try {
         $softwareAssetsExists = (int)$stmt->fetchColumn() > 0;
     } catch (Exception $e) {}
 
+    // Tickets: check for demo tickets
+    $ticketsExists = false;
+    try {
+        $stmt = $conn->query("SELECT COUNT(*) FROM tickets");
+        $ticketsExists = (int)$stmt->fetchColumn() > 0;
+    } catch (Exception $e) {}
+
+    // Dashboards: check for dashboard widget assignments
+    $dashboardsExists = false;
+    try {
+        $stmt = $conn->query("SELECT COUNT(*) FROM analyst_ticket_dashboard_widgets");
+        $dashboardsExists = (int)$stmt->fetchColumn() > 0;
+    } catch (Exception $e) {}
+
     echo json_encode([
         'exists' => $coreExists,
         'modules' => [
             'software' => $softwareExists,
             'assets' => $assetsExists,
-            'software-assets' => $softwareAssetsExists
+            'software-assets' => $softwareAssetsExists,
+            'tickets' => $ticketsExists,
+            'dashboards' => $dashboardsExists
         ]
     ]);
 } catch (Exception $e) {

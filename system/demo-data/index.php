@@ -421,6 +421,20 @@ if (!isset($_SESSION['analyst_id'])) {
             </div>
             <div class="error-text" id="err-software-assets" style="display:none"></div>
         </div>
+
+        <!-- Dashboards: appears after tickets imported -->
+        <div class="bonus-section" id="dashboardsSection">
+            <p class="section-label">Step 3 &mdash; Dashboards</p>
+            <div class="bonus-card" id="bonus-dashboards">
+                <div class="bonus-info">
+                    <h4>Dashboard Widgets</h4>
+                    <p>Pre-built dashboard widgets and per-analyst layouts for the ticket dashboard. Requires Tickets to be imported first.</p>
+                    <p class="bonus-detail">15 widgets &bull; 3 analyst dashboards with varied layouts</p>
+                </div>
+                <button class="import-btn" id="btn-dashboards" onclick="importModule('dashboards', this)" disabled>Import</button>
+            </div>
+            <div class="error-text" id="err-dashboards" style="display:none"></div>
+        </div>
     </div>
 
     <script>
@@ -487,6 +501,14 @@ if (!isset($_SESSION['analyst_id'])) {
                     btn.disabled = false;
                 }
             }
+            if (importedModules['tickets']) {
+                var section = document.getElementById('dashboardsSection');
+                section.style.display = 'block';
+                var btn = document.getElementById('btn-dashboards');
+                if (btn && !btn.classList.contains('success')) {
+                    btn.disabled = false;
+                }
+            }
         }
 
         // On page load, check if core data and modules already exist
@@ -506,6 +528,7 @@ if (!isset($_SESSION['analyst_id'])) {
                 if (data.modules) {
                     if (data.modules.software) importedModules['software'] = true;
                     if (data.modules.assets) importedModules['assets'] = true;
+                    if (data.modules.tickets) importedModules['tickets'] = true;
                     if (data.modules['software-assets']) {
                         importedModules['software-assets'] = true;
                         var saBtn = document.getElementById('btn-software-assets');
@@ -513,6 +536,15 @@ if (!isset($_SESSION['analyst_id'])) {
                             saBtn.className = 'import-btn success';
                             saBtn.innerHTML = checkSvg + ' Already imported';
                             saBtn.disabled = true;
+                        }
+                    }
+                    if (data.modules.dashboards) {
+                        importedModules['dashboards'] = true;
+                        var dbBtn = document.getElementById('btn-dashboards');
+                        if (dbBtn) {
+                            dbBtn.className = 'import-btn success';
+                            dbBtn.innerHTML = checkSvg + ' Already imported';
+                            dbBtn.disabled = true;
                         }
                     }
                     checkBonusEligibility();
