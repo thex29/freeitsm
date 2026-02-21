@@ -251,6 +251,27 @@ $schema = [
         'updated_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
     ],
 
+    'ticket_rota_shifts' => [
+        'id'                => 'INT NOT NULL AUTO_INCREMENT',
+        'name'              => 'VARCHAR(100) NOT NULL',
+        'start_time'        => 'TIME NOT NULL',
+        'end_time'          => 'TIME NOT NULL',
+        'is_active'         => 'TINYINT(1) NOT NULL DEFAULT 1',
+        'display_order'     => 'INT NOT NULL DEFAULT 0',
+        'created_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    ],
+
+    'ticket_rota_entries' => [
+        'id'                => 'INT NOT NULL AUTO_INCREMENT',
+        'analyst_id'        => 'INT NOT NULL',
+        'rota_date'         => 'DATE NOT NULL',
+        'shift_id'          => 'INT NOT NULL',
+        'location'          => "VARCHAR(20) NOT NULL DEFAULT 'office'",
+        'is_on_call'        => 'TINYINT(1) NOT NULL DEFAULT 0',
+        'created_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+        'updated_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    ],
+
     'assets' => [
         'id'                => 'INT NOT NULL AUTO_INCREMENT',
         'hostname'          => 'VARCHAR(50) NULL',

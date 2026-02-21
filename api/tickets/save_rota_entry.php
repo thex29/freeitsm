@@ -1,0 +1,63 @@
+<?php
+/**
+ * API Endpoint: Create or update a rota entry
+ */
+session_start();
+require_once '../../config.php';
+require_once '../../includes/functions.php';
+
+header('Content-Type: application/json');
+
+if (!isset($_SESSION['analyst_id'])) {
+    echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+if (!$input) {
+    echo json_encode(['success' => false, 'error' => 'Invalid request data']);
+    exit;
+}
+
+$id = !empty($input['id']) ? (int)$input['id'] : null;
+$analystId = !empty($input['analyst_id']) ? (int)$input['analyst_id'] : null;
+$rotaDate = trim($input['rota_date'] ?? '');
+$shiftId = !empty($input['shift_id']) ? (int)$input['shift_id'] : null;
+$location = trim($input['location'] ?? 'office');
+$isOnCall = isset($input['is_on_call']) ? (int)$input['is_on_call'] : 0;
+
+if (!$analystId || empty($rotaDate) || !$shiftId) {
+    echo json_encode(['success' => false, 'error' => 'Analyst, date, and shift are required']);
+    exit;
+}
+
+if (!in_array($location, ['office', 'wfh'])) {
+    $location = 'office';
+}
+
+try {
+    $conn = connectToDatabase();
+
+    if ($id) {
+        $sql = "UPDATE ticket_rota_entries
+                SET shift_id = ?, location = ?, is_on_call = ?, updated_datetime = UTC_TIMESTAMP()
+                WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$shiftId, $location, $isOnCall, $id]);
+    } else {
+        // Use INSERT ... ON DUPLICATE KEY UPDATE for the unique analyst+date constraint
+        $sql = "INSERT INTO ticket_rota_entries (analyst_id, rota_date, shift_id, location, is_on_call, created_datetime, updated_datetime)
+                VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP())
+                ON DUPLICATE KEY UPDATE shift_id = VALUES(shift_id), location = VALUES(location),
+                    is_on_call = VALUES(is_on_call), updated_datetime = UTC_TIMESTAMP()";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$analystId, $rotaDate, $shiftId, $location, $isOnCall]);
+        $id = $conn->lastInsertId();
+    }
+
+    echo json_encode(['success' => true, 'id' => $id]);
+
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+}

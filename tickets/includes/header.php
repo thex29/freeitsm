@@ -55,6 +55,18 @@ require_once $path_prefix . 'includes/waffle-menu.php';
             </svg>
             <span>Calendar</span>
         </a>
+        <a href="<?php echo $path_prefix; ?>tickets/rota.php" class="nav-btn <?php echo $current_page === 'rota' ? 'active' : ''; ?>" title="Rota">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="8" cy="15" r="1"></circle>
+                <circle cx="12" cy="15" r="1"></circle>
+                <circle cx="16" cy="15" r="1"></circle>
+            </svg>
+            <span>Rota</span>
+        </a>
         <a href="<?php echo $current_page === 'settings' ? '.' : 'settings/'; ?>" class="nav-btn <?php echo $current_page === 'settings' ? 'active' : ''; ?>" title="Settings">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>

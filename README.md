@@ -158,12 +158,14 @@ sdtickets/
 │   │   ├── inbox.css                 # Core layout & shared styles
 │   │   ├── knowledge.css             # Knowledge base styles
 │   │   ├── calendar.css              # Calendar widget styles
+│   │   ├── rota.css                  # Staff rota styles
 │   │   ├── change-management.css     # Change management styles
 │   │   └── itsm_calendar.css         # ITSM calendar styles
 │   ├── js/
 │   │   ├── inbox.js                  # Ticket interface logic
 │   │   ├── knowledge.js              # Knowledge base logic
 │   │   ├── calendar.js               # Calendar logic
+│   │   ├── rota.js                   # Staff rota logic
 │   │   ├── change-management.js      # Change management logic
 │   │   ├── change-calendar.js        # Change management calendar logic
 │   │   ├── itsm_calendar.js          # ITSM calendar logic
@@ -176,7 +178,8 @@ sdtickets/
 │   ├── index.php                     # Three-panel inbox interface
 │   ├── users.php                     # User directory & their tickets
 │   ├── calendar.php                  # Ticket scheduling calendar
-│   ├── settings/                     # Departments, types, origins, mailboxes, analysts, teams
+│   ├── rota.php                      # Staff rota weekly grid
+│   ├── settings/                     # Departments, types, origins, mailboxes, analysts, teams, rota shifts
 │   ├── includes/                     # Module header
 │   └── attachments/                  # Email attachment storage
 │
@@ -347,6 +350,7 @@ The primary module. Three-panel Outlook-style interface.
 - **Email actions**: Configurable per-mailbox actions for rejected emails (delete, move to Deleted Items, mark as read) and imported emails (delete, move to folder) with folder verification
 - **Email templates**: Automated email responses triggered by ticket events (new ticket from email, ticket assigned, ticket closed) with merge codes for ticket reference, requester name, analyst name, and more
 - **Ask AI**: Button in ticket detail view opens a slide-in chat panel that searches the knowledge base for relevant articles using ticket context
+- **Staff rota**: Weekly grid showing analyst shift patterns, WFH/office location, and on-call status with per-day entry management and configurable shift definitions
 - **Activity log**: Searchable, paginated log of imported and rejected emails per mailbox with clickable processing log details
 
 ### Assets (`asset-management/`)
@@ -492,7 +496,7 @@ if (!isset($_SESSION['analyst_id'])) {
 }
 ```
 
-### Tickets (`api/tickets/`) ~48 endpoints
+### Tickets (`api/tickets/`) ~54 endpoints
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -528,6 +532,12 @@ if (!isset($_SESSION['analyst_id'])) {
 | `save_note.php` | POST | Add internal note |
 | `get_ticket_audit.php` | GET | Get change history |
 | `get_ticket_counts.php` | GET | Counts by department/status |
+| `get_rota_shifts.php` | GET | List rota shift definitions |
+| `save_rota_shift.php` | POST | Create/update rota shift |
+| `delete_rota_shift.php` | POST | Delete rota shift |
+| `get_rota.php` | GET | Get rota entries for a week |
+| `save_rota_entry.php` | POST | Create/update rota entry |
+| `delete_rota_entry.php` | POST | Delete rota entry |
 | *...and more* | | |
 
 ### Assets (`api/assets/`)

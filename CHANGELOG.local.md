@@ -18,6 +18,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 065 | Tickets           | Feature     | Ask AI button in ticket detail view that opens a slide-in chat panel, auto-sends ticket context to the knowledge base AI, and links referenced articles in new tabs |
 | 066 | Knowledge         | Feature     | Article versioning — save as new version button archives previous content, displays version number on article view, and stores version history |
 | 067 | System            | Feature     | Shared customAlert component replacing native alert/confirm with styled modals supporting info, warning, danger, and success types |
+| 068 | Tickets           | Feature     | Staff rota with weekly grid showing analyst shift patterns, WFH/office location, and on-call status; configurable shifts and include-weekends setting in Ticket Settings |
 
 ---
 
