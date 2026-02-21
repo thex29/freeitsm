@@ -1748,14 +1748,14 @@
     display: flex;
     justify-content: center;
     padding: 4px 0;
-    margin-left: 42px;
+    width: 160px;
 }
 
 .cm-help-step-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 130px;
+    width: 160px;
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 13px;
