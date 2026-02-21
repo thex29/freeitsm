@@ -19,14 +19,16 @@ $path_prefix = '../';
         .system-landing {
             flex: 1;
             display: flex;
-            align-items: center;
             justify-content: center;
             background: #f5f7fa;
+            overflow-y: auto;
         }
 
         .landing-content {
             text-align: center;
             max-width: 700px;
+            margin: auto 0;
+            padding: 30px 20px;
         }
 
         .landing-content h2 {
