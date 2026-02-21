@@ -17,7 +17,6 @@ $path_prefix = '../../';
     <title>Service Desk - Asset Dashboard</title>
     <link rel="stylesheet" href="../../assets/css/inbox.css">
     <script src="../../assets/js/toast.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
     <style>
         body {
             overflow: auto;
@@ -379,6 +378,7 @@ $path_prefix = '../../';
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
     <script>
         const API_BASE = '../../api/assets/';
         let dashboardWidgets = [];
