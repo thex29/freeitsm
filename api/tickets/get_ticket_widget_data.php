@@ -123,9 +123,9 @@ function getCategoricalData($conn, $prop, $where, $params) {
     } elseif ($prop === 'ticket_type') {
         $sql = "SELECT COALESCE(tt.name, 'Unassigned') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN ticket_types tt ON tt.id = t.ticket_type_id {$where} GROUP BY tt.name ORDER BY value DESC";
     } elseif ($prop === 'analyst') {
-        $sql = "SELECT COALESCE(a.name, 'Unassigned') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN analysts a ON a.id = t.assigned_analyst_id {$where} GROUP BY a.name ORDER BY value DESC";
+        $sql = "SELECT COALESCE(a.full_name, 'Unassigned') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN analysts a ON a.id = t.assigned_analyst_id {$where} GROUP BY a.full_name ORDER BY value DESC";
     } elseif ($prop === 'owner') {
-        $sql = "SELECT COALESCE(a.name, 'Unassigned') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN analysts a ON a.id = t.owner_id {$where} GROUP BY a.name ORDER BY value DESC";
+        $sql = "SELECT COALESCE(a.full_name, 'Unassigned') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN analysts a ON a.id = t.owner_id {$where} GROUP BY a.full_name ORDER BY value DESC";
     } elseif ($prop === 'origin') {
         $sql = "SELECT COALESCE(o.name, 'Unknown') AS label, COUNT(*) AS value FROM tickets t LEFT JOIN ticket_origins o ON o.id = t.origin_id {$where} GROUP BY o.name ORDER BY value DESC";
     } elseif ($prop === 'first_time_fix') {
@@ -161,13 +161,13 @@ function getCategoricalWithSeries($conn, $prop, $seriesProp, $where, $params) {
         $join = 'LEFT JOIN ticket_types tt ON tt.id = t.ticket_type_id';
         $groupCol = 'tt.name';
     } elseif ($prop === 'analyst') {
-        $labelExpr = "COALESCE(a.name, 'Unassigned')";
+        $labelExpr = "COALESCE(a.full_name, 'Unassigned')";
         $join = 'LEFT JOIN analysts a ON a.id = t.assigned_analyst_id';
-        $groupCol = 'a.name';
+        $groupCol = 'a.full_name';
     } elseif ($prop === 'owner') {
-        $labelExpr = "COALESCE(a.name, 'Unassigned')";
+        $labelExpr = "COALESCE(a.full_name, 'Unassigned')";
         $join = 'LEFT JOIN analysts a ON a.id = t.owner_id';
-        $groupCol = 'a.name';
+        $groupCol = 'a.full_name';
     } elseif ($prop === 'origin') {
         $labelExpr = "COALESCE(o.name, 'Unknown')";
         $join = 'LEFT JOIN ticket_origins o ON o.id = t.origin_id';

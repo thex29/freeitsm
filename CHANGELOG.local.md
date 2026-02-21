@@ -17,6 +17,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 079 | Tickets           | Feature     | Time-series widgets showing tickets created or closed per day (current month) and per month (last 12 months) with gap-filled labels |
 | 080 | Tickets           | Feature     | Multi-series stacked bar and multi-line charts with series breakdown by status or priority, and created-vs-closed comparison charts |
 | 081 | System            | Feature     | Dashboard widgets demo data import with 15 pre-built ticket widgets and per-analyst dashboard layouts for 3 analysts |
+| 082 | Tickets           | Fix         | Fix tickets by analyst and owner dashboard widgets using wrong column name (a.name instead of a.full_name) |
 
 ---
 
