@@ -30,6 +30,13 @@ try {
 
     $conn = connectToDatabase();
 
+    // Fetch current ticket state for change detection
+    $currentStmt = $conn->prepare("SELECT assigned_analyst_id, status FROM tickets WHERE id = ?");
+    $currentStmt->execute([$ticket_id]);
+    $currentTicket = $currentStmt->fetch(PDO::FETCH_ASSOC);
+    $oldAnalystId = $currentTicket ? $currentTicket['assigned_analyst_id'] : null;
+    $oldStatus = $currentTicket ? $currentTicket['status'] : null;
+
     // Build dynamic SQL based on what's being updated
     $updates = [];
     $params = [];
@@ -47,6 +54,14 @@ try {
     if ($status !== null) {
         $updates[] = "status = ?";
         $params[] = $status;
+        // Set closed_datetime when closing
+        if ($status === 'Closed' && $oldStatus !== 'Closed') {
+            $updates[] = "closed_datetime = UTC_TIMESTAMP()";
+        }
+        // Clear closed_datetime if reopening
+        if ($status !== 'Closed' && $oldStatus === 'Closed') {
+            $updates[] = "closed_datetime = NULL";
+        }
     }
 
     if (array_key_exists('origin_id', $data)) {
@@ -69,9 +84,11 @@ try {
     }
 
     // Add assignment tracking
+    $newAnalystId = null;
     if ($department_id || $ticket_type_id || $status) {
         $updates[] = "assigned_analyst_id = ?";
-        $params[] = $_SESSION['analyst_id'];
+        $newAnalystId = $_SESSION['analyst_id'];
+        $params[] = $newAnalystId;
     }
 
     // Always update the updated_datetime
@@ -85,8 +102,23 @@ try {
 
     echo json_encode(['success' => true]);
 
+    // Trigger template emails after successful update (non-blocking)
+    try {
+        require_once dirname(dirname(__DIR__)) . '/includes/template_email.php';
+
+        // Trigger ticket_assigned if analyst actually changed
+        if ($newAnalystId !== null && (string)$newAnalystId !== (string)$oldAnalystId) {
+            sendTemplateEmail($conn, $ticket_id, 'ticket_assigned');
+        }
+
+        // Trigger ticket_closed if status changed to Closed
+        if ($status === 'Closed' && $oldStatus !== 'Closed') {
+            sendTemplateEmail($conn, $ticket_id, 'ticket_closed');
+        }
+    } catch (Exception $tplEx) {
+        error_log('Template email error in assign_ticket: ' . $tplEx->getMessage());
+    }
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
-
-?>

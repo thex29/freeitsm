@@ -183,11 +183,14 @@ try {
                 ];
             }
 
-            $ticketId = saveEmailToDatabase($conn, $email, $accessToken, $mailboxId);
+            $importResult = saveEmailToDatabase($conn, $email, $accessToken, $mailboxId);
+            $ticketId = $importResult['ticket_id'] ?? $importResult;
+            $isNewTicket = $importResult['is_new_ticket'] ?? false;
             $processingLog['steps'][] = [
                 'step' => 'import',
                 'result' => 'success',
-                'ticket_id' => $ticketId ?: null
+                'ticket_id' => $ticketId ?: null,
+                'is_new_ticket' => $isNewTicket
             ];
             $savedCount++;
 
@@ -206,6 +209,20 @@ try {
                 $postAction['error'] = $delEx->getMessage();
             }
             $processingLog['steps'][] = $postAction;
+
+            // Send template email for new tickets
+            if ($isNewTicket && $ticketId) {
+                $templateStep = ['step' => 'template_email', 'event' => 'new_ticket_email'];
+                try {
+                    require_once dirname(dirname(__DIR__)) . '/includes/template_email.php';
+                    sendTemplateEmail($conn, $ticketId, 'new_ticket_email');
+                    $templateStep['result'] = 'success';
+                } catch (Exception $tplEx) {
+                    $templateStep['result'] = 'error';
+                    $templateStep['error'] = $tplEx->getMessage();
+                }
+                $processingLog['steps'][] = $templateStep;
+            }
 
             $activityEntries[] = [
                 'action' => 'imported',
@@ -987,7 +1004,7 @@ function saveEmailToDatabase($conn, $email, $accessToken, $mailboxId) {
         'attachments' => $attachmentInfo
     ]);
 
-    return $ticketId;
+    return ['ticket_id' => $ticketId, 'is_new_ticket' => ($isInitial == 1)];
 }
 
 /**

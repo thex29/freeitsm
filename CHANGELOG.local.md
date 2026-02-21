@@ -10,7 +10,11 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 
 ## Unpublished
 
-_(nothing to publish)_
+### 21 February 2026
+
+| ID  | Module            | Type        | Description |
+|-----|-------------------|-------------|-------------|
+| 064 | Tickets           | Feature     | Automated email templates triggered by ticket events (new ticket from email, ticket assigned, ticket closed) with merge codes for ticket reference, requester, analyst, department, and dates |
 
 ---
 

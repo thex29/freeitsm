@@ -239,6 +239,18 @@ $schema = [
         'created_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
     ],
 
+    'ticket_email_templates' => [
+        'id'                => 'INT NOT NULL AUTO_INCREMENT',
+        'name'              => 'VARCHAR(100) NOT NULL',
+        'event_trigger'     => 'VARCHAR(50) NOT NULL',
+        'subject_template'  => 'VARCHAR(500) NOT NULL',
+        'body_template'     => 'LONGTEXT NOT NULL',
+        'is_active'         => 'TINYINT(1) NOT NULL DEFAULT 1',
+        'display_order'     => 'INT NOT NULL DEFAULT 0',
+        'created_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+        'updated_datetime'  => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    ],
+
     'assets' => [
         'id'                => 'INT NOT NULL AUTO_INCREMENT',
         'hostname'          => 'VARCHAR(50) NULL',

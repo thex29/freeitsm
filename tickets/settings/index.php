@@ -198,6 +198,7 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
             <button class="tab" data-tab="ticket-types" onclick="switchTab('ticket-types')">Ticket Types</button>
             <button class="tab" data-tab="ticket-origins" onclick="switchTab('ticket-origins')">Ticket Origins</button>
             <button class="tab" data-tab="mailboxes" onclick="switchTab('mailboxes')">Mailboxes</button>
+            <button class="tab" data-tab="email-templates" onclick="switchTab('email-templates')">Templates</button>
             <button class="tab" data-tab="analysts" onclick="switchTab('analysts')">Analysts</button>
             <button class="tab" data-tab="general" onclick="switchTab('general')">General</button>
         </div>
@@ -329,6 +330,30 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
                 </thead>
                 <tbody id="mailboxes-list">
                     <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Email Templates Tab -->
+        <div class="tab-content" id="email-templates-tab">
+            <div class="section-header">
+                <h2>Email Templates</h2>
+                <button class="add-btn" onclick="openTemplateModal()">Add</button>
+            </div>
+            <p style="margin-bottom: 15px; color: #666;">Automated email responses triggered by ticket events. Only the first active template per event is used.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Event</th>
+                        <th>Subject</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="email-templates-list">
+                    <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -680,6 +705,69 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
         </div>
     </div>
 
+    <!-- Template Modal -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header" id="templateModalTitle">Add Email Template</div>
+            <form id="templateForm">
+                <input type="hidden" id="templateId">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="templateName">Name *</label>
+                        <input type="text" id="templateName" required placeholder="e.g., New Ticket Auto-Reply" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="templateEvent">Event Trigger *</label>
+                        <select id="templateEvent" required>
+                            <option value="">Select event...</option>
+                            <option value="new_ticket_email">New ticket from email</option>
+                            <option value="ticket_assigned">Ticket assigned</option>
+                            <option value="ticket_closed">Ticket closed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="templateSubject">Subject *</label>
+                        <input type="text" id="templateSubject" required placeholder="e.g., Your request has been received" autocomplete="off">
+                        <small style="color: #666;">[SDREF:...] is added automatically for reply threading.</small>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="templateBody">Body *</label>
+                        <textarea id="templateBody" rows="10" required placeholder="Dear [requester_name],&#10;&#10;Thank you for contacting us..."></textarea>
+                        <small style="color: #666;">
+                            Merge codes: [ticket_reference], [ticket_subject], [ticket_status], [ticket_priority],
+                            [requester_name], [requester_email], [analyst_name], [analyst_email],
+                            [department_name], [created_date], [closed_date]
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="templateOrder">Display Order</label>
+                        <input type="number" id="templateOrder" value="0" autocomplete="off">
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 10px; margin: 0;">
+                            Active
+                            <label class="toggle-switch" style="margin: 0;">
+                                <input type="checkbox" id="templateActive" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '../../api/tickets/';
         const API_SETTINGS = '../../api/settings/';
@@ -700,6 +788,7 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
             loadTicketTypes();
             loadTicketOrigins();
             loadMailboxes();
+            loadEmailTemplates();
 
             // Auto-switch to mailboxes tab if OAuth success
             <?php if ($oauthSuccess && $oauthMailboxId): ?>
@@ -2146,6 +2235,131 @@ $path_prefix = '../../';  // Two levels up from tickets/settings/
                 }
             } catch (error) {
                 showToast('Failed to save settings', 'error');
+            }
+        });
+
+        // ============================
+        // Email Templates
+        // ============================
+
+        const EVENT_LABELS = {
+            'new_ticket_email': 'New ticket from email',
+            'ticket_assigned': 'Ticket assigned',
+            'ticket_closed': 'Ticket closed'
+        };
+
+        let emailTemplates = [];
+
+        async function loadEmailTemplates() {
+            try {
+                const response = await fetch(API_BASE + 'get_email_templates.php');
+                const data = await response.json();
+                if (data.success) {
+                    emailTemplates = data.templates;
+                    renderEmailTemplates(data.templates);
+                }
+            } catch (error) {
+                console.error('Error loading templates:', error);
+            }
+        }
+
+        function renderEmailTemplates(templates) {
+            const tbody = document.getElementById('email-templates-list');
+            if (templates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No email templates configured</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = templates.map(t => `
+                <tr>
+                    <td>${escapeHtml(t.name)}</td>
+                    <td>${EVENT_LABELS[t.event_trigger] || t.event_trigger}</td>
+                    <td>${escapeHtml(t.subject_template)}</td>
+                    <td>${t.display_order}</td>
+                    <td><span class="status-badge ${t.is_active == 1 ? 'active' : 'inactive'}">${t.is_active == 1 ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editTemplate(${t.id})" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteTemplate(${t.id}, '${escapeHtml(t.name)}')" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openTemplateModal(template = null) {
+            document.getElementById('templateId').value = template ? template.id : '';
+            document.getElementById('templateName').value = template ? template.name : '';
+            document.getElementById('templateEvent').value = template ? template.event_trigger : '';
+            document.getElementById('templateSubject').value = template ? template.subject_template : '';
+            document.getElementById('templateBody').value = template ? template.body_template : '';
+            document.getElementById('templateOrder').value = template ? template.display_order : 0;
+            document.getElementById('templateActive').checked = template ? template.is_active == 1 : true;
+            document.getElementById('templateModalTitle').textContent = template ? 'Edit Email Template' : 'Add Email Template';
+            document.getElementById('templateModal').classList.add('active');
+        }
+
+        function editTemplate(id) {
+            const template = emailTemplates.find(t => t.id == id);
+            if (template) openTemplateModal(template);
+        }
+
+        function closeTemplateModal() {
+            document.getElementById('templateModal').classList.remove('active');
+        }
+
+        async function deleteTemplate(id, name) {
+            if (!confirm(`Delete template "${name}"?`)) return;
+
+            try {
+                const response = await fetch(API_BASE + 'delete_email_template.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Template deleted', 'success');
+                    loadEmailTemplates();
+                } else {
+                    showToast('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Failed to delete template', 'error');
+            }
+        }
+
+        document.getElementById('templateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const templateData = {
+                id: document.getElementById('templateId').value || null,
+                name: document.getElementById('templateName').value,
+                event_trigger: document.getElementById('templateEvent').value,
+                subject_template: document.getElementById('templateSubject').value,
+                body_template: document.getElementById('templateBody').value,
+                display_order: parseInt(document.getElementById('templateOrder').value) || 0,
+                is_active: document.getElementById('templateActive').checked ? 1 : 0
+            };
+
+            try {
+                const response = await fetch(API_BASE + 'save_email_template.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(templateData)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Template saved', 'success');
+                    closeTemplateModal();
+                    loadEmailTemplates();
+                } else {
+                    showToast('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Failed to save template', 'error');
             }
         });
 

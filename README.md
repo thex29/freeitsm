@@ -342,9 +342,10 @@ The primary module. Three-panel Outlook-style interface.
 - **Middle panel**: Ticket list (searchable)
 - **Right panel**: Reading pane with full email thread
 - **Features**: Create tickets, reply/forward emails, attachments, internal notes, audit trail, team-based filtering, scheduling
-- **Settings**: Departments, ticket types, origins, mailboxes (Office 365), analysts, teams
+- **Settings**: Departments, ticket types, origins, mailboxes (Office 365), email templates, analysts, teams
 - **Mailbox whitelist**: Per-mailbox domain and email address whitelisting — non-whitelisted senders are rejected
 - **Email actions**: Configurable per-mailbox actions for rejected emails (delete, move to Deleted Items, mark as read) and imported emails (delete, move to folder) with folder verification
+- **Email templates**: Automated email responses triggered by ticket events (new ticket from email, ticket assigned, ticket closed) with merge codes for ticket reference, requester name, analyst name, and more
 - **Activity log**: Searchable, paginated log of imported and rejected emails per mailbox with clickable processing log details
 
 ### Assets (`asset-management/`)
@@ -518,6 +519,9 @@ if (!isset($_SESSION['analyst_id'])) {
 | `save_mailbox_whitelist.php` | POST | Replace whitelist entries for a mailbox |
 | `get_mailbox_activity.php` | GET | Paginated activity log for a mailbox |
 | `verify_mailbox_folder.php` | POST | Verify a mail folder exists via Graph API |
+| `get_email_templates.php` | GET | List email templates |
+| `save_email_template.php` | POST | Create/update an email template |
+| `delete_email_template.php` | POST | Delete an email template |
 | `get_notes.php` | GET | Get notes for a ticket |
 | `save_note.php` | POST | Add internal note |
 | `get_ticket_audit.php` | GET | Get change history |
@@ -670,6 +674,13 @@ id, mailbox_id, action ('imported'|'rejected'), from_address, from_name,
 subject, reason, ticket_id, created_datetime
 ```
 Records every email imported or rejected during mailbox processing.
+
+#### ticket_email_templates
+```sql
+id, name, event_trigger, subject_template, body_template, is_active, display_order,
+created_datetime, updated_datetime
+```
+Automated email templates triggered by ticket events (`new_ticket_email`, `ticket_assigned`, `ticket_closed`). Subject and body support merge codes like `[ticket_reference]`, `[analyst_name]`, etc.
 
 ### Asset Tables
 

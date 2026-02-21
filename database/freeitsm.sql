@@ -289,6 +289,19 @@ CREATE TABLE IF NOT EXISTS `mailbox_activity_log` (
     CONSTRAINT `fk_mal_mailbox` FOREIGN KEY (`mailbox_id`) REFERENCES `target_mailboxes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `ticket_email_templates` (
+    `id`                INT NOT NULL AUTO_INCREMENT,
+    `name`              VARCHAR(100) NOT NULL,
+    `event_trigger`     VARCHAR(50) NOT NULL,
+    `subject_template`  VARCHAR(500) NOT NULL,
+    `body_template`     LONGTEXT NOT NULL,
+    `is_active`         TINYINT(1) NOT NULL DEFAULT 1,
+    `display_order`     INT NOT NULL DEFAULT 0,
+    `created_datetime`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_datetime`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ----------------------------------------------------------
 -- Assets
 -- ----------------------------------------------------------
