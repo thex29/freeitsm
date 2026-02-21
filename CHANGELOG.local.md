@@ -10,7 +10,12 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 
 ## Unpublished
 
-*(No unpublished entries)*
+### 21 February 2026
+
+| ID  | Module            | Type        | Description |
+|-----|-------------------|-------------|-------------|
+| 055 | Assets            | Feature     | PowerShell inventory agent and system-info ingest API that collects and syncs hardware, disks, network, GPU, TPM, BitLocker, and software data per asset |
+| 056 | Assets            | Improvement | Widen hostname and service_tag columns to VARCHAR(50) and add new asset columns for domain, logged-in user, last boot, TPM, BitLocker, and GPU |
 
 ---
 

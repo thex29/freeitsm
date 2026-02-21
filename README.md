@@ -351,6 +351,8 @@ IT asset management with vCenter integration.
   - Clickable rows show full detail modal with raw JSON from vCenter
   - Stores all API response data in `raw_data` column
 - **Settings**: vCenter server URL, username, and password (encrypted)
+- **PowerShell inventory agent** (`scripts/Invoke-AssetInventory.ps1`): Collects hardware, disks, network, GPU, TPM, BitLocker, and installed software from Windows machines and posts to the system-info API
+- **System-info API** (`api/external/system-info/submit/`): External endpoint that ingests asset inventory data, syncs disk and network adapter tables, and processes software inventory
 
 ### Knowledge (`knowledge/`)
 Rich-text knowledge base with AI integration.
@@ -577,7 +579,8 @@ if (!isset($_SESSION['analyst_id'])) {
 - `api/software/` — 5 endpoints for software inventory and licence management
 - `api/service-status/` — 7 endpoints for services CRUD, incident management, and dashboard aggregation
 - `api/system/` — 4 endpoints for encryption status and module access management
-- `api/external/software-inventory/submit/` — External API for automated inventory collection
+- `api/external/software-inventory/submit/` — External API for automated software inventory collection
+- `api/external/system-info/submit/` — External API for full asset inventory ingestion (hardware, disks, network, software)
 
 ---
 

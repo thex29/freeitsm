@@ -289,11 +289,11 @@ CREATE TABLE IF NOT EXISTS `asset_status_types` (
 
 CREATE TABLE IF NOT EXISTS `assets` (
     `id`                INT NOT NULL AUTO_INCREMENT,
-    `hostname`          VARCHAR(20) NULL,
+    `hostname`          VARCHAR(50) NULL,
     `manufacturer`      VARCHAR(50) NULL,
     `model`             VARCHAR(50) NULL,
     `memory`            BIGINT NULL,
-    `service_tag`       VARCHAR(20) NULL,
+    `service_tag`       VARCHAR(50) NULL,
     `operating_system`  VARCHAR(50) NULL,
     `feature_release`   VARCHAR(10) NULL,
     `build_number`      VARCHAR(50) NULL,
@@ -304,6 +304,12 @@ CREATE TABLE IF NOT EXISTS `assets` (
     `last_seen`         DATETIME NULL,
     `asset_type_id`     INT NULL,
     `asset_status_id`   INT NULL,
+    `domain`            VARCHAR(100) NULL,
+    `logged_in_user`    VARCHAR(100) NULL,
+    `last_boot_utc`     DATETIME NULL,
+    `tpm_version`       VARCHAR(50) NULL,
+    `bitlocker_status`  VARCHAR(20) NULL,
+    `gpu_name`          VARCHAR(250) NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -331,6 +337,32 @@ CREATE TABLE IF NOT EXISTS `asset_history` (
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_asset_history_asset` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`),
     CONSTRAINT `fk_asset_history_analyst` FOREIGN KEY (`analyst_id`) REFERENCES `analysts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `asset_disks` (
+    `id`            INT NOT NULL AUTO_INCREMENT,
+    `asset_id`      INT NOT NULL,
+    `drive`         VARCHAR(10) NULL,
+    `label`         VARCHAR(100) NULL,
+    `file_system`   VARCHAR(20) NULL,
+    `size_bytes`    BIGINT NULL,
+    `free_bytes`    BIGINT NULL,
+    `used_percent`  DECIMAL(5,1) NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_asset_disks_asset` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `asset_network_adapters` (
+    `id`            INT NOT NULL AUTO_INCREMENT,
+    `asset_id`      INT NOT NULL,
+    `name`          VARCHAR(255) NULL,
+    `mac_address`   VARCHAR(17) NULL,
+    `ip_address`    VARCHAR(45) NULL,
+    `subnet_mask`   VARCHAR(45) NULL,
+    `gateway`       VARCHAR(45) NULL,
+    `dhcp_enabled`  TINYINT(1) NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_asset_network_asset` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `servers` (
