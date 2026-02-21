@@ -661,6 +661,10 @@ function displayEmail(email) {
                 <span class="action-btn-icon">📅</span>
                 <span>Schedule</span>
             </button>
+            <button class="action-btn" onclick="openTicketAiChat()">
+                <span class="action-btn-icon">🤖</span>
+                <span>Ask AI</span>
+            </button>
             <button class="action-btn" onclick="showAuditHistory()">
                 <span class="action-btn-icon">📋</span>
                 <span>Audit</span>
@@ -1878,3 +1882,179 @@ async function clearSchedule() {
         alert('Failed to clear schedule');
     }
 }
+
+// ===== AI Chat Functions (Ask AI) =====
+
+let _ticketAiContextId = null; // Track which ticket has been auto-queried
+
+function openTicketAiChat() {
+    if (!currentEmail) return;
+
+    const panel = document.getElementById('ticketAiPanel');
+    const overlay = document.getElementById('ticketAiOverlay');
+    panel.classList.add('active');
+    overlay.classList.add('active');
+
+    // If ticket changed, reset chat
+    if (_ticketAiContextId !== currentEmail.ticket_id) {
+        _ticketAiContextId = currentEmail.ticket_id;
+        const messagesContainer = document.getElementById('ticketAiMessages');
+        messagesContainer.innerHTML = '<div class="ai-chat-welcome">Ask a question about this ticket and the AI will search the knowledge base for relevant articles.</div>';
+
+        // Auto-send initial context question
+        const subject = currentEmail.subject || '';
+        const bodyText = (currentEmail.body_content || '').replace(/<[^>]*>/g, '').substring(0, 1500);
+        const autoQuestion = `I'm looking at ticket ${currentEmail.ticket_number || ''}: ${subject}.\n\nHere's the initial email:\n\n${bodyText}\n\nAre there any knowledge articles that might help resolve this?`;
+        _sendTicketAiMessage(autoQuestion, true);
+    }
+
+    document.getElementById('ticketAiInput').focus();
+}
+
+function closeTicketAiChat() {
+    document.getElementById('ticketAiPanel').classList.remove('active');
+    document.getElementById('ticketAiOverlay').classList.remove('active');
+}
+
+function askTicketAi() {
+    const input = document.getElementById('ticketAiInput');
+    const question = input.value.trim();
+    if (!question) return;
+    input.value = '';
+    _sendTicketAiMessage(question, false);
+}
+
+async function _sendTicketAiMessage(question, isAutoContext) {
+    const messagesContainer = document.getElementById('ticketAiMessages');
+    const input = document.getElementById('ticketAiInput');
+    const sendBtn = document.getElementById('ticketAiSendBtn');
+
+    // Clear welcome message
+    const welcome = messagesContainer.querySelector('.ai-chat-welcome');
+    if (welcome) welcome.remove();
+
+    // Add user message bubble (show a shorter version for auto-context)
+    const userMsg = document.createElement('div');
+    userMsg.className = 'ai-chat-message user';
+    const displayText = isAutoContext
+        ? `Find knowledge articles relevant to: ${currentEmail.subject || 'this ticket'}`
+        : question;
+    userMsg.innerHTML = '<div class="ai-chat-bubble">' + escapeHtml(displayText) + '</div>';
+    messagesContainer.appendChild(userMsg);
+
+    // Disable input
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    // Add thinking indicator
+    const thinking = document.createElement('div');
+    thinking.className = 'ai-chat-thinking';
+    thinking.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> Searching knowledge base...';
+    messagesContainer.appendChild(thinking);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    try {
+        const response = await fetch('../api/knowledge/ai_chat.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: question, include_archived: false })
+        });
+        const data = await response.json();
+
+        thinking.remove();
+
+        if (data.success) {
+            const assistantMsg = document.createElement('div');
+            assistantMsg.className = 'ai-chat-message assistant';
+            assistantMsg.innerHTML = '<div class="ai-chat-bubble">' + formatTicketAiResponse(data.answer, data.articles || []) + '</div>' +
+                '<div class="ai-chat-meta">Searched ' + data.articles_searched + ' articles</div>';
+            messagesContainer.appendChild(assistantMsg);
+        } else {
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'ai-chat-error';
+            errorMsg.textContent = data.error || 'Failed to get a response. Please check the AI API key in Knowledge Settings.';
+            messagesContainer.appendChild(errorMsg);
+        }
+    } catch (error) {
+        thinking.remove();
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'ai-chat-error';
+        errorMsg.textContent = 'Network error: ' + error.message;
+        messagesContainer.appendChild(errorMsg);
+    }
+
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function formatTicketAiResponse(text, articlesList) {
+    // Replace quoted article titles with hyperlinks
+    if (articlesList && articlesList.length > 0) {
+        const sorted = [...articlesList].sort((a, b) => b.title.length - a.title.length);
+        sorted.forEach(article => {
+            const escapedTitle = article.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp('["\u201c]' + escapedTitle + '(\\s*\\(ID:\\s*\\d+\\))?["\u201d]', 'gi');
+            const link = '<a href="../knowledge/#article-' + article.id + '" target="_blank" class="ai-article-link">\u201c' + escapeHtml(article.title) + '\u201d</a>';
+            text = text.replace(regex, link);
+        });
+    }
+
+    // Markdown-like formatting
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    text = text.replace(/(?<!\w)_([^_]+)_(?!\w)/g, '<em>$1</em>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Paragraphs and lists
+    const paragraphs = text.split(/\n\n+/);
+    if (paragraphs.length > 1) {
+        text = paragraphs.map(p => {
+            p = p.trim();
+            if (!p) return '';
+            if (/^[-*]\s/.test(p) || /^\d+\.\s/.test(p)) {
+                const items = p.split(/\n/).map(line => {
+                    line = line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '');
+                    return '<li>' + line + '</li>';
+                }).join('');
+                return '<ul>' + items + '</ul>';
+            }
+            return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+        }).join('');
+    } else {
+        if (/^[-*]\s/m.test(text) || /^\d+\.\s/m.test(text)) {
+            const lines = text.split(/\n/);
+            let html = '';
+            let inList = false;
+            lines.forEach(line => {
+                const isListItem = /^[-*]\s/.test(line) || /^\d+\.\s/.test(line);
+                if (isListItem) {
+                    if (!inList) { html += '<ul>'; inList = true; }
+                    line = line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '');
+                    html += '<li>' + line + '</li>';
+                } else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += (line.trim() ? '<p>' + line + '</p>' : '');
+                }
+            });
+            if (inList) html += '</ul>';
+            text = html;
+        } else {
+            text = '<p>' + text.replace(/\n/g, '<br>') + '</p>';
+        }
+    }
+
+    return text;
+}
+
+// Close AI chat on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const panel = document.getElementById('ticketAiPanel');
+        if (panel && panel.classList.contains('active')) {
+            closeTicketAiChat();
+        }
+    }
+});

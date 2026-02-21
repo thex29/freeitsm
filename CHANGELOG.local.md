@@ -15,6 +15,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | ID  | Module            | Type        | Description |
 |-----|-------------------|-------------|-------------|
 | 064 | Tickets           | Feature     | Automated email templates triggered by ticket events (new ticket from email, ticket assigned, ticket closed) with merge codes for ticket reference, requester, analyst, department, and dates |
+| 065 | Tickets           | Feature     | Ask AI button in ticket detail view that opens a slide-in chat panel, auto-sends ticket context to the knowledge base AI, and links referenced articles in new tabs |
 
 ---
 

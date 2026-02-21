@@ -14,7 +14,7 @@ $current_page = 'inbox';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Desk - Inbox</title>
-    <link rel="stylesheet" href="../assets/css/inbox.css?v=3">
+    <link rel="stylesheet" href="../assets/css/inbox.css?v=4">
     <script src="../assets/js/tinymce/tinymce.min.js"></script>
 </head>
 <body>
@@ -225,7 +225,7 @@ $current_page = 'inbox';
 
     <div class="toast" id="toast"></div>
     <script>window.API_BASE = '../api/tickets/';</script>
-    <script src="../assets/js/inbox.js?v=7"></script>
+    <script src="../assets/js/inbox.js?v=8"></script>
     <script>
     // Auto-check mailboxes every 60 seconds
     (function() {
@@ -281,5 +281,25 @@ $current_page = 'inbox';
         setInterval(checkMailboxes, POLL_INTERVAL);
     })();
     </script>
+
+    <!-- AI Chat Panel -->
+    <div class="ai-chat-overlay" id="ticketAiOverlay" onclick="closeTicketAiChat()"></div>
+    <div class="ai-chat-panel" id="ticketAiPanel">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">Ask AI</div>
+            <button class="ai-chat-close" onclick="closeTicketAiChat()">&times;</button>
+        </div>
+        <div class="ai-chat-messages" id="ticketAiMessages">
+            <div class="ai-chat-welcome">
+                Ask a question about this ticket and the AI will search the knowledge base for relevant articles.
+            </div>
+        </div>
+        <div class="ai-chat-input-area">
+            <textarea id="ticketAiInput" placeholder="Ask a question..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askTicketAi();}"></textarea>
+            <button class="ai-chat-send" id="ticketAiSendBtn" onclick="askTicketAi()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+    </div>
 </body>
 </html>
