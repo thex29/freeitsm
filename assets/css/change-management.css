@@ -1491,76 +1491,108 @@
     border-radius: 10px;
 }
 
-/* ============ Help Modal ============ */
+/* ============ Help Guide Page ============ */
 
-.help-nav-btn {
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-
-.cm-help-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 9999;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 30px 20px;
-    overflow-y: auto;
-}
-
-.cm-help-overlay.active {
+/* Full-page container */
+.cm-help-container {
     display: flex;
+    height: calc(100vh - 48px);
+    background: #f5f5f5;
 }
 
-.cm-help-modal {
+/* Left sidebar navigation */
+.cm-help-sidebar {
+    width: 260px;
     background: white;
-    border-radius: 16px;
-    max-width: 820px;
-    width: 100%;
-    position: relative;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
-    animation: cmHelpSlideIn 0.3s ease;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
-@keyframes cmHelpSlideIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+.cm-help-sidebar h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px;
 }
 
-.cm-help-close {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: rgba(255,255,255,0.9);
-    border: none;
-    font-size: 28px;
-    color: #666;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+.cm-help-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.cm-help-nav-link:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.cm-help-nav-link.active {
+    background: #e0f2f1;
+    color: #00695c;
+    font-weight: 600;
+}
+
+.cm-help-nav-link.cab {
+    color: #00695c;
+}
+
+.cm-help-nav-link.cab.active {
+    background: #00897b;
+    color: white;
+}
+
+.cm-help-nav-num {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
-    transition: all 0.15s;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #eee;
+    color: #888;
+    font-weight: 700;
+    font-size: 11px;
+    flex-shrink: 0;
 }
 
-.cm-help-close:hover {
-    background: white;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.cm-help-nav-link.active .cm-help-nav-num {
+    background: #00897b;
+    color: white;
+}
+
+.cm-help-nav-num.cab {
+    background: #e0f2f1;
+    color: #00695c;
+}
+
+.cm-help-nav-link.cab.active .cm-help-nav-num {
+    background: rgba(255,255,255,0.25);
+    color: white;
+}
+
+/* Main content */
+.cm-help-main {
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* Hero banner */
 .cm-help-hero {
     background: linear-gradient(135deg, #00897b 0%, #00695c 50%, #004d40 100%);
     color: white;
-    padding: 40px 40px 36px;
-    border-radius: 16px 16px 0 0;
+    padding: 40px 48px 36px;
     text-align: center;
 }
 
@@ -1587,11 +1619,11 @@
     opacity: 0.85;
 }
 
-/* Scrollable content */
-.cm-help-scroll {
-    padding: 10px 40px 40px;
-    max-height: calc(100vh - 160px);
-    overflow-y: auto;
+/* Content area below hero */
+.cm-help-content {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 10px 48px 48px;
 }
 
 /* Sections */
@@ -1809,8 +1841,8 @@
 /* CAB section highlight */
 .cm-help-section-highlight {
     background: #f0faf9;
-    margin: 0 -40px;
-    padding: 28px 40px !important;
+    margin: 0 -48px;
+    padding: 28px 48px !important;
     border-bottom: none !important;
     border-top: 2px solid #b2dfdb;
 }
@@ -2037,10 +2069,14 @@
 }
 
 /* Responsive */
+@media (max-width: 900px) {
+    .cm-help-sidebar { display: none; }
+    .cm-help-content { padding: 10px 24px 40px; }
+    .cm-help-hero { padding: 30px 24px; }
+    .cm-help-section-highlight { margin: 0 -24px; padding: 20px 24px !important; }
+}
+
 @media (max-width: 700px) {
     .cm-help-types-grid { grid-template-columns: 1fr; }
     .cm-help-tips-grid { grid-template-columns: 1fr; }
-    .cm-help-scroll { padding: 10px 20px 30px; }
-    .cm-help-hero { padding: 30px 20px; }
-    .cm-help-section-highlight { margin: 0 -20px; padding: 20px !important; }
 }

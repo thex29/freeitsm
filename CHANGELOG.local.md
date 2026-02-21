@@ -19,7 +19,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 073 | Change Management | Feature     | CAB (Change Advisory Board) multi-member approval workflow with required/optional reviewers, Approve/Reject/Abstain voting, configurable threshold (all or majority), and auto-status transitions |
 | 074 | Change Management | Feature     | CAB review panel in change detail view showing member cards with colour-coded vote status, progress badge, and inline vote form for pending CAB members |
 | 075 | Change Management | Feature     | My CAB Reviews filter on approvals page showing changes where current analyst has a pending CAB vote, with CAB progress badge on approval cards |
-| 076 | Change Management | Feature     | Interactive help guide in header with visual walkthrough of change lifecycle, change types, CAB workflow, risk assessment, and post-implementation review |
+| 076 | Change Management | Improvement | Help guide moved from modal to dedicated full page with left-pane section navigation, scroll-spy active section highlighting, and smooth scrolling |
 
 ---
 
