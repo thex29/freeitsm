@@ -394,9 +394,16 @@ $path_prefix = '../';
             });
         });
 
-        // Update active class when a nav link is clicked
+        // Scroll within the help container, not the page
         navLinks.forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const el = document.getElementById(this.dataset.section);
+                if (el) {
+                    const containerTop = helpMain.getBoundingClientRect().top;
+                    const elTop = el.getBoundingClientRect().top;
+                    helpMain.scrollTo({ top: helpMain.scrollTop + (elTop - containerTop) - 20, behavior: 'smooth' });
+                }
                 navLinks.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
             });
