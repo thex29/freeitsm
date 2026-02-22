@@ -467,6 +467,58 @@ $path_prefix = '../../';
         }
 
         let allDepartments = [];
+        let descriptionManuallyEdited = false;
+
+        // Auto-generate description from current form state
+        function generateDescription() {
+            const prop = document.getElementById('editProperty').value;
+            const series = document.getElementById('editSeries').value;
+            const dateRange = document.getElementById('editDateRange').value;
+            const timeGrouping = document.getElementById('editTimeGrouping').value;
+            const isTime = TIME_AGGREGATES.includes(prop);
+            const checkedDepts = [...document.querySelectorAll('.dept-checkbox:checked')];
+
+            let desc = '';
+
+            // Base description
+            if (prop === 'created_vs_closed') {
+                desc = 'Created vs closed';
+                if (isTime) desc += ' per ' + (TIME_GROUPING_LABELS[timeGrouping] || timeGrouping).toLowerCase().replace(/ly$/, '');
+            } else if (isTime) {
+                const verb = prop === 'created' ? 'created' : 'closed';
+                const groupLabel = (TIME_GROUPING_LABELS[timeGrouping] || timeGrouping).toLowerCase().replace(/ly$/, '');
+                desc = 'Tickets ' + verb + ' per ' + groupLabel;
+                if (series) desc += ' by ' + (SERIES_LABELS[series] || series).toLowerCase();
+            } else {
+                desc = 'Tickets by ' + (PROPERTY_LABELS[prop] || prop).toLowerCase();
+                if (series) desc += ' and ' + (SERIES_LABELS[series] || series).toLowerCase();
+            }
+
+            // Date range suffix
+            if (dateRange) {
+                desc += ' (' + (DATE_RANGE_LABELS[dateRange] || dateRange).toLowerCase() + ')';
+            }
+
+            // Department filter suffix
+            if (checkedDepts.length > 0 && checkedDepts.length < allDepartments.length) {
+                const names = checkedDepts.map(cb => {
+                    const label = cb.closest('label');
+                    return label ? label.textContent.trim() : '';
+                }).filter(Boolean);
+                if (names.length <= 2) {
+                    desc += ' — ' + names.join(', ');
+                } else {
+                    desc += ' — ' + names.length + ' departments';
+                }
+            }
+
+            return desc;
+        }
+
+        function autoFillDescription() {
+            if (descriptionManuallyEdited) return;
+            document.getElementById('editDescription').value = generateDescription();
+        }
 
         async function init() {
             const [libRes, dashRes, deptRes] = await Promise.all([
@@ -588,6 +640,9 @@ $path_prefix = '../../';
 
             // Hide filterable when series is status
             updateFilterableVisibility();
+
+            // Auto-generate description
+            autoFillDescription();
         }
 
         function updateChartTypeOptions() {
@@ -629,6 +684,18 @@ $path_prefix = '../../';
         document.getElementById('editSeries').addEventListener('change', function() {
             updateChartTypeOptions();
             updateFilterableVisibility();
+            autoFillDescription();
+        });
+
+        // Listen for time grouping, date range, and department changes
+        document.getElementById('editTimeGrouping').addEventListener('change', autoFillDescription);
+        document.getElementById('editDateRange').addEventListener('change', autoFillDescription);
+        document.getElementById('deptCheckboxes').addEventListener('change', autoFillDescription);
+
+        // Track manual description edits — clearing resets to auto mode
+        document.getElementById('editDescription').addEventListener('input', function() {
+            descriptionManuallyEdited = this.value.trim().length > 0;
+            if (!descriptionManuallyEdited) autoFillDescription();
         });
 
         // Edit panel
@@ -648,6 +715,7 @@ $path_prefix = '../../';
             document.getElementById('filterableGroup').style.display = '';
             document.getElementById('editPanel').classList.add('active');
             document.getElementById('editTitle').focus();
+            descriptionManuallyEdited = false;
             onPropertyChange();
         }
 
@@ -679,6 +747,9 @@ $path_prefix = '../../';
             document.querySelectorAll('.dept-checkbox').forEach(cb => {
                 cb.checked = deptIds.includes(parseInt(cb.value));
             });
+
+            // When editing, treat existing description as manually set
+            descriptionManuallyEdited = !!(w.description || '').trim();
 
             document.getElementById('editPanel').classList.add('active');
             document.getElementById('editTitle').focus();
