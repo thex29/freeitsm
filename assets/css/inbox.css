@@ -758,6 +758,71 @@ body {
     justify-content: flex-end;
 }
 
+/* Widget edit form (shared between library page and dashboard modal) */
+.edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.edit-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 0;
+}
+
+.edit-form .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.edit-form label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.edit-form input:focus,
+.edit-form select:focus,
+.edit-form textarea:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 2px rgba(0,120,212,0.1);
+}
+
+.edit-form textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.edit-form .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding-top: 20px;
+}
+
+.edit-form .checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 900px) {
+    .edit-form {
+        grid-template-columns: 1fr;
+    }
+}
+
 .form-group {
     margin-bottom: 20px;
 }

@@ -21,6 +21,7 @@ When publishing to the website, move entries from **Unpublished** to the **Publi
 | 083 | Tickets           | Fix         | Setting ticket owner now also sets assigned_analyst_id so the analyst appears in dashboard widgets |
 | 084 | Tickets           | Feature     | Dashboard widgets now support configurable date range, department filter, and day/month/year time grouping |
 | 085 | Tickets           | Improvement | Widget editor auto-generates description from selected parameters (e.g. "Tickets by department (last 30 days)") |
+| 086 | Tickets           | Feature     | Edit widget properties directly from the dashboard via cog icon modal, with shared form code between library and dashboard |
 
 ---
 

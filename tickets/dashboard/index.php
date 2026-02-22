@@ -248,12 +248,28 @@ $path_prefix = '../../';
         </button>
     </div>
 
+    <!-- Widget edit modal -->
+    <div class="modal" id="widgetEditModal">
+        <div class="modal-content" style="max-width:700px;">
+            <div class="modal-header">Edit Widget</div>
+            <div class="modal-body">
+                <?php require_once 'includes/widget_edit_form.php'; ?>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="handleWidgetSave()">Save</button>
+                <button class="btn" onclick="closeWidgetEditModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../assets/js/chart.min.js"></script>
+    <script src="../../assets/js/widget-editor.js"></script>
     <script>
         const API_BASE = '../../api/tickets/';
         let dashboardWidgets = [];
         let chartInstances = {};
         let dragSource = null;
+        let editingWidgetId = null;
 
         // Ticket statuses for filter dropdowns
         const STATUSES = ['Open', 'In Progress', 'On Hold', 'Closed'];
@@ -292,6 +308,7 @@ $path_prefix = '../../';
                 console.error('Dashboard init error:', err);
             }
 
+            await WidgetEditor.init(API_BASE);
             renderDashboard();
         }
 
@@ -332,6 +349,9 @@ $path_prefix = '../../';
                             <p>${escapeHtml(w.description || '')}</p>
                         </div>
                         <div class="widget-actions">
+                            <button class="widget-action-btn" onclick="openWidgetEditModal(${w.widget_id})" title="Edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            </button>
                             <button class="widget-action-btn" onclick="removeWidget(${w.widget_id})" title="Remove">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
@@ -534,6 +554,58 @@ $path_prefix = '../../';
             }
         }
 
+        // Widget edit modal
+        function openWidgetEditModal(widgetId) {
+            const widget = dashboardWidgets.find(w => w.widget_id == widgetId);
+            if (!widget) return;
+            editingWidgetId = widgetId;
+
+            WidgetEditor.populateForm({
+                id: widget.widget_id,
+                title: widget.title,
+                description: widget.description,
+                chart_type: widget.chart_type,
+                aggregate_property: widget.aggregate_property,
+                series_property: widget.series_property,
+                is_status_filterable: widget.is_status_filterable,
+                date_range: widget.date_range,
+                department_filter: widget.department_filter,
+                time_grouping: widget.time_grouping
+            });
+
+            document.getElementById('widgetEditModal').classList.add('active');
+        }
+
+        function closeWidgetEditModal() {
+            document.getElementById('widgetEditModal').classList.remove('active');
+            editingWidgetId = null;
+        }
+
+        async function handleWidgetSave() {
+            const result = await WidgetEditor.saveWidget();
+            if (!result.success) {
+                if (result.error) showToast(result.error, 'error');
+                return;
+            }
+
+            const w = dashboardWidgets.find(w => w.widget_id == editingWidgetId);
+            if (w) {
+                w.title = result.widget.title;
+                w.description = result.widget.description;
+                w.chart_type = result.widget.chart_type;
+                w.aggregate_property = result.widget.aggregate_property;
+                w.series_property = result.widget.series_property;
+                w.is_status_filterable = result.widget.is_status_filterable;
+                w.date_range = result.widget.date_range;
+                w.department_filter = result.widget.department_filter;
+                w.time_grouping = result.widget.time_grouping;
+            }
+
+            closeWidgetEditModal();
+            renderDashboard();
+            showToast('Widget updated', 'success');
+        }
+
         // Drag & Drop reordering
         function onDragStart(e) {
             dragSource = this;
@@ -602,6 +674,14 @@ $path_prefix = '../../';
             div.textContent = str;
             return div.innerHTML;
         }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeWidgetEditModal();
+        });
+
+        document.getElementById('widgetEditModal').addEventListener('click', function(e) {
+            if (e.target === this) closeWidgetEditModal();
+        });
 
         init();
     </script>

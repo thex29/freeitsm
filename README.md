@@ -360,6 +360,7 @@ The primary module. Three-panel Outlook-style interface.
   - Department filter: scope any widget to specific departments
   - Each analyst picks widgets for their own dashboard
   - Status filtering on supported widgets
+  - Inline editing: cog icon on each widget opens a modal to edit properties without leaving the dashboard
   - Drag-and-drop reordering
 
 ### Assets (`asset-management/`)
