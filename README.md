@@ -19,6 +19,38 @@ A comprehensive web-based IT Service Management (ITSM) platform with 11 integrat
 >
 > FreeITSM now runs on **MySQL**, which comes pre-installed with WAMP, XAMPP, and most web hosting stacks. No extra downloads, no driver headaches. If you've already set up with SQL Server, you'll need to migrate your data to MySQL and update your `db_config.php` — but for new installations, it's just clone and go.
 
+## Table of Contents
+
+- [Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration Files](#configuration-files)
+- [Technology Stack](#technology-stack)
+- [ITSM Modules](#itsm-modules)
+- [Directory Structure](#directory-structure)
+- [Shared Components](#shared-components)
+- [Module Details](#module-details)
+  - [Tickets](#tickets-tickets)
+  - [Assets](#assets-asset-management)
+  - [Knowledge](#knowledge-knowledge)
+  - [Change Management](#change-management-change-management)
+  - [Calendar](#calendar-calendar)
+  - [Morning Checks](#morning-checks-morning-checks)
+  - [Reporting](#reporting-reporting)
+  - [Software](#software-software)
+  - [System](#system-system)
+  - [Forms](#forms-forms)
+  - [Contracts](#contracts-contracts)
+  - [Service Status](#service-status-service-status)
+- [API Reference](#api-reference)
+- [Database](#database)
+- [Security](#security)
+- [Key Workflows](#key-workflows)
+- [Development Notes](#development-notes)
+- [File Locations Quick Reference](#file-locations-quick-reference)
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
